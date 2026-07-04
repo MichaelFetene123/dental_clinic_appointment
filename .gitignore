@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE and Editor
+.vscode/
+.idea/
+
+# Crash logs
+*.stackdump
+
+/src/generated/prisma

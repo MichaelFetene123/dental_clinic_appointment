@@ -59,7 +59,7 @@ const appointments = [
 ];
 
 const timeSlots = Array.from({ length: 24 }, (_, i) => {
-    const hour = i % 12 || 12; // For 0-11, map to 12-hour format
+    const hour = 8 + Math.floor(i / 2); // Start at 8:00 AM
     const minute = i % 2 === 0 ? "00" : "30"; // Half-hour increments
     return `${hour.toString().padStart(2, "0")}:${minute}`; // HH:mm format
 });

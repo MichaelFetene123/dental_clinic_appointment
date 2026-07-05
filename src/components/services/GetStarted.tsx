@@ -17,7 +17,7 @@ const data = [
 const GetStarted = () => {
   return (
     <div className="relative">
-      <div className="w-[90%] mx-auto px-4 py-24 sm:px-6 lg:px-8">
+      <div className="w-[90%] mx-auto px-4 py-16 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -30,21 +30,34 @@ const GetStarted = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
-          {data.map((item, idx) => (
+          { data.map((item, idx) => (
             <motion.div
               key={idx}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: idx * 0.2 }}
               viewport={{ once: true }}
-              className="relative "
+              className="relative overflow-hidden rounded-2xl min-h-[380px] p-8 flex flex-col justify-between group"
+              style={{
+                backgroundImage: `url(${item.image})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
             >
-              <div className=" text-4xl w-[100px] h-[100px] flex items-center justify-center bg-primary text-white">{item.icon}</div>
-              <div className="">
-                <p className="font-instrument-serif text-2xl font-normal text-gray-950 mt-2">
+              {/* Gradient Overlay for better readability */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20 transition-all duration-500 group-hover:bg-black/50" />
+              
+              <div className="relative z-10 text-4xl w-[80px] h-[80px] flex items-center justify-center bg-primary text-white rounded-full transform group-hover:scale-110 transition-transform duration-500">
+                {item.icon}
+              </div>
+              
+              <div className="relative z-10 mt-auto transform group-hover:-translate-y-2 transition-transform duration-500">
+                <p className="font-instrument-serif text-3xl font-normal text-white mt-2">
                   {item.title}
                 </p>
-                <p className="font-inter text-base font-normal text-gray-700 mt-2">{item.description}</p>
+                <p className="font-inter text-base font-normal text-gray-200 mt-3">
+                  {item.description}
+                </p>
               </div>
             </motion.div>
           ))}

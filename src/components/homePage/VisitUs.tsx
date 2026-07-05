@@ -4,7 +4,7 @@ import { FaMapMarked, FaPhoneAlt, FaClock, FaEnvelope } from 'react-icons/fa'
 
 const VisitUs = () => {
   return (
-    <div className='w-full py-32 flex items-center'>
+    <div className='w-full py-14 flex items-center'>
       <div className='w-[90%] mx-auto h-full flex justify-between my-auto pt-10'>
 
         {/* Left Section - Contact Information */}
@@ -29,7 +29,7 @@ const VisitUs = () => {
               <div>
                 <h4 className='font-instrument-serif text-2xl font-normal text-gray-950'>Address:</h4>
                 <p className='font-inter text-base md:text-lg font-normal text-gray-700'>
-                  Classic Specialty Dental Center, <br />Bisrate Gebrale , Adot cinema ,Addis Ababa, Ethiopia
+                  Classic Specialty Dental Center,<br/>Bisrate Gebrale , Adot cinema ,Addis Ababa, Ethiopia
                 </p>
               </div>
             </div>

@@ -42,7 +42,8 @@ const WhyChooseUs = () => {
                     transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
                     viewport={{ once: true }}
                 >
-                    <h2 className='font-instrument-serif text-[32px] md:text-[52px] lg:text-[68px] font-normal text-gray-950 mt-10'>Why Classic Specialty</h2>
+                    <h2 className='font-instrument-serif text-[32px] md:text-[52px] lg:text-[68px] font-normal text-gray-950 mt-10'>
+                        Why Classic Specialty</h2>
                     <p className='font-inter text-base md:text-lg font-normal text-gray-700 mt-8'>
                         At Classic Dental, we understand the importance of a confident smile, and we are committed to providing exceptional dental care. Here are a few reasons why you should choose us:
                     </p>

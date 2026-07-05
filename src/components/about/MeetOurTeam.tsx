@@ -31,7 +31,7 @@ const teamMembers = [
   },
 ];
 
-const MeetOurTeam = () => {
+const  MeetOurTeam = () => {
   return (
     <div className="w-full bg-white min-h-[85vh] pt-10 pb-20 overflow-x-hidden">
       <div className="md:w-[80%] mx-auto px-5 text-center">

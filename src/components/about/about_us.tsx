@@ -18,7 +18,7 @@ const AboutUs = () => {
                     initial={{ opacity: 0, y: 50 }}
                     animate={isInView ? { opacity: 1, y: 0, transition: { staggerChildren: 0.3, duration: 0.6, ease: "easeInOut" } } : {}}
                 >
-                    {["/images/d3.jpg", "/images/d4.jpg", "/images/d1.jpg", "/images/d2.jpg"].map((src, index) => (
+                    {["/images/d3.jpg", "/images/d4.jpg", "/images/d1.jpg", "/images/doc2.png"].map((src, index) => (
                         <motion.div
                             key={index}
                             initial={{ opacity: 0, y: 50 }}
@@ -30,7 +30,7 @@ const AboutUs = () => {
                                 src={src}
                                 alt={`About Us ${index + 1}`}
                                 className={`w-full ${index < 2 ? "h-[300px]" : "h-full"} 
-                                    ${index === 0 ? "rounded-tl-3xl" : ""}`}
+                                    ${index === 0 ? "rounded-tl-3xl" : ""} ${index === 3 ? "rounded-br-3xl" : ""}`}
                                 width={200}
                                 height={250}
                             />

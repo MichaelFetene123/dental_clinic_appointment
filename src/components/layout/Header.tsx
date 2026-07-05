@@ -246,7 +246,7 @@ const Header = () => {
                                 {navigation.map((item) =>
                                     item.isDropdown ? (
                                         <div
-                                            key={item.name}
+                                                key={item.name}
                                             className="space-y-2 cursor-pointer border-b-2"
                                         >
                                             <div className="flex justify-between items-center hover:bg-gray-50 px-2 py-2">

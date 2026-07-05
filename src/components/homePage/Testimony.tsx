@@ -10,11 +10,10 @@ import { testimonials } from '@/lib/constants';
 const Testimony = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    // Auto-scroll functionality
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-        }, 4000); // Change every 4 seconds
+        }, 4000);
 
         return () => clearInterval(interval);
     }, []);
@@ -23,7 +22,7 @@ const Testimony = () => {
     const extendedTestimonials = [...testimonials, ...testimonials, ...testimonials];
 
     return (
-        <div className='w-full py-16'>
+        <div className='w-full pb-8 pt-16'>
             <div className='w-[90%] mx-auto px-4'>
                 {/* Header */}
                 <div className=' mb-12'>

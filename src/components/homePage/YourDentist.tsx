@@ -38,7 +38,7 @@ const YourDentist : React.FC<YourDentistProps> = ({
                     {/* Animated Button */}
                     {
                         !isHidden && 
-                        <motion.div 
+                           <motion.div 
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                     >
@@ -62,7 +62,8 @@ const YourDentist : React.FC<YourDentistProps> = ({
                         alt="Your Dentist"
                         width={500}
                         height={500}
-                        className='w-[400px] h-[500px]'
+                        // className='w-[400px] h-[500px]'
+                        className='fit'
                     />
                 </motion.div>
             </motion.div>

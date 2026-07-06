@@ -16,7 +16,7 @@ interface ServiceCardProps {
 
 const ServiceCard: React.FC<ServiceCardProps> = ({ service, index }) => (
     <motion.div
-        className='w-[340px] lg:w-[400px] mx-auto p-4 hover:bg-card hover:shadow-md rounded-t-[13px] cursor-pointer hover:-translate-y-6 transition-all duration-300 ease-in-out'
+        className='w-full sm:w-80 lg:w-96 mx-auto p-4 hover:bg-card hover:shadow-md rounded-t-xl cursor-pointer hover:-translate-y-6 transition-all duration-300 ease-in-out'
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{
@@ -31,7 +31,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, index }) => (
             alt={service.alt}
             width={380}
             height={400}
-            className='rounded-t-[6px] w-[340px] lg:w-[380px] h-[320px] object-cover'
+            className='rounded-t-md w-full h-80 object-cover'
         />
         <h2 className='font-instrument-serif text-2xl font-normal text-foreground my-3'>
             {service.name}
@@ -44,7 +44,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, index }) => (
         <Button
             asChild
             variant="outline"
-            className="h-[70px] px-8 border-2 border-primary rounded-none font-inter text-xl font-medium hover:bg-primary hover:text-primary-foreground transition-colors duration-200"
+            size="lg"
+            className="h-16 px-8 border-2 border-primary font-inter text-lg font-medium hover:bg-primary hover:text-primary-foreground transition-colors duration-200"
         >
             <Link href={'/appointment'}>Request Appointment</Link>
         </Button>
@@ -62,7 +63,7 @@ const ServicesList: React.FC<ServiceListProps> = ({ isHidden }) => {
                     <p className='font-inter text-sm font-medium text-primary uppercase tracking-wider mb-2 px-2'>
                         SERVICES
                     </p>
-                    <h2 className='font-instrument-serif text-[32px] md:text-[52px] lg:text-[68px] font-normal text-foreground mb-4'>
+                    <h2 className='font-instrument-serif text-3xl md:text-5xl lg:text-7xl font-normal text-foreground mb-4'>
                         Tailored treatments just for you
                     </h2>
                     <p className='font-inter text-base md:text-lg font-normal text-muted-foreground max-w-2xl px-2'>
@@ -87,7 +88,8 @@ const ServicesList: React.FC<ServiceListProps> = ({ isHidden }) => {
                             <Button
                                 asChild
                                 variant="outline"
-                                className="h-[70px] px-8 border-2 border-primary rounded-none font-inter text-xl font-medium hover:bg-primary hover:text-primary-foreground transition-colors duration-200"
+                                size="lg"
+                                className="h-16 px-8 border-2 border-primary font-inter text-lg font-medium hover:bg-primary hover:text-primary-foreground transition-colors duration-200"
                             >
                                 <Link href={"/services"}>View All Services</Link>
                             </Button>

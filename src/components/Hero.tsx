@@ -70,7 +70,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                             </h1>
 
                             {/* Subtitle */}
-                            <p className="font-instrument-serif text-[32px] md:text-[52px] lg:text-[70px] font-normal text-white max-w-3xl leading-tight">
+                            <p className="font-instrument-serif text-3xl md:text-5xl lg:text-7xl font-normal text-white max-w-3xl leading-tight">
                                 {subtitle}
                             </p>
 
@@ -79,7 +79,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                                 <Button
                                     asChild
                                     variant="default"
-                                    className="h-[70px] mt-2 px-8 rounded-none shadow-md text-xl font-inter font-medium"
+                                    size="lg"
+                                    className="h-16 mt-2 px-8 rounded-md shadow-md text-lg font-inter font-medium"
                                 >
                                     <Link href="/appointment">
                                         {buttonText}
@@ -91,7 +92,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                             <div className="mt-4 w-fit">
                                 {phoneNumbers.map((phone, index) => (
                                     <div key={index} className="flex items-center gap-3 font-inter text-lg font-medium text-white hover:text-accent w-fit mb-4 transition-colors duration-300">
-                                        <div className="bg-primary h-[40px] w-[40px] flex items-center justify-center rounded-full">
+                                        <div className="bg-primary h-10 w-10 flex items-center justify-center rounded-full">
                                             <FaPhoneVolume size={20} />
                                         </div>
                                         <a href={`tel:${phone}`} className="transition-colors duration-300">
@@ -101,7 +102,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                                 ))}
                                 {location && (
                                     <div className="mt-4 flex items-center gap-3 font-inter text-lg font-medium text-white hover:text-accent w-fit transition-colors duration-300">
-                                        <div className="bg-primary h-[40px] w-[40px] flex items-center justify-center rounded-full">
+                                        <div className="bg-primary h-10 w-10 flex items-center justify-center rounded-full">
                                             <FaLocationDot size={20} />
                                         </div>
                                         <p>{location}</p>

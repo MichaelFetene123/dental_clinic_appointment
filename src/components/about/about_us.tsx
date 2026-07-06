@@ -44,16 +44,16 @@ const AboutUs = () => {
                     initial={{ opacity: 0, y: 50 }}
                     animate={isInView ? { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut", type: "spring", stiffness: 100 } } : {}}
                 >
-                    <h1 className="text-[50px] font-bold mb-14 font-heading text-[#104B82] ">
+                    <h1 className="text-5xl font-bold mb-14 font-heading text-primary">
                         Hi! We&rsquo;re Classic Specialty
                     </h1>
-                    <p className=" mb-4 font-heading text-[16px] md:text-[20px]">
+                    <p className=" mb-4 font-heading text-base md:text-xl">
                         We’re more than just a dental practice – we’re a family passionate about creating healthy, confident smiles. Since 2002, our team of skilled and caring professionals has been blending advanced technology with a warm, personalized touch to redefine your dental experience.
                     </p>
-                    <p className="mb-4 font-heading text-[16px] md:text-[20px]">
+                    <p className="mb-4 font-heading text-base md:text-xl">
                         Whether it’s routine care, cosmetic enhancements, or specialized treatments, we tailor every visit to your comfort and needs.
                     </p>
-                    <p className="text-gray-600 font-semibold font-heading mt-6 text-[16px] md:text-[20px]">
+                    <p className="text-muted-foreground font-semibold font-heading mt-6 text-base md:text-xl">
                         Your smile is our priority, and we’re here to make it shine brighter than ever!
                     </p>
                 </motion.div>

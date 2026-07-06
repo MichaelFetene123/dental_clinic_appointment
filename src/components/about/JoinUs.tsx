@@ -32,7 +32,7 @@ const JoinUs = () => {
                 {/* Clickable Email Address */}
                 <motion.a
                     href="mailto:careers@villagedental.com"
-                    className="text-xl font-semibold text-[#ffcc00] hover:text-[#ffd633] transition-all duration-300"
+                    className="text-xl font-semibold text-accent hover:text-accent/80 transition-all duration-300"
                     whileHover={{ scale: 1.05 }}
                 >
                     careers@villagedental.com

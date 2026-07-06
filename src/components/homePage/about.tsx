@@ -24,7 +24,7 @@ const About = () => {
                     transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
                     viewport={{ once: true }}
                 >
-                    <h2 className='font-instrument-serif text-[32px] md:text-[52px] font-normal text-white mb-5'>
+                    <h2 className='font-instrument-serif text-3xl md:text-5xl font-normal text-white mb-5'>
                         World-Class Specialists | Painless Treatments | Personalized Care
                     </h2>
                     <p className='font-inter text-base md:text-lg font-normal text-white leading-relaxed'>

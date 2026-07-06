@@ -13,7 +13,7 @@ interface ServiceDetailProps {
 
 const ServiceDetail: React.FC<ServiceDetailProps> = ({ serviceName,imageSrc }) => {
     return (
-        <div className="py-20 bg-white">
+        <div className="py-20 bg-background">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <motion.div
                     className="flex flex-col lg:flex-row gap-12"
@@ -35,17 +35,17 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ serviceName,imageSrc }) =
 
                     {/* Right side - Service Information */}
                     <div className="lg:w-1/2">
-                        <h2 className="text-4xl font-bold text-[#104B82] mb-6">
+                        <h2 className="text-4xl font-bold text-primary mb-6">
                             {serviceName} Treatment
                         </h2>
-                        <div className="space-y-4 text-gray-600">
+                        <div className="space-y-4 text-muted-foreground">
                             <p className="text-lg">
                                 Our {serviceName} services are designed to provide you with the highest quality dental care.
                                 We use state-of-the-art technology and proven techniques to ensure optimal results.
                             </p>
 
                             <div className="mt-8">
-                                <h3 className="text-2xl font-semibold text-[#104B82] mb-4">Benefits</h3>
+                                <h3 className="text-2xl font-semibold text-primary mb-4">Benefits</h3>
                                 <ul className="list-disc list-inside space-y-2">
                                     <li>Improved oral health and hygiene</li>
                                     <li>Enhanced smile aesthetics</li>
@@ -56,7 +56,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ serviceName,imageSrc }) =
                             </div>
 
                             <div className="mt-8">
-                                <h3 className="text-2xl font-semibold text-[#104B82] mb-4">What to Expect</h3>
+                                <h3 className="text-2xl font-semibold text-primary mb-4">What to Expect</h3>
                                 <p className="text-lg">
                                     During your visit, our experienced team will conduct a thorough examination and discuss
                                     your specific needs. We&apos;ll create a customized treatment plan that aligns with your goals
@@ -69,7 +69,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ serviceName,imageSrc }) =
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                             >
-                                <Button asChild className="h-[60px] px-8 text-lg font-semibold">
+                                <Button asChild size="lg" className="h-14 px-8 text-lg font-semibold">
                                     <Link href="/appointment">
                                         Schedule Consultation
                                     </Link>

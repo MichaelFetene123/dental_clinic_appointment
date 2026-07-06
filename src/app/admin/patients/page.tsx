@@ -16,28 +16,28 @@ const Page = () => {
             title: "Total Patients",
             value: 125,
             description: "Number of all patients",
-            icon: <Users className="text-[#0e4e81]" />,
+            icon: <Users className="text-primary" />,
             badge: { text: "+10%", icon: <TrendingUpIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
         },
         {
             title: "New Patients",
             value: 340,
             description: "Number of new patients",
-            icon: <CalendarCheckIcon className="text-[#0e4e81]" />,
+            icon: <CalendarCheckIcon className="text-primary" />,
             badge: { text: "+5%", icon: <TrendingUpIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
         },
         {
             title: "Active Patients",
             value: 210,
             description: "Number of active patients",
-            icon: <CircleCheckBig className="text-[#0e4e81]" />,
+            icon: <CircleCheckBig className="text-primary" />,
             badge: { text: "+12%", icon: <TrendingUpIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
         },
         {
             title: "Inactive Patients",
             value: 8,
             description: "Number of inactive patients",
-            icon: <AlertTriangleIcon className="text-[#0e4e81]" />,
+            icon: <AlertTriangleIcon className="text-primary" />,
             badge: { text: "Critical", icon: <TrendingDownIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
         },
     ];
@@ -59,12 +59,12 @@ const Page = () => {
                 <div className='flex justify-between mt-3'>
                     <div>
                         <h1 className='text-2xl font-semibold'>Patients Lists</h1>
-                        <p className='text-gray-500'>Here are the update patient list last 7 days </p>
+                        <p className='text-muted-foreground'>Here are the update patient list last 7 days </p>
                     </div>
                     <div className='flex gap-3'>
                         <Button
                             size="lg"
-                            className="bg-[#0E4E81] hover:bg-[#0E4E81] font-semibold"
+                            className="font-semibold"
                             onClick={() => setShowForm(!showForm)} // Toggle form visibility
                         >
                             {showForm ? "Close Form" : "Add patient"}

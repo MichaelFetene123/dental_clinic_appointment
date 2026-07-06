@@ -26,7 +26,7 @@ const GetStarted = () => {
           className=" mb-16"
         >
           <p className="font-inter text-sm font-medium text-primary uppercase tracking-wider mb-4">How It Work</p>
-          <h2 className="font-instrument-serif text-[32px] md:text-[52px] lg:text-[68px] font-normal text-gray-950 mb-4 w-[50%]">Your Journey to a Healthy Smile Starts Here</h2>
+          <h2 className="font-instrument-serif text-3xl md:text-5xl lg:text-7xl font-normal text-foreground mb-4 w-1/2">Your Journey to a Healthy Smile Starts Here</h2>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
@@ -47,7 +47,7 @@ const GetStarted = () => {
               {/* Gradient Overlay for better readability */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20 transition-all duration-500 group-hover:bg-black/50" />
               
-              <div className="relative z-10 text-4xl w-[80px] h-[80px] flex items-center justify-center bg-primary text-white rounded-full transform group-hover:scale-110 transition-transform duration-500">
+              <div className="relative z-10 text-4xl w-20 h-20 flex items-center justify-center bg-primary text-primary-foreground rounded-full transform group-hover:scale-110 transition-transform duration-500">
                 {item.icon}
               </div>
               
@@ -55,7 +55,7 @@ const GetStarted = () => {
                 <p className="font-instrument-serif text-3xl font-normal text-white mt-2">
                   {item.title}
                 </p>
-                <p className="font-inter text-base font-normal text-gray-200 mt-3">
+                <p className="font-inter text-base font-normal text-white/80 mt-3">
                   {item.description}
                 </p>
               </div>

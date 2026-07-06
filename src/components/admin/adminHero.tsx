@@ -5,14 +5,14 @@ import { Button } from '../ui/button'
 
 const AdminHero = () => {
     return (
-        <Card className='card-bg '>
-            <CardHeader className='text-3xl text-white font-heading'>
+        <Card className='bg-primary'>
+            <CardHeader className='text-3xl text-primary-foreground font-heading'>
                 Good Morning, Abebe Debebe 
             </CardHeader>
             <CardContent className='-mt-3'>
                 <CardDescription>
-                    <p className='md:w-[50%] text-gray-100 font-normal text-base'>Have nice day it seems like you are in the right place create appointment for your clients</p>
-                    <Button className='bg-white text-black font-semibold mt-5 hover:bg-white hover:text-black'>Create Appointment</Button>
+                    <p className='md:w-1/2 text-primary-foreground/80 font-normal text-base'>Have nice day it seems like you are in the right place create appointment for your clients</p>
+                    <Button variant="secondary" className='font-semibold mt-5'>Create Appointment</Button>
                 </CardDescription>
             </CardContent>
         </Card>

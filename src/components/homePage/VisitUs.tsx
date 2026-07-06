@@ -50,7 +50,7 @@ const VisitUs = () => {
             <h4 className='font-inter text-sm font-medium text-primary uppercase tracking-wider mb-3'>
               Visit us
             </h4>
-            <h1 className='font-instrument-serif text-[32px] md:text-[52px] lg:text-[68px] font-normal text-foreground'>
+            <h1 className='font-instrument-serif text-3xl md:text-5xl lg:text-7xl font-normal text-foreground'>
               We can&rsquo;t wait to meet you!
             </h1>
           </div>
@@ -59,7 +59,7 @@ const VisitUs = () => {
           <div className='mt-6 space-y-6'>
             {contactDetails.map(({ Icon, size, label, content }) => (
               <div key={label} className='flex gap-3'>
-                <div className="h-[35px] w-[35px] text-muted-foreground hover:text-accent flex items-center justify-center transition-colors duration-200">
+                <div className="h-9 w-9 text-muted-foreground hover:text-accent flex items-center justify-center transition-colors duration-200">
                   <Icon size={size} />
                 </div>
                 <div>

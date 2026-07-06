@@ -71,7 +71,7 @@ export function AppointmentForm({ show, setShow }: AppointmentFormProps) {
 
 
     return (
-        <Card className="w-[500px] mx-auto px-3 pt-6 fixed top-0 right-0 mt-8 mr-3 ">
+        <Card className="w-full max-w-lg mx-auto px-3 pt-6 fixed top-0 right-0 mt-8 mr-3 ">
             <CardHeader >
                 <div className="flex justify-between">
                     <CardTitle>Book an Appointment</CardTitle>
@@ -219,7 +219,7 @@ export function AppointmentForm({ show, setShow }: AppointmentFormProps) {
                             )}
                         />
 
-                        <Button type="submit" className="w-full bg-[#0E4E81] hover:bg-[#2374b7]">Book Appointment</Button>
+                        <Button type="submit" variant="default" className="w-full">Book Appointment</Button>
                     </form>
                 </Form>
             </CardContent>

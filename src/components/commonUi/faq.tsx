@@ -22,7 +22,7 @@ const FAQComponent = ({ title, faqs, classes }: TFaq) => {
     <div className="w-[90%] mx-auto px-3 flex justify-center items-center flex-col lg:flex-row py-16">
       {/* Left Section */}
       <div className="lg:pr-8 md:pl-10 my-5 md:my-0">
-        <h2 className={`font-instrument-serif text-[32px] md:text-[52px] lg:text-[68px] font-normal text-foreground ${classes}`}>
+        <h2 className={`font-instrument-serif text-3xl md:text-5xl lg:text-7xl font-normal text-foreground ${classes}`}>
           {title}
         </h2>
         <p className="my-10 font-inter text-base md:text-lg font-normal text-muted-foreground">

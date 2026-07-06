@@ -35,42 +35,42 @@ const PatientDetail = () => {
               <div className='flex gap-3 mb-7 items-center'>
                 <VenusAndMars />
                 <div>
-                  <p className='text-sm text-gray-500'>Gender</p>
+                  <p className='text-sm text-muted-foreground'>Gender</p>
                   <p>Male</p>
                 </div>
               </div>
               <div className='flex gap-3 mb-7 items-center'>
                 <Cake />
                 <div>
-                  <p className='text-sm text-gray-500'>Birth date</p>
+                  <p className='text-sm text-muted-foreground'>Birth date</p>
                   <p>Jan-20-2000</p>
                 </div>
               </div>
               <div className='flex gap-3 mb-7 items-center'>
                 <Phone />
                 <div>
-                  <p className='text-sm text-gray-500'>Phone Number</p>
+                  <p className='text-sm text-muted-foreground'>Phone Number</p>
                   <p>096637523542</p>
                 </div>
               </div>
               <div className='flex gap-3 mb-7 items-center'>
                 <Mail />
                 <div>
-                  <p className='text-sm text-gray-500'>Mail</p>
+                  <p className='text-sm text-muted-foreground'>Mail</p>
                   <p>jhone@gmailcom</p>
                 </div>
               </div>
               <div className="flex gap-3 mb-7 items-center">
                 <Home />
                 <div>
-                  <p className="text-sm text-gray-500">Address</p>
+                  <p className="text-sm text-muted-foreground">Address</p>
                   <p>1234 Elm St, Springfield</p>
                 </div>
               </div>
               <div className="flex gap-3 mb-7 items-center">
                 <CalendarCheck />
                 <div>
-                  <p className="text-sm text-gray-500">Last Visit</p>
+                  <p className="text-sm text-muted-foreground">Last Visit</p>
                   <p>Feb-10-2024</p>
                 </div>
               </div>
@@ -81,18 +81,18 @@ const PatientDetail = () => {
               <p className="font-heading font-[600] text-xl">Appointment Schedule</p>
             </CardHeader >
             <div className="relative px-2">
-              <p className="absolute top-0 mt-2 left-[17px] h-[90%] border-2 border-dashed border-[#56a9ec]"></p>
+              <p className="absolute top-0 mt-2 left-[17px] h-[90%] border-2 border-dashed border-primary/40"></p>
 
               {[...Array(4)].map((_, index) => (
                 <CardContent key={index} className={` ${index === 3 ? "opacity-50" : ""}`}>
-                  <div className="absolute left-[7px] flex items-center justify-center h-6 w-6 border-2 bg-[#ffffff] border-[#2e92e3] rounded-full">
-                    <div className="h-4 w-4 bg-[#2a91e6] rounded-full"></div>
+                  <div className="absolute left-[7px] flex items-center justify-center h-6 w-6 border-2 bg-background border-primary rounded-full">
+                    <div className="h-4 w-4 bg-primary rounded-full"></div>
                   </div>
-                  <p className="text-sm text-gray-500 px-2 mb-1">Jan-20-2024</p>
-                  <Card className='card-2 text-white'>
+                  <p className="text-sm text-muted-foreground px-2 mb-1">Jan-20-2024</p>
+                  <Card className='bg-primary text-primary-foreground'>
                     <CardHeader className='text-lg font-semibold'>
                       Brace treatment
-                      <p className="text-sm text-gray-200 font-normal">Follow-up for braces adjustment.</p>
+                      <p className="text-sm text-primary-foreground/70 font-normal">Follow-up for braces adjustment.</p>
                     </CardHeader>
                   </Card>
                 </CardContent>
@@ -100,7 +100,7 @@ const PatientDetail = () => {
             </div>
 
             {/* Fading overlay at the bottom */}
-            <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-white via-white/70 to-transparent"></div>
+            <div className="absolute bottom-0 left-0 w-full h-20 bg-gradient-to-t from-background via-background/70 to-transparent"></div>
           </Card>
         </div>
         <div className='w-full'>
@@ -170,9 +170,9 @@ const PatientDetail = () => {
                 </ChartContainer>
               </CardContent>
               <div className='flex-1 self-center mr-4'>
-                <p className='text-gray-500'>Start date joined</p>
+                <p className='text-muted-foreground'>Start date joined</p>
                 <p className='font-semibold text-xl mb-3'>Jan 2 2025</p>
-                <Button variant="outline" className='px-6 flex items-center font-semibold text-[17px]'>
+                <Button variant="outline" className='px-6 flex items-center font-semibold text-base'>
                   Extend <ArrowUpRight />
                 </Button>
               </div>

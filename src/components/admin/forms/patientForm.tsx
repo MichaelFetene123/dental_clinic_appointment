@@ -130,12 +130,12 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
   return (
     <div className="relative z-50">
       <div className="fixed inset-0 bg-gray-600 bg-opacity-50 z-40"></div>
-      <Card className="mx-auto px-3 fixed top-0 right-0 mt-2 mr-3  z-50 shadow-lg bg-white w-[800px] max-h-screen overflow-y-scroll">
+      <Card className="mx-auto px-3 fixed top-0 right-0 mt-2 mr-3  z-50 shadow-lg bg-background w-full max-w-3xl max-h-screen overflow-y-scroll">
         <CardHeader>
           <div className="flex justify-between items-center">
             <CardTitle>Add New Patient</CardTitle>
             <button
-              className="text-gray-600 hover:text-red-500 transition "
+              className="text-muted-foreground hover:text-destructive transition "
               aria-label="Close form"
               onClick={() => setShow(false)}
             >
@@ -152,7 +152,7 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
             <div className="absolute top-4 left-20 w-[75%] mx-auto h-1 ">
               {/* Active Progress Line */}
               <div
-                className="h-1 bg-blue-600 transition-all duration-300"
+                className="h-1 bg-primary transition-all duration-300"
                 style={{ width: `${(step / (sections.length - 1)) * 100}%` }}
               ></div>
             </div>
@@ -161,9 +161,9 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
             {sections.map((section, index) => (
               <div key={index} className="relative flex flex-col items-center gap-2 w-full">
                 {/* Step Circle */}
-                <div className="h-10 w-10 rounded-full bg-[#ffffff] flex justify-center items-center">
+                <div className="h-10 w-10 rounded-full bg-background flex justify-center items-center">
                   <div
-                    className={`h-8 w-8  flex items-center justify-center rounded-full p-2 z-10 ${index <= step ? "bg-blue-600 text-white" : "bg-gray-400 text-white"
+                    className={`h-8 w-8  flex items-center justify-center rounded-full p-2 z-10 ${index <= step ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
                       }`}
                   >
                     {section.icon}
@@ -172,7 +172,7 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
 
                 {/* Step Title */}
                 <span
-                  className={`text-sm ${index <= step ? "font-bold text-blue-600" : "text-gray-500"
+                  className={`text-sm ${index <= step ? "font-bold text-primary" : "text-muted-foreground"
                     }`}
                 >
                   {section.title}
@@ -290,7 +290,6 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
                               mode="single"
                               selected={date}
                               onSelect={setDate}
-                              initialFocus
                             />
                           </PopoverContent>
                         </Popover>
@@ -549,7 +548,6 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
                             mode="single"
                             selected={lastVisitDate}
                             onSelect={setLastVisitDate}
-                            initialFocus
                           />
                         </PopoverContent>
                       </Popover>

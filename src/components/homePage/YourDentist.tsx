@@ -31,7 +31,7 @@ const YourDentist: React.FC<YourDentistProps> = ({ isHidden }) => {
                     <p className='font-inter text-sm font-medium text-primary uppercase tracking-wider'>
                         YOUR DENTIST
                     </p>
-                    <h1 className='font-instrument-serif text-[32px] md:text-[52px] lg:text-[68px] font-normal text-foreground text-center md:text-start'>
+                    <h1 className='font-instrument-serif text-3xl md:text-5xl lg:text-7xl font-normal text-foreground text-center md:text-start'>
                         Dr. Abel Mekonn
                     </h1>
                     <p className='font-inter text-base md:text-lg font-normal text-muted-foreground mt-8 w-full px-2'>
@@ -47,7 +47,8 @@ const YourDentist: React.FC<YourDentistProps> = ({ isHidden }) => {
                             <Button
                                 asChild
                                 variant="default"
-                                className='w-fit rounded-none shadow-md font-inter text-xl font-medium px-8 py-8 border-none mt-10 flex'
+                                size="lg"
+                                className='w-fit rounded-md shadow-md font-inter text-lg font-medium h-16 px-8 border-none mt-10 flex'
                             >
                                 <Link href="/about">
                                     About Us

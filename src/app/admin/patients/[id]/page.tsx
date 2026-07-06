@@ -20,13 +20,13 @@ const page = () => {
                     </div>
                     <div>
                         <p className="text-lg font-heading font-medium">Abebe Kebede</p>
-                        <p className="text-sm text-gray-500">Joined since jan-20-2024</p>
+                        <p className="text-sm text-muted-foreground">Joined since jan-20-2024</p>
                     </div>
                 </div>
                 <div className='flex gap-3'>
                     <Button
                         size="lg"
-                        className="bg-[#0E4E81] hover:bg-[#0E4E81] font-semibold"
+                        className="font-semibold"
 
                     >
                         Add Appointment

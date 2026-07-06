@@ -24,17 +24,17 @@ interface CardProps {
 
 function SectionCard({ title, value, description, icon, badge }: CardProps) {
     return (
-        <Card className="@container/card bg-white ">
+        <Card className="@container/card">
             <CardHeader className="relative">
-                <CardDescription className="flex text-black text-lg gap-2 items-center mb-5">
+                <CardDescription className="flex text-foreground text-lg gap-2 items-center mb-5">
                     <span className="text-primary">{icon}</span>
                     {description}
                 </CardDescription>
-                <CardTitle className="text-3xl font-semibold tabular-nums flex items-center gap-3 text-black">
+                <CardTitle className="text-3xl font-semibold tabular-nums flex items-center gap-3 text-foreground">
                     {value}
                     {badge && (
                         <div className="right-4 top-4">
-                            <Badge variant="outline" className={`flex gap-1 rounded-lg text-xs bg-[#79dfc2] border-[#4ddcb4] text-white`}>
+                            <Badge variant="outline" className={`flex gap-1 rounded-lg text-xs bg-chart-1/20 border-chart-1 text-chart-1`}>
                                 {badge.icon}
                                 {badge.text}
                             </Badge>
@@ -42,7 +42,7 @@ function SectionCard({ title, value, description, icon, badge }: CardProps) {
                     )}
                 </CardTitle>
             </CardHeader>
-            <CardFooter className="flex-col items-start gap-1 text-sm text-black">
+            <CardFooter className="flex-col items-start gap-1 text-sm text-foreground">
                 <div className="flex gap-2 font-medium items-center">
                     {title}
                 </div>

@@ -33,9 +33,9 @@ const teamMembers = [
 
 const  MeetOurTeam = () => {
   return (
-    <div className="w-full bg-white min-h-[85vh] pt-10 pb-20 overflow-x-hidden">
+    <div className="w-full bg-background min-h-[85vh] pt-10 pb-20 overflow-x-hidden">
       <div className="md:w-[80%] mx-auto px-5 text-center">
-        <h1 className="text-3xl md:text-5xl text-[#104B82] font-semibold">Our Team</h1>
+        <h1 className="text-3xl md:text-5xl text-primary font-semibold">Our Team</h1>
       </div>
       {/* Team Members Grid */}
       <motion.div 
@@ -61,8 +61,8 @@ const  MeetOurTeam = () => {
               height={120}
               className=" md:w-full md:h-full object-cover mb-4"
             />
-            <h3 className="text-xl font-semibold text-gray-800">{member.name}</h3>
-            <p className="text-gray-700">{member.role}</p>
+            <h3 className="text-xl font-semibold text-foreground">{member.name}</h3>
+            <p className="text-muted-foreground">{member.role}</p>
             {/* <p className="text-sm text-gray-500 mt-2">{member.description}</p> */}
           </motion.div>
         ))}

@@ -19,28 +19,28 @@ const Page = () => {
             title: "Total Patients",
             value: 125,
             description: "Number of Patients",
-            icon: <Users className="text-[#0e4e81]" />,
+            icon: <Users className="text-primary" />,
             badge: { text: "+10%", icon: <TrendingUpIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
         },
         {
             title: "Scheduled Appointments",
             value: 340,
             description: "Number of Appointments",
-            icon: <CalendarCheckIcon className="text-[#0e4e81]" />,
+            icon: <CalendarCheckIcon className="text-primary" />,
             badge: { text: "+5%", icon: <TrendingUpIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
         },
         {
             title: "Completed Procedures",
             value: 210,
             description: "Number of Procedures",
-            icon: <CircleCheckBig className="text-[#0e4e81]" />,
+            icon: <CircleCheckBig className="text-primary" />,
             badge: { text: "+12%", icon: <TrendingUpIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
         },
         {
             title: "Emergency Cases",
             value: 8,
             description: "Number of Cases",
-            icon: <AlertTriangleIcon className="text-[#0e4e81]" />,
+            icon: <AlertTriangleIcon className="text-primary" />,
             badge: { text: "Critical", icon: <TrendingDownIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
         },
     ];
@@ -51,7 +51,7 @@ const Page = () => {
                 <h1 className='text-2xl font-semibold'>Appointments</h1>
                 <Button
                     size="lg"
-                    className="bg-[#407C82] hover:bg-[#366A70] font-semibold"
+                    className="font-semibold"
                     onClick={() => setShowForm(!showForm)} // Toggle form visibility
                 >
                     {showForm ? "Close Form" : "Add Appointment"}
@@ -65,25 +65,25 @@ const Page = () => {
             {/* Tab Navigation */}
             <div className="flex gap-4 border-b-2 py-2 px-4">
                 <button
-                    className={`relative px-4 py-2 text-gray-700 transition-all duration-300 ${activeTab === 'accepted' ? 'font-semibold' : 'text-gray-500'}`}
+                    className={`relative px-4 py-2 text-foreground transition-all duration-300 ${activeTab === 'accepted' ? 'font-semibold' : 'text-muted-foreground'}`}
                     onClick={() => setActiveTab('accepted')}
                 >
                     Accepted
-                    <div className={`absolute left-0 bottom-0 w-full h-[2px] bg-blue-600 transition-all duration-300 ${activeTab === 'accepted' ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}></div>
+                    <div className={`absolute left-0 bottom-0 w-full h-0.5 bg-primary transition-all duration-300 ${activeTab === 'accepted' ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}></div>
                 </button>
                 <button
-                    className={`relative px-4 py-2 text-gray-700 transition-all duration-300 ${activeTab === 'queue' ? 'font-semibold' : 'text-gray-500'}`}
+                    className={`relative px-4 py-2 text-foreground transition-all duration-300 ${activeTab === 'queue' ? 'font-semibold' : 'text-muted-foreground'}`}
                     onClick={() => setActiveTab('queue')}
                 >
                     In Queue
-                    <div className={`absolute left-0 bottom-0 w-full h-[2px] bg-blue-600 transition-all duration-300 ${activeTab === 'queue' ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}></div>
+                    <div className={`absolute left-0 bottom-0 w-full h-0.5 bg-primary transition-all duration-300 ${activeTab === 'queue' ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}></div>
                 </button>
                 <button
-                    className={`relative px-4 py-2 text-gray-700 transition-all duration-300 ${activeTab === 'archive' ? 'font-semibold' : 'text-gray-500'}`}
+                    className={`relative px-4 py-2 text-foreground transition-all duration-300 ${activeTab === 'archive' ? 'font-semibold' : 'text-muted-foreground'}`}
                     onClick={() => setActiveTab('archive')}
                 >
                     Archive
-                    <div className={`absolute left-0 bottom-0 w-full h-[2px] bg-blue-600 transition-all duration-300 ${activeTab === 'archive' ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}></div>
+                    <div className={`absolute left-0 bottom-0 w-full h-0.5 bg-primary transition-all duration-300 ${activeTab === 'archive' ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}></div>
                 </button>
             </div>
 

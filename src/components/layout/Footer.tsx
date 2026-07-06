@@ -20,7 +20,7 @@ const Footer = () => {
       >
         <div className="absolute inset-0 bg-primary/80" />
         <div className="relative w-[90%] mx-auto px-4 text-center">
-          <h2 className="font-instrument-serif text-[32px] md:text-[52px] lg:text-[68px] font-normal text-white mb-6">
+          <h2 className="font-instrument-serif text-3xl md:text-5xl lg:text-7xl font-normal text-white mb-6">
             Transform Your Smile Today
           </h2>
           <p className="font-inter text-base md:text-lg font-normal text-primary-foreground/80 max-w-2xl mx-auto mb-10">

@@ -16,9 +16,9 @@ const ContactUs = () => {
                     "linear-gradient(to right, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.5)), url('/images/jose-vazquez-4SUyx4KQ5Ik-unsplash.jpg')",
             }}
         >
-            <div className='w-[90%] mx-auto my-auto flex items-center md:items-end justify-center md:justify-end lg:px-3 h-full'>
+            <div className='w-11/12 mx-auto my-auto flex items-center md:items-end justify-center md:justify-end lg:px-3 h-full'>
                 <motion.div
-                    className='bg-card lg:py-16 py-10 lg:px-16 px-10 flex flex-col gap-4 rounded-tl-[50px] rounded-br-[40px] shadow-xl'
+                    className='bg-card lg:py-16 py-10 lg:px-16 px-10 flex flex-col gap-4 rounded-tl-3xl rounded-br-3xl shadow-xl'
                     initial={{ opacity: 0, y: 50 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
@@ -27,7 +27,7 @@ const ContactUs = () => {
                     <h4 className='font-inter text-lg font-medium text-muted-foreground'>
                         Feel free to reach out
                     </h4>
-                    <h1 className='font-instrument-serif text-[32px] md:text-[52px] lg:text-[68px] font-normal text-foreground mb-6'>
+                    <h1 className='font-instrument-serif text-3xl md:text-5xl lg:text-7xl font-normal text-foreground mb-6'>
                         Making Dentistry Affordable
                     </h1>
                     <div className='space-y-2'>
@@ -58,7 +58,8 @@ const ContactUs = () => {
                         <Button
                             asChild
                             variant="default"
-                            className="h-[50px] w-fit mt-5 px-8 rounded-none shadow-md font-inter text-xl font-medium"
+                            size="lg"
+                            className="h-12 w-fit mt-5 px-8 rounded-md shadow-md font-inter text-lg font-medium"
                         >
                             <Link href="/appointment">
                                 Request Appointment

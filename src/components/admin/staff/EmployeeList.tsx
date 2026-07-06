@@ -19,7 +19,7 @@ const EmployeeList = () => {
             <Card className='p-6 min-h-[430px]'>
                 <div className='flex justify-between mb-6'>
                     <p className='text-lg font-semibold flex gap-2'>
-                        <Users className='self-center text-base text-[#3383c8]' />
+                        <Users className='self-center text-base text-primary' />
                         Employee List
                     </p>
                     <Ellipsis />
@@ -28,12 +28,12 @@ const EmployeeList = () => {
                     <div key={index} className='mb-4'>
                         <div className='flex justify-between mb-1'>
                             <div className='flex flex-col'>
-                                <p className='text-[17px]'>{employee.name}</p>
-                                <span className='text-gray-600 text-sm'>{employee.position}</span>
-                                {/* <span className='text-gray-600 text-sm'>{employee.department}</span> */}
+                                <p className='text-base font-medium text-foreground'>{employee.name}</p>
+                                <span className='text-muted-foreground text-sm'>{employee.position}</span>
+                                {/* <span className='text-muted-foreground text-sm'>{employee.department}</span> */}
                             </div>
                             <div className='flex flex-col items-center'>
-                                <p className='text-sm'>{employee.contact}</p>
+                                <p className='text-sm text-muted-foreground'>{employee.contact}</p>
                             </div>
                         </div>
                         <Separator />
@@ -41,7 +41,8 @@ const EmployeeList = () => {
                 ))}
                 <div className='flex items-center justify-center py-2'>
                     <Button
-                        className="card-bg font-semibold hover:scale-105 transition-all ease-in-out duration-300"
+                        variant="default"
+                        className="font-semibold hover:scale-105 transition-all ease-in-out duration-300"
                         onClick={() => { window.location.href = "admin/patients" }}
                     >
                         All Patients <ArrowRight />

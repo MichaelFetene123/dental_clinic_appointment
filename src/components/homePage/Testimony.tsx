@@ -28,7 +28,7 @@ const Testimony = () => {
                     <p className='font-inter text-sm font-medium text-primary uppercase tracking-wider mb-2'>
                         TESTIMONIALS
                     </p>
-                    <h2 className='font-instrument-serif text-[32px] md:text-[52px] lg:text-[68px] font-normal text-foreground mb-4'>
+                    <h2 className='font-instrument-serif text-3xl md:text-5xl lg:text-7xl font-normal text-foreground mb-4'>
                         What Our Patients Say
                     </h2>
                     <p className='font-inter text-base md:text-lg font-normal text-muted-foreground max-w-2xl'>

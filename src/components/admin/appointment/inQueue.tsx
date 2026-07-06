@@ -31,29 +31,29 @@ const InQueue = () => {
                             />
                             <div>
                                 <CardDescription >Patient name</CardDescription>
-                                <CardTitle className='text-[16px] mt-2'>Abebe Kebede</CardTitle>
+                                <CardTitle className='text-base mt-2'>Abebe Kebede</CardTitle>
                             </div>
                         </div>
                         <div className='w-[40%]'>
                             <CardDescription>Date of register</CardDescription>
-                            <CardTitle className='text-[16px] mt-2'>12 Dec,2025</CardTitle>
+                            <CardTitle className='text-base mt-2'>12 Dec,2025</CardTitle>
                         </div>
                     </div>
                     <div className='flex'>
                         <div className='w-[60%]'>
                             <CardDescription >Telephone number</CardDescription>
-                            <CardTitle className='text-[16px] mt-2'>0923434344</CardTitle>
+                            <CardTitle className='text-base mt-2'>0923434344</CardTitle>
                         </div>
                         <div className='w-[40%]'>
                             <CardDescription>Email</CardDescription>
-                            <CardTitle className='text-[16px] mt-2'>Abebe@gmail.com</CardTitle>
+                            <CardTitle className='text-base mt-2'>Abebe@gmail.com</CardTitle>
                         </div>
                     </div>
                 </CardContent>
                 <Separator className='my-3 px-4' />
                 <CardFooter className='flex justify-between items-center '>
-                    <Button variant="outline" className='text-[18px] hover:bg-red-600 hover:text-white transition-color ease-linear duration-300 font-semibold px-10'><Plus size={44} strokeWidth={2.75}  className='rotate-45 text-lg'/> Cancel</Button>
-                    <Button className='bg-[#0E4E81] hover:bg-[#0E4E81] transition-all ease-linear text-[18px] font-semibold px-10'> <Check size={44} strokeWidth={2.75} />Accept</Button>
+                    <Button variant="outline" className='text-lg hover:bg-destructive hover:text-destructive-foreground transition-colors ease-linear duration-300 font-semibold px-10'><Plus size={44} strokeWidth={2.75}  className='rotate-45'/> Cancel</Button>
+                    <Button variant="default" className='transition-all ease-linear text-lg font-semibold px-10'> <Check size={44} strokeWidth={2.75} />Accept</Button>
                 </CardFooter>
             </Card>
         </div>

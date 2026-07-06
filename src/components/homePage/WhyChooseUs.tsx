@@ -50,7 +50,7 @@ const WhyChooseUs = () => {
                     transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
                     viewport={{ once: true }}
                 >
-                    <h2 className='font-instrument-serif text-[32px] md:text-[52px] lg:text-[68px] font-normal text-foreground mt-10'>
+                    <h2 className='font-instrument-serif text-3xl md:text-5xl lg:text-7xl font-normal text-foreground mt-10'>
                         Why Classic Specialty
                     </h2>
                     <p className='font-inter text-base md:text-lg font-normal text-muted-foreground mt-8'>
@@ -75,7 +75,8 @@ const WhyChooseUs = () => {
                         <Button
                             asChild
                             variant="default"
-                            className='w-fit rounded-none shadow-md font-inter text-xl font-medium px-8 py-8 border-none mt-10 flex'
+                            size="lg"
+                            className='w-fit rounded-md shadow-md font-inter text-lg font-medium h-16 px-8 border-none mt-10 flex'
                         >
                             <Link href="/appointment">
                                 Book now

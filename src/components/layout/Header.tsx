@@ -121,9 +121,9 @@ const Header = () => {
     }, []);
 
     return (
-        <header className="fixed w-screen inset-x-0 top-0 z-50 transition-all duration-500 ">
+        <header className="fixed w-screen inset-x-0 top-0 z-50 transition-all duration-500">
             <nav aria-label="Global" className="flex flex-col">
-                <div className={`flex items-center justify-between transition-all duration-500 shadow-sm  ${isScrolled ? "bg-[#FFF] shadow-sm" : "bg-transparent"}  px-8 lg:px-14 pb-1 pt-2`}>
+                <div className={`flex items-center justify-between transition-all duration-500 shadow-sm ${isScrolled ? "bg-background shadow-sm" : "bg-transparent"} px-8 lg:px-14 pb-1 pt-2`}>
                     {/* Logo */}
                     <Link href={"/"} className="flex items-center gap-2">
                         <div
@@ -136,8 +136,8 @@ const Header = () => {
                                 height: "70px",
                             }}
                         ></div>
-                        <h1 className="font-serif text-xl md:text-2xl font-semibold flex flex-col text-[#104b82]">
-                            <span className="text-[#dd9639] text-2xl md:text-3xl">Classic</span>{" "}
+                        <h1 className="font-serif text-xl md:text-2xl font-semibold flex flex-col text-primary">
+                            <span className="text-accent text-2xl md:text-3xl">Classic</span>{" "}
                             Specialty Dental Center
                         </h1>
                     </Link>
@@ -147,7 +147,7 @@ const Header = () => {
                         <button
                             type="button"
                             onClick={() => setMobileMenuOpen((prev) => !prev)}
-                            className={`-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 ${isScrolled ? "text-gray-900": "text-white" }  transition-all ease-linear duration-300`}
+                            className={`-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 ${isScrolled ? "text-foreground" : "text-white"} transition-all ease-linear duration-300`}
                         >
                             {mobileMenuOpen ? (
                                 <svg
@@ -175,21 +175,24 @@ const Header = () => {
                         {navigation.map((item) =>
                             item.isDropdown ? (
                                 <div key={item.name} className="group inline-block relative">
-                                    <Link href={item.href} className={`${isScrolled ? "text-gray-900": "text-white" } hover:text-primary-500 cursor-pointer `}>
+                                    <Link
+                                        href={item.href}
+                                        className={`${isScrolled ? "text-foreground" : "text-white"} hover:text-primary cursor-pointer transition-colors duration-200`}
+                                    >
                                         {item.name}
                                     </Link>
                                     {/* Main dropdown menu */}
-                                    <ul className="absolute left-0 hidden text-gray-700  group-hover:block transition-all shadow-lg duration-300 ease-in-out border-t-4  border-[#104B82] ">
+                                    <ul className="absolute left-0 hidden text-foreground group-hover:block transition-all shadow-lg duration-300 ease-in-out border-t-4 border-primary">
                                         {item.subSections?.map((subSection) => (
                                             <li
                                                 key={subSection.name}
-                                                className="relative group/item bg-white min-w-[290px] "
+                                                className="relative group/item bg-background min-w-[290px]"
                                             >
                                                 <Link
                                                     href={subSection.href}
-                                                    className="rounded-t  block whitespace-no-wrap transition-all duration-200 ease-in-out "
+                                                    className="rounded-t block whitespace-no-wrap transition-all duration-200 ease-in-out"
                                                 >
-                                                    <p className="text-lg font-medium text-gray-900 group-hover/item:bg-gray-100  hover:bg-gray-100 px-5 py-2 flex justify-between gap-3">
+                                                    <p className="text-lg font-medium text-foreground group-hover/item:bg-muted hover:bg-muted px-5 py-2 flex justify-between gap-3">
                                                         {subSection.name}
                                                         {subSection.subServices && (
                                                             <IoIosArrowDown
@@ -201,12 +204,12 @@ const Header = () => {
                                                 </Link>
                                                 {/* Show subServices when hovering over subSection */}
                                                 {subSection.subServices && (
-                                                    <ul className="absolute hidden text-gray-700 group-hover/item:block top-0 left-[290px] shadow-xl transition-all duration-200 ease-in-out border-t-4 border-[#104B82] min-w-[240px]">
+                                                    <ul className="absolute hidden text-foreground group-hover/item:block top-0 left-[290px] shadow-xl transition-all duration-200 ease-in-out border-t-4 border-primary min-w-[240px]">
                                                         {subSection.subServices?.map((subService) => (
                                                             <li key={subService.name}>
                                                                 <Link
                                                                     href={subService.href}
-                                                                    className="bg-white text-lg font-medium text-gray-900 hover:bg-gray-100 py-2 px-8 block  transition-all duration-200 ease-in-out "
+                                                                    className="bg-background text-lg font-medium text-foreground hover:bg-muted py-2 px-8 block transition-all duration-200 ease-in-out"
                                                                 >
                                                                     {subService.name}
                                                                 </Link>
@@ -222,7 +225,7 @@ const Header = () => {
                                 <Link
                                     key={item.name}
                                     href={item.href}
-                                    className={`${isScrolled ? "text-gray-900": "text-white" }  hover:text-primary-500`}
+                                    className={`${isScrolled ? "text-foreground" : "text-white"} hover:text-primary transition-colors duration-200`}
                                 >
                                     {item.name}
                                 </Link>
@@ -238,22 +241,22 @@ const Header = () => {
                     </div>
                 </div>
 
-                {/* Mobile navigation  */}
+                {/* Mobile navigation */}
                 {mobileMenuOpen && (
-                    <div className="inset-y-0 right-0 z-50 shadow-lg  bg-white px-8  text-xl font-semibold border-t-4 border-[#104B82] lg:hidden w-[80%] mx-auto max-h-[600px] overflow-y-scroll transition-all duration-300 ease-in">
-                        <div className="">
-                            <div className="space-y-2  ">
+                    <div className="inset-y-0 right-0 z-50 shadow-lg bg-background px-8 text-xl font-semibold border-t-4 border-primary lg:hidden w-[80%] mx-auto max-h-[600px] overflow-y-scroll transition-all duration-300 ease-in">
+                        <div>
+                            <div className="space-y-2">
                                 {navigation.map((item) =>
                                     item.isDropdown ? (
                                         <div
-                                                key={item.name}
-                                            className="space-y-2 cursor-pointer border-b-2"
+                                            key={item.name}
+                                            className="space-y-2 cursor-pointer border-b border-border"
                                         >
-                                            <div className="flex justify-between items-center hover:bg-gray-50 px-2 py-2">
-                                                <p className="text-gray-900">{item.name}</p>
+                                            <div className="flex justify-between items-center hover:bg-muted px-2 py-2">
+                                                <p className="text-foreground">{item.name}</p>
                                                 <button
                                                     onClick={() => toggleSection(item.name)}
-                                                    className="text-gray-700 hover:bg-gray-100 rounded-md p-2"
+                                                    className="text-muted-foreground hover:bg-muted rounded-md p-2"
                                                 >
                                                     {openSections[item.name] ? (
                                                         <MinusIcon className="h-5 w-5" />
@@ -266,7 +269,7 @@ const Header = () => {
                                                 <div className="pl-4 space-y-2">
                                                     {item.subSections.map((subSection) => (
                                                         <div key={subSection.name}>
-                                                            <div className="flex justify-between text-lg px-3 py-2 text-gray-900 hover:bg-gray-50 border-b-2">
+                                                            <div className="flex justify-between text-lg px-3 py-2 text-foreground hover:bg-muted border-b border-border">
                                                                 <Link href={subSection.href}>
                                                                     {subSection.name}
                                                                 </Link>
@@ -275,7 +278,7 @@ const Header = () => {
                                                                         onClick={() =>
                                                                             toggleSection(subSection.name)
                                                                         }
-                                                                        className="text-gray-700 hover:bg-gray-100 rounded-md p-2"
+                                                                        className="text-muted-foreground hover:bg-muted rounded-md p-2"
                                                                     >
                                                                         {openSections[subSection.name] ? (
                                                                             <MinusIcon className="h-5 w-5" />
@@ -287,13 +290,13 @@ const Header = () => {
                                                             </div>
                                                             {subSection.subServices &&
                                                                 openSections[subSection.name] && (
-                                                                    <div className="pl-6 space-y-2  text-[16px]">
+                                                                    <div className="pl-6 space-y-2 text-[16px]">
                                                                         {subSection.subServices.map(
                                                                             (subService) => (
                                                                                 <Link
                                                                                     key={subService.name}
                                                                                     href={subService.href}
-                                                                                    className="block border-b-2   last:border-0 px-3 py-2 text-gray-800 hover:bg-gray-50"
+                                                                                    className="block border-b border-border last:border-0 px-3 py-2 text-foreground hover:bg-muted"
                                                                                 >
                                                                                     {subService.name}
                                                                                 </Link>
@@ -310,7 +313,7 @@ const Header = () => {
                                         <Link
                                             key={item.name}
                                             href={item.href}
-                                            className="block py-3 px-2 text-gray-900 hover:bg-gray-50 border-b-2 last:border-0"
+                                            className="block py-3 px-2 text-foreground hover:bg-muted border-b border-border last:border-0"
                                         >
                                             {item.name}
                                         </Link>
@@ -321,7 +324,6 @@ const Header = () => {
                     </div>
                 )}
             </nav>
-            {/* Mobile Menu Dialog */}
         </header>
     );
 }

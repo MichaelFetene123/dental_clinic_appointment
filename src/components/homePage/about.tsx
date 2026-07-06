@@ -9,22 +9,22 @@ const About = () => {
             className='w-full md:h-[100vh] bg-cover bg-center bg-no-repeat flex flex-col justify-center py-8'
             style={{ backgroundImage: "url('/images/image0_0.jpg')" }}
         >
-            <motion.div 
-                className='w-[90%] mx-auto md:flex md:flex-wrap lg:flex-nowrap justify-between items-center border-2 rounded-3xl px-8 py-10'
+            <motion.div
+                className='w-[90%] mx-auto md:flex md:flex-wrap lg:flex-nowrap justify-between items-center border-2 border-white/30 rounded-3xl px-8 py-10'
                 initial={{ opacity: 0, y: -50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                viewport={{ once: true }} // Trigger the animation once when it's in view
+                viewport={{ once: true }}
             >
                 {/* Left Content Section */}
-                <motion.div 
+                <motion.div
                     className='md:w-[50%] text-white'
                     initial={{ opacity: 0, y: -50 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
                     viewport={{ once: true }}
                 >
-                    <h2 className='font-instrument-serif text-[32px] md:text-[52px]  font-normal text-white mb-5'>
+                    <h2 className='font-instrument-serif text-[32px] md:text-[52px] font-normal text-white mb-5'>
                         World-Class Specialists | Painless Treatments | Personalized Care
                     </h2>
                     <p className='font-inter text-base md:text-lg font-normal text-white leading-relaxed'>
@@ -33,8 +33,8 @@ const About = () => {
                         in a warm, welcoming environment.
                     </p>
 
-                    {/* Key Benefits List with Icons */}
-                    <motion.ul 
+                    {/* Key Benefits List */}
+                    <motion.ul
                         className='mt-6 space-y-3 font-inter text-base font-normal text-white'
                         initial={{ opacity: 0, y: -50 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -42,18 +42,21 @@ const About = () => {
                         viewport={{ once: true }}
                     >
                         <li className='flex items-center'>
-                            <IoMdCheckmark className='text-[#dd9639] mr-2' size={30} /> <strong>Transparent & Honest Pricing</strong>
+                            <IoMdCheckmark className='text-accent mr-2' size={30} />
+                            <strong>Transparent &amp; Honest Pricing</strong>
                         </li>
                         <li className='flex items-center'>
-                            <IoMdCheckmark className='text-[#dd9639] mr-2' size={30} /> <strong>Unmatched Warranty</strong>
+                            <IoMdCheckmark className='text-accent mr-2' size={30} />
+                            <strong>Unmatched Warranty</strong>
                         </li>
                         <li className='flex items-center'>
-                            <IoMdCheckmark className='text-[#dd9639] mr-2' size={30} /> <strong>FREE Lifetime Whitening!</strong>
+                            <IoMdCheckmark className='text-accent mr-2' size={30} />
+                            <strong>FREE Lifetime Whitening!</strong>
                         </li>
                     </motion.ul>
 
-                    <motion.p 
-                        className='mt-6 flex items-center border-l-4 border-[#dd9639] px-4 italic font-inter text-lg font-normal text-white'
+                    <motion.p
+                        className='mt-6 flex items-center border-l-4 border-accent px-4 italic font-inter text-lg font-normal text-white'
                         initial={{ opacity: 0, y: -50 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, ease: "easeOut", delay: 0.6 }}
@@ -64,7 +67,7 @@ const About = () => {
                 </motion.div>
 
                 {/* Right Image Section */}
-                <motion.div 
+                <motion.div
                     className='flex-shrink-0 mt-6 lg:mt-0 md:w-[45%] self-start h-full relative'
                     initial={{ opacity: 0, y: -50 }}
                     whileInView={{ opacity: 1, y: 0 }}

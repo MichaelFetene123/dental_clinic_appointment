@@ -18,17 +18,20 @@ const Testimony = () => {
         return () => clearInterval(interval);
     }, []);
 
-    // Create extended array for seamless infinite scroll
     const extendedTestimonials = [...testimonials, ...testimonials, ...testimonials];
 
     return (
         <div className='w-full pb-8 pt-16'>
             <div className='w-[90%] mx-auto px-4'>
                 {/* Header */}
-                <div className=' mb-12'>
-                    <p className='font-inter text-sm font-medium uppercase tracking-wider mb-2'>TESTIMONIALS</p>
-                    <h2 className='font-instrument-serif text-[32px] md:text-[52px] lg:text-[68px] font-normal text-gray-950 mb-4'>What Our Patients Say</h2>
-                    <p className='font-inter text-base md:text-lg font-normal text-gray-700 max-w-2xl'>
+                <div className='mb-12'>
+                    <p className='font-inter text-sm font-medium text-primary uppercase tracking-wider mb-2'>
+                        TESTIMONIALS
+                    </p>
+                    <h2 className='font-instrument-serif text-[32px] md:text-[52px] lg:text-[68px] font-normal text-foreground mb-4'>
+                        What Our Patients Say
+                    </h2>
+                    <p className='font-inter text-base md:text-lg font-normal text-muted-foreground max-w-2xl'>
                         Real experiences from our valued patients who trust us with their dental care
                     </p>
                 </div>
@@ -38,7 +41,7 @@ const Testimony = () => {
                     <motion.div
                         className='flex gap-6'
                         animate={{
-                            x: -currentIndex * 340 // 320px card width + 20px gap
+                            x: -currentIndex * 340
                         }}
                         transition={{
                             duration: 0.8,
@@ -51,18 +54,18 @@ const Testimony = () => {
                         {extendedTestimonials.map((testimonial, index) => (
                             <div
                                 key={`${testimonial.name}-${index}`}
-                                className='min-w-[350px]  rounded-xl p-6 shadow-sm border-2 border-primary hover:shadow-md transition-shadow duration-300'
+                                className='min-w-[350px] rounded-xl p-6 shadow-sm border border-border hover:shadow-md transition-shadow duration-300 bg-card'
                             >
                                 {/* Stars */}
                                 <div className='flex flex-col gap-4'>
                                     <div className='flex gap-1 mb-4'>
                                         {[...Array(testimonial.stars)].map((_, idx) => (
-                                            <IoStarSharp key={idx} className='text-yellow-400' size={16} />
+                                            <IoStarSharp key={idx} className='text-accent' size={16} />
                                         ))}
                                     </div>
 
                                     {/* Review Text */}
-                                    <p className='font-inter text-base md:text-lg font-normal text-gray-800 leading-relaxed mb-6'>
+                                    <p className='font-inter text-base md:text-lg font-normal text-foreground leading-relaxed mb-6'>
                                         {testimonial.text}
                                     </p>
                                 </div>
@@ -77,8 +80,8 @@ const Testimony = () => {
                                         className='w-10 h-10 rounded-full object-cover'
                                     />
                                     <div>
-                                        <p className='font-inter text-sm font-medium text-gray-950'>{testimonial.name}</p>
-                                        <p className='font-inter text-xs font-normal text-gray-600'>{testimonial.role}</p>
+                                        <p className='font-inter text-sm font-medium text-foreground'>{testimonial.name}</p>
+                                        <p className='font-inter text-xs font-normal text-muted-foreground'>{testimonial.role}</p>
                                     </div>
                                 </div>
                             </div>
@@ -92,10 +95,11 @@ const Testimony = () => {
                         <button
                             key={index}
                             onClick={() => setCurrentIndex(index)}
-                            className={`w-2 h-2 rounded-full transition-colors duration-300 ${index === currentIndex
+                            className={`w-2 h-2 rounded-full transition-colors duration-300 ${
+                                index === currentIndex
                                     ? 'bg-primary'
-                                    : 'bg-gray-300 hover:bg-gray-400'
-                                }`}
+                                    : 'bg-border hover:bg-muted-foreground'
+                            }`}
                             aria-label={`Go to testimonial ${index + 1}`}
                         />
                     ))}

@@ -150,20 +150,18 @@ const Page = () => {
                                             <FormLabel className='text-primary mt-3 self-center text-center text-lg font-subheading'>Pick your suitable date </FormLabel>
                                             <FormControl className='w-full'>
                                                 <Calendar
+                                                    mode="single"
                                                     selected={selectedDate}
-                                                    onSelect={setSelectedDate}
-                                                    onDayClick={(date) => {
-                                                        form.setValue('requestedDate', date);
+                                                    onSelect={(date) => {
                                                         setSelectedDate(date);
+                                                        if (date) form.setValue('requestedDate', date);
                                                     }}
                                                     className="h-full w-full flex"
                                                     classNames={{
-                                                        months:
-                                                            "flex w-full flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0 flex-1",
+                                                        months: "flex w-full flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0 flex-1",
                                                         month: "space-y-4 w-full flex flex-col",
-                                                        table: "w-full h-full border-collapse space-y-1",
-                                                        head_row: "",
-                                                        row: "w-full mt-2",
+                                                        month_grid: "w-full h-full border-collapse space-y-1",
+                                                        week: "w-full mt-2",
                                                     }}
                                                 />
                                             </FormControl>
@@ -181,7 +179,7 @@ const Page = () => {
                                                             key={`time-slot-${index}`} // Ensure a unique key by prefixing with "slot-"
                                                             variant={field.value === slot ? 'default' : 'outline'}
                                                             onClick={() => form.setValue('requestedTime', slot)}
-                                                            className='cursor-pointer *:hover:bg-secondary *:hover:text-secondary-foreground font-normal text-base p-3'
+                                                            className='cursor-pointer hover:bg-secondary hover:text-secondary-foreground font-normal text-base p-3'
                                                         >
                                                             {slot}
                                                         </Badge>
@@ -192,7 +190,7 @@ const Page = () => {
                                         </FormItem>
                                     )} />
 
-                                    <Button type='submit' className='w-full h-10 text-lg font-semibold  button'>Book Now</Button>
+                                    <Button type='submit' className='w-full h-[60px] text-lg font-semibold'>Book Now</Button>
                                 </form>
                             </Form>
                         </CardContent>

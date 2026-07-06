@@ -71,7 +71,7 @@ const YourDentist: React.FC<YourDentistProps> = ({ isHidden }) => {
                         alt="Your Dentist"
                         width={500}
                         height={500}
-                        className='object-contain'
+                        className='object-contain w-auto h-auto'
                     />
                 </motion.div>
             </motion.div>

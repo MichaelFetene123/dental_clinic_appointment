@@ -13,7 +13,7 @@ const Page = () => {
                 </Link>
                 <p className='text-center font-lucida my-5 mb-8 text-3xl font-extrabold text-foreground'>Welcome back</p>
                 <div className="flex flex-col items-center justify-center mb-4 gap-3">
-                    <Image src="/images/logo/logo-1.png" alt='logo' width={100} height={100} />
+                    <Image src="/images/logo/logo-1.png" alt='logo' width={100} height={100} className="w-auto h-auto" />
                     <h1 className='text-3xl font-boruna text-accent'>Classic Dental Clinic</h1>
                 </div>
 

@@ -114,7 +114,7 @@ export const columns: ColumnDef<z.infer<typeof schema>>[] = [
                         alt="pp"
                         width={40}
                         height={40}
-                        className="rounded-full "
+                        className="rounded-full w-auto h-auto"
                     />
                 </div>
                 <div>

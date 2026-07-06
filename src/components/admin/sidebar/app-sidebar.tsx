@@ -32,7 +32,7 @@ const data = {
     user: {
         name: "Admin",
         email: "admin@hospital.com",
-        avatar: "/avatars/admin.jpg",
+        avatar: "",
     },
     navMain: [
         {

@@ -22,7 +22,7 @@ export function TeamSwitcher() {
                         width={100}
                         height={100}
                         alt="logo"
-                        className="bg-cover mb-3 transition-opacity hover:opacity-80"
+                        className="bg-cover mb-3 transition-opacity hover:opacity-80 w-auto h-auto"
                     />
                 </Link>
             </SidebarMenuItem>

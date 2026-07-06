@@ -232,7 +232,7 @@ const Header = () => {
                             )
                         )}
                         <div>
-                            <Button  variant="default" size="lg" className="h-12 md:ml-20">
+                            <Button variant="default" size="lg" className="h-9 md:h-12 px-3 md:px-5 text-xs md:text-sm lg:text-base md:ml-20">
                                 <Link href={"/appointment"}>
                                     Request Appointment
                                 </Link>

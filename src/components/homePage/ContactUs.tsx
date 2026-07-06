@@ -59,7 +59,7 @@ const ContactUs = () => {
                             asChild
                             variant="default"
                             size="lg"
-                            className="h-12 w-fit mt-5 px-8 rounded-md shadow-md font-inter text-lg font-medium"
+                            className="h-10 md:h-14 lg:h-16 w-fit mt-5 px-4 md:px-6 lg:px-8 rounded-md shadow-md font-inter text-sm md:text-base lg:text-lg font-medium"
                         >
                             <Link href="/appointment">
                                 Request Appointment

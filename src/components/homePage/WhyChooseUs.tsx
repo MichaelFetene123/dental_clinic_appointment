@@ -76,7 +76,7 @@ const WhyChooseUs = () => {
                             asChild
                             variant="default"
                             size="lg"
-                            className='w-fit rounded-md shadow-md font-inter text-lg font-medium h-16 px-8 border-none mt-10 flex'
+                            className='w-fit rounded-md shadow-md font-inter text-sm md:text-base lg:text-lg font-medium h-10 md:h-14 lg:h-16 px-4 md:px-6 lg:px-8 border-none mt-10 flex'
                         >
                             <Link href="/appointment">
                                 Book now

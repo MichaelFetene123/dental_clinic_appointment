@@ -73,7 +73,7 @@ const GetStarted = () => {
           <Button
             asChild
             variant="default"
-            className="px-8 py-6 font-inter text-lg font-medium rounded-lg hover:transform hover:scale-105 transition-all duration-300"
+            className="px-4 md:px-6 lg:px-8 py-4 md:py-5 lg:py-6 font-inter text-sm md:text-base lg:text-lg font-medium rounded-lg hover:transform hover:scale-105 transition-all duration-300"
           >
             <Link href="/appointment">
               Request Appointment

@@ -45,7 +45,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, index }) => (
             asChild
             variant="outline"
             size="lg"
-            className="h-16 px-8 border-2 border-primary font-inter text-lg font-medium hover:bg-primary hover:text-primary-foreground transition-colors duration-200"
+            className="h-10 md:h-14 lg:h-16 px-4 md:px-6 lg:px-8 border-2 border-primary font-inter text-sm md:text-base lg:text-lg font-medium hover:bg-primary hover:text-primary-foreground transition-colors duration-200"
         >
             <Link href={'/appointment'}>Request Appointment</Link>
         </Button>
@@ -89,7 +89,7 @@ const ServicesList: React.FC<ServiceListProps> = ({ isHidden }) => {
                                 asChild
                                 variant="outline"
                                 size="lg"
-                                className="h-16 px-8 border-2 border-primary font-inter text-lg font-medium hover:bg-primary hover:text-primary-foreground transition-colors duration-200"
+                                className="h-10 md:h-14 lg:h-16 px-4 md:px-6 lg:px-8 border-2 border-primary font-inter text-sm md:text-base lg:text-lg font-medium hover:bg-primary hover:text-primary-foreground transition-colors duration-200"
                             >
                                 <Link href={"/services"}>View All Services</Link>
                             </Button>

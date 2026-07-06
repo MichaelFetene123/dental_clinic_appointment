@@ -69,7 +69,7 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ serviceName,imageSrc }) =
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                             >
-                                <Button asChild size="lg" className="h-14 px-8 text-lg font-semibold">
+                                <Button asChild size="lg" className="h-10 md:h-12 lg:h-14 px-4 md:px-6 lg:px-8 text-sm md:text-base lg:text-lg font-semibold">
                                     <Link href="/appointment">
                                         Schedule Consultation
                                     </Link>

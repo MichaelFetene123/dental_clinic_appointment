@@ -137,7 +137,7 @@ const Header = () => {
                             }}
                         ></div>
                         <h1 className="font-serif text-xl md:text-2xl font-semibold flex flex-col text-primary">
-                            <span className="text-accent text-2xl md:text-3xl">Classic</span>{" "}
+                            <span className={`text-2xl md:text-3xl transition-colors duration-300 ${isScrolled ? "text-secondary" : "text-accent"}`}>Classic</span>{" "}
                             Specialty Dental Center
                         </h1>
                     </Link>
@@ -232,7 +232,7 @@ const Header = () => {
                             )
                         )}
                         <div>
-                            <Button asChild variant="default" size="lg" className="h-12 md:ml-20">
+                            <Button  variant="default" size="lg" className="h-12 md:ml-20">
                                 <Link href={"/appointment"}>
                                     Request Appointment
                                 </Link>

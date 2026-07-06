@@ -29,7 +29,7 @@ const Footer = () => {
           <Button
             asChild
             variant="default"
-            className="flex items-center gap-2 mx-auto px-8 py-6 rounded-full font-inter text-lg font-medium bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-300"
+            className="inline-flex w-fit items-center gap-2 px-8 py-6 rounded-full font-inter text-lg font-medium bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-300"
           >
             <Link href="/appointment">
               Book Appointment
@@ -52,13 +52,12 @@ const Footer = () => {
                 Leading the way in modern dentistry with compassionate care and cutting-edge technology.
               </p>
               <div className="space-y-4">
-                <a
-                  href="tel:+251911123456"
-                  className="flex items-center gap-3 font-inter text-base font-normal text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                <div
+                  className="flex items-center gap-3 font-inter text-base font-normal text-primary-foreground/70"
                 >
                   <Phone className="w-5 h-5" />
                   +251 911 123 456
-                </a>
+                </div>
                 <a
                   href="mailto:info@dentalcare.com"
                   className="flex items-center gap-3 font-inter text-base font-normal text-primary-foreground/70 hover:text-primary-foreground transition-colors"

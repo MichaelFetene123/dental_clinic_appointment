@@ -27,12 +27,9 @@ const FAQComponent = ({ title, faqs, classes }: TFaq) => {
         </h2>
         <p className="my-10 font-inter text-base md:text-lg font-normal text-muted-foreground">
           More questions? We&rsquo;re ready to help. Give us a call at{" "}
-          <a
-            href="tel:7207309140"
-            className="text-primary hover:text-primary/80 transition-colors font-medium"
-          >
-            (720) 730-9140
-          </a>
+          <span className="text-primary font-medium">
+            +251 911 123 456
+          </span>
         </p>
       </div>
 

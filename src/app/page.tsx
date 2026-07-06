@@ -37,7 +37,7 @@ export default function Home() {
             title="Your Trusted Classic Specialty"
             subtitle={
               <>
-                <span className="font-instrument-serif text-3xl md:text-4xl lg:text-[80px] max-w-3xl leading-tight">Experience top-quality dental care with a gentle touch.</span>
+                <span className="font-instrument-serif text-4xl md:text-6xl lg:text-7xl max-w-3xl leading-tight">Experience top-quality dental care with a gentle touch.</span>
               </>
             }
             buttonText="Request Appointment"

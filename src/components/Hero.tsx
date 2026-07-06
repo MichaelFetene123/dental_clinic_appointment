@@ -58,12 +58,12 @@ const HeroSection: React.FC<HeroSectionProps> = ({
             <AnimatePresence>
                 {isMounted && (
                     <motion.div
-                        className="relative z-10 px-6 w-full flex flex-col justify-end mb-20 h-full"
+                        className="relative z-10 px-6 w-full flex flex-col justify-end h-full"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.5 }}
                     >
-                        <div className="w-[90%] mx-auto md:gap-5 flex flex-col justify-center">
+                        <div className="w-[90%] mx-auto my-auto md:gap-5 flex flex-col justify-center">
                             {/* Title */}
                             <h1 className="font-inter text-sm font-medium text-white uppercase tracking-wider leading-tight mt-10">
                                 {title}
@@ -80,7 +80,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({
                                     asChild
                                     variant="default"
                                     size="lg"
-                                    className="h-16 mt-2 px-8 rounded-md shadow-md text-lg font-inter font-medium"
+                                    className="h-10 md:h-14 lg:h-16 mt-2 px-4 md:px-6 lg:px-8 rounded-md shadow-md text-sm md:text-base lg:text-lg font-inter font-medium"
                                 >
                                     <Link href="/appointment">
                                         {buttonText}

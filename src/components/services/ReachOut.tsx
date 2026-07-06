@@ -4,7 +4,7 @@ import { CLINIC_PHONE } from "@/lib/constants";
 
 const ReachOut: React.FC = () => {
   return (
-    <div className="z-50 bg-white block md:hidden max-w-md mx-auto px-4 fixed bottom-0 left-0 right-0">
+    <div className="z-50 bg-card block md:hidden max-w-md mx-auto px-4 fixed bottom-0 left-0 right-0">
       <div className="flex justify-between items-center mt-4">
         <div className="flex items-center flex-col justify-center mb-4">
           <Phone size={24} className="text-classic_yellow bold" />

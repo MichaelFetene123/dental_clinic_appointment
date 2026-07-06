@@ -146,10 +146,10 @@ export const columns: ColumnDef<Appointment>[] = [
             const status = row.getValue("status") as string;
 
             const statusColors: Record<string, string> = {
-                PENDING: "bg-yellow-100 text-yellow-800 font-semibold",
-                CONFIRMED: "bg-blue-100 text-blue-800 font-semibold",
-                CANCELLED: "bg-red-100 text-red-800 font-semibold",
-                COMPLETED: "bg-green-100 text-green-800 font-semibold",
+                PENDING: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 font-semibold",
+                CONFIRMED: "bg-blue-500/10 text-blue-600 dark:text-blue-400 font-semibold",
+                CANCELLED: "bg-destructive/10 text-destructive font-semibold",
+                COMPLETED: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold",
             };
 
             return (
@@ -243,7 +243,7 @@ export function AppointmentTable() {
                         className="max-w-sm"
                     />
             </div>
-            <div className="rounded-md border">
+            <div>
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (

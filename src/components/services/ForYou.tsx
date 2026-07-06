@@ -29,16 +29,16 @@ const ForYou = () => {
   return (
           <div className="py-20 px-6 md:px-12">
       <div className="max-w-5xl mx-auto text-center">
-        <h2 className="text-3xl font-bold text-gray-900 mb-16">This part is all for you</h2>
+        <h2 className="text-3xl font-bold text-foreground mb-16">This part is all for you</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {items.map((item, index) => (
             <div
               key={index}
-              className="border border-gray-200 rounded-lg p-6 flex flex-col items-center text-center bg-gray-50"
+              className="border border-border rounded-lg p-6 flex flex-col items-center text-center bg-muted/50"
             >
               {item.icon}
-              <h3 className="text-xl font-semibold text-gray-800 mt-4">{item.title}</h3>
-              <p className="text-base text-gray-600 mt-2">{item.description}</p>
+              <h3 className="text-xl font-semibold text-foreground mt-4">{item.title}</h3>
+              <p className="text-base text-muted-foreground mt-2">{item.description}</p>
             </div>
           ))}
         </div>

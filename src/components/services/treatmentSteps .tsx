@@ -23,7 +23,7 @@ const TreatmentSteps = ({ treatmentName }: Props) => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.8 }}
-                    className="text-5xl font-bold text-center text-gray-800 mb-16"
+                    className="text-5xl font-bold text-center text-foreground mb-16"
                 >
                     Your Journey to a Perfect Smile
                 </motion.h2>
@@ -54,7 +54,7 @@ const TreatmentSteps = ({ treatmentName }: Props) => {
                             >
                                 <div className="relative md:w-1/2 px-8 py-4">
                                     <motion.div 
-                                        className={`absolute w-14 h-14 rounded-full bg-white shadow-lg top-0 flex items-center justify-center 
+                                        className={`absolute w-14 h-14 rounded-full bg-card shadow-lg top-0 flex items-center justify-center 
                                             ${index % 2 === 0 ? '-left-7' : '-right-7'}`}
                                         whileHover={{ scale: 1.1 }}
                                         whileTap={{ scale: 0.95 }}
@@ -62,15 +62,15 @@ const TreatmentSteps = ({ treatmentName }: Props) => {
                                         <FaCheckCircle size={28} className="text-primary" />
                                     </motion.div>
                                     <motion.div 
-                                        className={`bg-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-shadow duration-300
+                                        className={`bg-card p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-shadow duration-300
                                             transform hover:-translate-y-1 ${index % 2 === 0 ? 'ml-auto' : 'mr-auto'}`}
                                         whileHover={{ scale: 1.02 }}
                                         transition={{ type: "spring", stiffness: 300 }}
                                     >
-                                        <h3 className="text-2xl font-semibold text-gray-700 flex items-center gap-3 mb-3">
+                                        <h3 className="text-2xl font-semibold text-foreground flex items-center gap-3 mb-3">
                                             <span className="text-primary">Step {index + 1}</span>
                                         </h3>
-                                        <p className="text-gray-600 text-lg leading-relaxed">{step}</p>
+                                        <p className="text-muted-foreground text-lg leading-relaxed">{step}</p>
                                     </motion.div>
                                 </div>
                             </motion.div>

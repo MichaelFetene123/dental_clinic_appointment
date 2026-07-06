@@ -348,10 +348,10 @@ export function DataTable({
                         onChange={(e) => {
                             setFilterValue(e.target.value);
                         }}
-                        className="outline-none w-[40%]  focus:outline-none border-2 border-gray-300 px-4 py-2 rounded-lg"
+                        className="outline-none w-[40%]  focus:outline-none border-2 border-input px-4 py-2 rounded-lg"
                     />
                 </div>
-                <div className="overflow-hidden rounded-lg border">
+                <div>
                     <DndContext
                         collisionDetection={closestCenter}
                         modifiers={[restrictToVerticalAxis]}
@@ -360,7 +360,7 @@ export function DataTable({
                         id={sortableId}
                     >
                         <Table>
-                            <TableHeader className="sticky top-0 z-10 bg-muted">
+                            <TableHeader className="sticky top-0 z-10">
                                 {table.getHeaderGroups().map((headerGroup) => (
                                     <TableRow key={headerGroup.id}>
                                         {headerGroup.headers.map((header) => {

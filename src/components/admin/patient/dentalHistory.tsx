@@ -128,7 +128,7 @@ const DentalHistoryTable = () => {
             </CardHeader>
             <CardContent className="p-0">
                 <Table>
-                    <TableHeader className="bg-muted/50">
+                    <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => (

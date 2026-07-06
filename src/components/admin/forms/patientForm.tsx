@@ -129,7 +129,7 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
 
   return (
     <div className="relative z-50">
-      <div className="fixed inset-0 bg-gray-600 bg-opacity-50 z-40"></div>
+      <div className="fixed inset-0 bg-black/50 z-40"></div>
       <Card className="mx-auto px-3 fixed top-0 right-0 mt-2 mr-3  z-50 shadow-lg bg-background w-full max-w-3xl max-h-screen overflow-y-scroll">
         <CardHeader>
           <div className="flex justify-between items-center">

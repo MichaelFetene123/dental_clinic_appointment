@@ -84,7 +84,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-  <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${roboto.variable} ${instrumentSerif.variable} ${lato.variable} ${redHatText.variable}`} suppressHydrationWarning>
       <body className="antialiased">
           <ThemeProvider
             attribute="class"

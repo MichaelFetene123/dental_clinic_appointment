@@ -189,9 +189,9 @@ export const columns: ColumnDef<Patient>[] = [
                     <Eye className="w-4 h-4" />
                 </Button>
                 <Button variant="ghost" size="sm">
-                    <Edit className="w-4 h-4 text-blue-600" />
+                    <Edit className="w-4 h-4 text-primary" />
                 </Button>
-                <Button variant="ghost" size="sm" className="text-red-600">
+                <Button variant="ghost" size="sm" className="text-destructive">
                     <Trash2 className="w-4 h-4" />
                 </Button>
             </div>
@@ -236,7 +236,7 @@ export function PatientTable() {
                     className="max-w-sm"
                 />
             </div>
-            <div className="rounded-md border">
+            <div>
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (

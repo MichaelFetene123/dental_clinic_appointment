@@ -17,17 +17,17 @@ import { Textarea } from "@/components/ui/textarea";
 
 const APPOINTMENT_TYPES = {
     GENERAL: [
-        { id: "checkup", name: "Check-up", duration: 30, color: "bg-blue-100 text-blue-700" },
-        { id: "cleaning", name: "Cleaning", duration: 45, color: "bg-green-100 text-green-700" },
-        { id: "emergency", name: "Emergency", duration: 60, color: "bg-red-100 text-red-700" },
+        { id: "checkup", name: "Check-up", duration: 30, color: "bg-blue-500/10 text-blue-600 dark:text-blue-400" },
+        { id: "cleaning", name: "Cleaning", duration: 45, color: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" },
+        { id: "emergency", name: "Emergency", duration: 60, color: "bg-destructive/10 text-destructive" },
     ],
     TREATMENTS: [
-        { id: "rootcanal", name: "Root Canal", duration: 90, color: "bg-purple-100 text-purple-700" },
-        { id: "extraction", name: "Extraction", duration: 60, color: "bg-orange-100 text-orange-700" },
-        { id: "filling", name: "Filling", duration: 45, color: "bg-teal-100 text-teal-700" },
+        { id: "rootcanal", name: "Root Canal", duration: 90, color: "bg-purple-500/10 text-purple-600 dark:text-purple-400" },
+        { id: "extraction", name: "Extraction", duration: 60, color: "bg-orange-500/10 text-orange-600 dark:text-orange-400" },
+        { id: "filling", name: "Filling", duration: 45, color: "bg-teal-500/10 text-teal-600 dark:text-teal-400" },
     ],
     ORTHODONTICS: [
-        { id: "braces_adjustment", name: "Braces Adjustment", duration: 30, color: "bg-indigo-100 text-indigo-700" },
+        { id: "braces_adjustment", name: "Braces Adjustment", duration: 30, color: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400" },
         { id: "braces_fitting", name: "Braces Fitting", duration: 90, color: "bg-pink-100 text-pink-700" },
         { id: "retainer_check", name: "Retainer Check", duration: 20, color: "bg-yellow-100 text-yellow-700" },
     ],
@@ -146,25 +146,25 @@ export default function Home() {
 
     const renderDayView = () => (
         <div className="grid grid-cols-2  ">
-            <div className="sticky left-0 bg-white">
-                <div className="h-12 border-b border-gray-200"></div>
+            <div className="sticky left-0 bg-background">
+                <div className="h-12 border-b border-border"></div>
                 {timeSlots.map((time) => (
-                    <div key={time} className="h-12 border-b border-gray-200 px-2 py-1">
-                        <span className="text-xs text-gray-500">{time}</span>
+                    <div key={time} className="h-12 border-b border-border px-2 py-1">
+                        <span className="text-xs text-muted-foreground">{time}</span>
                     </div>
                 ))}
             </div>
             <div className="min-w-[300px]">
-                <div className="h-12 border-b border-gray-200 px-2 py-2 text-center bg-gray-50">
+                <div className="h-12 border-b border-border px-2 py-2 text-center bg-muted/50">
                     <div className="font-medium">{format(currentDate, "EEEE")}</div>
-                    <div className="text-sm text-gray-500">{format(currentDate, "MMMM d")}</div>
+                    <div className="text-sm text-muted-foreground">{format(currentDate, "MMMM d")}</div>
                 </div>
                 {timeSlots.map((time) => {
                     const dayAppointments = getAppointmentsForDateAndTime(currentDate, time);
                     return (
                         <div
                             key={`${format(currentDate, "yyyy-MM-dd")}T${time}`}
-                            className="h-12 border-b border-gray-200 px-1 py-1 relative group"
+                            className="h-12 border-b border-border px-1 py-1 relative group"
                             onClick={() => setSelectedSlot({ date: currentDate, time })}
                         >
                             {dayAppointments.map((apt) => {
@@ -201,27 +201,27 @@ export default function Home() {
     );
 
     const renderWeekView = () => (
-        <div className="grid grid-cols-8 divide-x divide-gray-200">
-            <div className="sticky left-0 bg-white">
-                <div className="h-12 border-b border-gray-200"></div>
+        <div className="grid grid-cols-8 divide-x divide-border">
+            <div className="sticky left-0 bg-background">
+                <div className="h-12 border-b border-border"></div>
                 {timeSlots.map((time) => (
-                    <div key={time} className="h-12 border-b border-gray-200 px-2 py-1">
-                        <span className="text-xs text-gray-500">{time}</span>
+                    <div key={time} className="h-12 border-b border-border px-2 py-1">
+                        <span className="text-xs text-muted-foreground">{time}</span>
                     </div>
                 ))}
             </div>
             {weekDays.map((date) => (
                 <div key={date.toString()} className="min-w-[180px]">
-                    <div className="h-12 border-b border-gray-200 px-2 py-2 text-center bg-gray-50">
+                    <div className="h-12 border-b border-border px-2 py-2 text-center bg-muted/50">
                         <div className="font-medium">{format(date, "EEE")}</div>
-                        <div className="text-sm text-gray-500">{format(date, "MMM d")}</div>
+                        <div className="text-sm text-muted-foreground">{format(date, "MMM d")}</div>
                     </div>
                     {timeSlots.map((time) => {
                         const appointments = getAppointmentsForDateAndTime(date, time);
                         return (
                             <div
                                 key={`${format(date, "yyyy-MM-dd")}T${time}`}
-                                className="h-12 border-b border-gray-200 px-1 py-1 relative group"
+                                className="h-12 border-b border-border px-1 py-1 relative group"
                                 onClick={() => setSelectedSlot({ date, time })}
                             >
                                 {appointments.map((apt) => {
@@ -259,9 +259,9 @@ export default function Home() {
     );
 
     const renderMonthView = () => (
-        <div className="grid grid-cols-7 gap-px bg-gray-200">
+        <div className="grid grid-cols-7 gap-px bg-border">
             {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
-                <div key={day} className="bg-gray-50 p-2 text-center text-xs font-medium">
+                <div key={day} className="bg-muted/50 p-2 text-center text-xs font-medium">
                     {day}
                 </div>
             ))}
@@ -271,8 +271,8 @@ export default function Home() {
                 return (
                     <div
                         key={date.toString()}
-                        className={`min-h-[120px] bg-white p-2 ${!isCurrentMonth ? "text-gray-400" : ""
-                            } ${isSameDay(date, new Date()) ? "bg-blue-50" : ""}`}
+                        className={`min-h-[120px] bg-card p-2 ${!isCurrentMonth ? "text-muted-foreground" : ""
+                            } ${isSameDay(date, new Date()) ? "bg-primary/5" : ""}`}
                         onClick={() => {
                             setCurrentDate(date);
                             setView("day");
@@ -296,7 +296,7 @@ export default function Home() {
                                 );
                             })}
                             {dayAppointments.length > 3 && (
-                                <div className="text-xs text-gray-500">
+                                <div className="text-xs text-muted-foreground">
                                     +{dayAppointments.length - 3} more
                                 </div>
                             )}
@@ -308,11 +308,11 @@ export default function Home() {
     );
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 md:p-8">
+        <div className="min-h-screen bg-background p-4 md:p-8">
             <div className="max-w-[1600px] mx-auto">
                 <div className="mb-8">
-                    <h1 className="text-4xl font-bold text-gray-900">Dental Clinic Schedule</h1>
-                    <p className="text-gray-600 mt-2">Manage your appointments efficiently</p>
+                    <h1 className="text-4xl font-bold text-foreground">Dental Clinic Schedule</h1>
+                    <p className="text-muted-foreground mt-2">Manage your appointments efficiently</p>
                 </div>
 
                 <Card>
@@ -371,7 +371,7 @@ export default function Home() {
                         </DialogHeader>
                         {selectedSlot && (
                             <div className="space-y-4 py-4">
-                                <div className="flex items-center gap-2 text-sm text-gray-500">
+                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                     <CalendarCheck2 className="h-4 w-4" />
                                     <span>
                                         {format(selectedSlot.date, "EEEE, MMMM d")} at {selectedSlot.time}
@@ -444,25 +444,25 @@ export default function Home() {
                             <div className="space-y-4">
                                 <div className="space-y-2">
                                     <div className="flex items-center gap-2">
-                                        <User className="h-4 w-4 text-gray-500" />
+                                        <User className="h-4 w-4 text-muted-foreground" />
                                         <span className="font-medium">{selectedAppointment.patient}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Calendar className="h-4 w-4 text-gray-500" />
+                                        <Calendar className="h-4 w-4 text-muted-foreground" />
                                         <span>
                                             {format(selectedAppointment.date, "PPPP")} at {selectedAppointment.time}
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Clock className="h-4 w-4 text-gray-500" />
+                                        <Clock className="h-4 w-4 text-muted-foreground" />
                                         <span>{getAppointmentTypeDetails(selectedAppointment.type)?.duration} minutes</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Phone className="h-4 w-4 text-gray-500" />
+                                        <Phone className="h-4 w-4 text-muted-foreground" />
                                         <span>{selectedAppointment.phone}</span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <Mail className="h-4 w-4 text-gray-500" />
+                                        <Mail className="h-4 w-4 text-muted-foreground" />
                                         <span>{selectedAppointment.email}</span>
                                     </div>
                                 </div>
@@ -475,7 +475,7 @@ export default function Home() {
                                 {selectedAppointment.notes && (
                                     <div className="space-y-2">
                                         <Label>Notes</Label>
-                                        <p className="text-sm text-gray-600">{selectedAppointment.notes}</p>
+                                        <p className="text-sm text-muted-foreground">{selectedAppointment.notes}</p>
                                     </div>
                                 )}
                                 <div className="flex gap-2">

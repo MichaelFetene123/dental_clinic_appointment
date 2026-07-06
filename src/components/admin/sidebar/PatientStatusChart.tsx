@@ -18,10 +18,10 @@ import {
 } from "@/components/ui/chart"
 
 const chartData = [
-    { status: "Braces", patients: 150, fill: "#407C82" }, // Teal
-    { status: "Canal", patients: 120, fill: "#FFC857" }, // Golden Yellow
-    { status: "Orthodontics", patients: 200, fill: "#89C2D9" }, // Sky Blue
-    { status: "Endodontics", patients: 180, fill: "#1E6091" }, // Warm Orange
+    { status: "Braces", patients: 150, fill: "var(--chart-1)" },
+    { status: "Canal", patients: 120, fill: "var(--chart-2)" },
+    { status: "Orthodontics", patients: 200, fill: "var(--chart-3)" },
+    { status: "Endodontics", patients: 180, fill: "var(--chart-4)" },
 ]
 
 // Sort the data to ensure the highest number of patients is at the top
@@ -30,19 +30,19 @@ const sortedChartData = [...chartData].sort((a, b) => b.patients - a.patients)
 const chartConfig = {
     braces: {
         label: "Braces Patients",
-        color: "#407C82", // Teal
+        color: "var(--chart-1)",
     },
     canal: {
         label: "Canal Patients",
-        color: "#FFC857", // Golden Yellow
+        color: "var(--chart-2)",
     },
     orthodontics: {
         label: "Orthodontics Patients",
-        color: "#89C2D9", // Sky Blue
+        color: "var(--chart-3)",
     },
     endodontics: {
         label: "Endodontics Patients",
-        color: "#1E6091", // Warm Orange
+        color: "var(--chart-4)",
     },
 } satisfies ChartConfig
 
@@ -108,7 +108,7 @@ export function PatientStatusChart() {
                     {sortedChartData.map((item) => (
                         <div key={item.status} className="flex items-center gap-2">
                             <Square size={13} style={{ backgroundColor: item.fill, color: item.fill }} />
-                            <p className="text-black text-sm">{item.status}</p>
+                            <p className="text-foreground text-sm">{item.status}</p>
                         </div>
                     ))}
                 </div>

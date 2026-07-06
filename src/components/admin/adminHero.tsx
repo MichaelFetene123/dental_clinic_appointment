@@ -1,19 +1,23 @@
 import React from 'react'
-import { Card, CardContent, CardDescription, CardHeader } from '../ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { Button } from '../ui/button'
 
 
 const AdminHero = () => {
     return (
-        <Card className='bg-primary'>
-            <CardHeader className='text-3xl text-primary-foreground font-heading'>
-                Good Morning, Abebe Debebe 
-            </CardHeader>
-            <CardContent className='-mt-3'>
-                <CardDescription>
-                    <p className='md:w-1/2 text-primary-foreground/80 font-normal text-base'>Have nice day it seems like you are in the right place create appointment for your clients</p>
-                    <Button variant="secondary" className='font-semibold mt-5'>Create Appointment</Button>
+        <Card className='bg-primary border-none'>
+            <CardHeader>
+                <CardTitle className='text-2xl md:text-3xl text-primary-foreground font-heading'>
+                    Good Morning, Abebe Debebe 
+                </CardTitle>
+                <CardDescription className='text-primary-foreground/80 font-normal text-sm md:text-base md:w-1/2 mt-2'>
+                    Have a nice day! It seems like you are in the right place to create appointments for your clients.
                 </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Button variant="secondary" size="lg" className='font-semibold h-10 md:h-12 px-4 md:px-6 text-sm md:text-base'>
+                    Create Appointment
+                </Button>
             </CardContent>
         </Card>
     )

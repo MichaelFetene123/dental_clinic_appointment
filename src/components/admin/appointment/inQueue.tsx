@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Check, ClipboardPlus, Plus } from 'lucide-react'
-import Image from 'next/image'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import React from 'react'
 
 
@@ -22,13 +22,10 @@ const InQueue = () => {
                 <CardContent className=''>
                     <div className='flex justify-between mb-5'>
                         <div className='flex gap-3 items-center w-[60%]'>
-                            <Image
-                                src={"https://randomuser.me/api/portraits/women/2.jpg"}
-                                alt="pp"
-                                width={50}
-                                height={50}
-                                className="rounded-full "
-                            />
+                            <Avatar className="h-12 w-12">
+                                <AvatarImage src="https://randomuser.me/api/portraits/women/2.jpg" alt="Patient photo" />
+                                <AvatarFallback className="bg-primary/10 text-primary">AK</AvatarFallback>
+                            </Avatar>
                             <div>
                                 <CardDescription >Patient name</CardDescription>
                                 <CardTitle className='text-base mt-2'>Abebe Kebede</CardTitle>
@@ -51,9 +48,9 @@ const InQueue = () => {
                     </div>
                 </CardContent>
                 <Separator className='my-3 px-4' />
-                <CardFooter className='flex justify-between items-center '>
-                    <Button variant="outline" className='text-lg hover:bg-destructive hover:text-destructive-foreground transition-colors ease-linear duration-300 font-semibold px-10'><Plus size={44} strokeWidth={2.75}  className='rotate-45'/> Cancel</Button>
-                    <Button variant="default" className='transition-all ease-linear text-lg font-semibold px-10'> <Check size={44} strokeWidth={2.75} />Accept</Button>
+                <CardFooter className='flex justify-between items-center gap-4'>
+                    <Button variant="outline" className='flex-1 text-sm md:text-base hover:bg-destructive hover:text-destructive-foreground transition-colors ease-linear duration-300 font-semibold'><Plus className='mr-2 h-4 w-4 rotate-45'/> Cancel</Button>
+                    <Button variant="default" className='flex-1 transition-all ease-linear text-sm md:text-base font-semibold'> <Check className='mr-2 h-4 w-4' /> Accept</Button>
                 </CardFooter>
             </Card>
         </div>

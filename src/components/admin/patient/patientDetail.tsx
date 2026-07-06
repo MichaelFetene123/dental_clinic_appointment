@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChartConfig, ChartContainer } from '@/components/ui/chart'
 import { ArrowUpRight, Cake, CalendarCheck, Home, Mail, Phone, VenusAndMars } from 'lucide-react'
 import React from 'react'
@@ -24,12 +24,12 @@ const chartConfig = {
 
 const PatientDetail = () => {
   return (
-    <div className='flex justify-between gap-5'>
-      <div className='grid grid-cols-1 gap-3 w-[65%]'>
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-3'>
-          <Card className='max-h-[540px]'>
+    <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
+      <div className='grid grid-cols-1 gap-6 lg:col-span-2'>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+          <Card className='max-h-[540px] flex flex-col'>
             <CardHeader>
-              <p className='font-heading font-[600] text-xl '>General Information</p>
+              <CardTitle className='font-heading text-xl'>General Information</CardTitle>
             </CardHeader>
             <CardContent>
               <div className='flex gap-3 mb-7 items-center'>
@@ -76,10 +76,10 @@ const PatientDetail = () => {
               </div>
             </CardContent>
           </Card>
-          <Card className="max-h-[540px] relative overflow-hidden">
-            <CardHeader  >
-              <p className="font-heading font-[600] text-xl">Appointment Schedule</p>
-            </CardHeader >
+          <Card className="max-h-[540px] relative overflow-hidden flex flex-col">
+            <CardHeader>
+              <CardTitle className="font-heading text-xl">Appointment Schedule</CardTitle>
+            </CardHeader>
             <div className="relative px-2">
               <p className="absolute top-0 mt-2 left-[17px] h-[90%] border-2 border-dashed border-primary/40"></p>
 
@@ -108,11 +108,11 @@ const PatientDetail = () => {
         </div>
 
       </div>
-      <div className='flex flex-col gap-4 w-[34%]'>
-        <div >
+      <div className='flex flex-col gap-6 lg:col-span-1'>
+        <div>
           <Card className='pb-4'>
-            <CardHeader className='font-heading font-[600] text-xl pb-2'>
-              Member dentalical
+            <CardHeader>
+              <CardTitle className='font-heading text-xl'>Member dentalical</CardTitle>
             </CardHeader>
             <div className='flex '>
               <CardContent className="flex-1 pb-0">

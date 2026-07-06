@@ -1,10 +1,11 @@
-"use client"
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { ArrowRight, ClipboardPlus, Ellipsis } from 'lucide-react'
 import React from 'react'
 import Link from 'next/link'
+
 const appointments = [
     { name: 'Abel Mekonn', type: 'Canal test', date: 'Tomorrow', time: '10:00 AM' },
     { name: 'Sara Johnson', type: 'Teeth Cleaning', date: 'March 20', time: '2:00 PM' },
@@ -14,43 +15,48 @@ const appointments = [
 
 const AppointmentList = () => {
     return (
-        <div>
-            <Card className='p-6 min-h-[410px]'>
-                <div className='flex justify-between mb-6'>
-                    <p className='text-lg font-semibold flex gap-2'>
-                        <ClipboardPlus className='self-center text-base text-primary' />
-                        Appointment List
-                    </p>
-                    <Ellipsis />
-                </div>
+        <Card className='flex flex-col min-h-[430px]'>
+            <CardHeader className="flex flex-row items-center justify-between pb-6">
+                <CardTitle className='text-lg font-semibold flex gap-2 items-center'>
+                    <ClipboardPlus className='text-primary h-5 w-5' />
+                    Appointment List
+                </CardTitle>
+                <Ellipsis className="text-muted-foreground h-5 w-5" />
+            </CardHeader>
+            <CardContent className="flex-1">
                 {appointments.map((appointment, index) => (
                     <div key={index} className='mb-4'>
-                        <div className='flex justify-between mb-1'>
-                            <div className='flex flex-col'>
-                                <p className='text-base font-medium text-foreground'>{appointment.name}</p>
-                                <span className='text-muted-foreground text-sm'>{appointment.type}</span>
+                        <div className='flex items-center gap-4 mb-4'>
+                            <Avatar className="h-9 w-9">
+                                <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                                    {appointment.name.split(' ').map(n => n[0]).join('')}
+                                </AvatarFallback>
+                            </Avatar>
+                            <div className='flex flex-col flex-1'>
+                                <p className='text-sm font-medium leading-none'>{appointment.name}</p>
+                                <span className='text-sm text-muted-foreground mt-1.5'>{appointment.type}</span>
                             </div>
-                            <div className='flex flex-col items-center'>
-                                <p className='text-sm font-medium text-foreground'>{appointment.date}</p>
-                                <span className='text-sm text-muted-foreground'>{appointment.time}</span>
+                            <div className='flex flex-col items-end'>
+                                <p className='text-sm font-medium'>{appointment.date}</p>
+                                <span className='text-xs text-muted-foreground mt-1'>{appointment.time}</span>
                             </div>
-
                         </div>
-                        <Separator />
+                        {index < appointments.length - 1 && <Separator />}
                     </div>
                 ))}
-                <div className='flex items-center justify-center py-2'>
-                    <Button
-                        asChild
-                        className="font-semibold hover:scale-105 transition-all ease-in-out duration-300"
-                    >
-                        <Link href="/admin/patients">
-                            All Patients <ArrowRight />
-                        </Link>
-                    </Button>
-                </div>
-            </Card>
-        </div>
+            </CardContent>
+            <CardFooter className='flex justify-center pt-2'>
+                <Button
+                    asChild
+                    variant="default"
+                    className="font-semibold hover:scale-105 transition-all ease-in-out duration-300"
+                >
+                    <Link href="/admin/appointment">
+                        All Appointments <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                </Button>
+            </CardFooter>
+        </Card>
     )
 }
 

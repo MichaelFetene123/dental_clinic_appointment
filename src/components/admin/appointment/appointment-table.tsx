@@ -26,7 +26,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { Card } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 import {
     Select,
     SelectContent,
@@ -178,13 +178,13 @@ export const columns: ColumnDef<Appointment>[] = [
 
             return (
                 <div className="flex justify-center space-x-2">
-                    <Button size="sm" variant="outline" className="text-green-600" onClick={() => console.log("Viewing", appointment.id)}>
+                    <Button size="sm" variant="outline" className="text-emerald-600 hover:text-emerald-700" onClick={() => console.log("Viewing", appointment.id)}>
                         <Eye className="w-4 h-4 mr-1" /> See
                     </Button>
-                    <Button size="sm" variant="outline" className="text-blue-600" onClick={() => console.log("Editing", appointment.id)}>
+                    <Button size="sm" variant="outline" className="text-primary hover:text-primary/90" onClick={() => console.log("Editing", appointment.id)}>
                         <Edit className="w-4 h-4 mr-1" /> Update
                     </Button>
-                    <Button size="sm" variant="outline"  className="text-red-600" onClick={() => console.log("Deleting", appointment.id)}>
+                    <Button size="sm" variant="destructive" onClick={() => console.log("Deleting", appointment.id)}>
                         <Trash2 className="w-4 h-4 mr-1" /> Delete
                     </Button>
                 </div>
@@ -225,16 +225,23 @@ export function AppointmentTable() {
     })
 
     return (
-        <Card className="p-5">
-            <div className="flex items-center justify-between py-4">
-                <Input
-                    placeholder="Filter by reason..."
-                    value={(table.getColumn("reason")?.getFilterValue() as string) ?? ""}
-                    onChange={(event) =>
-                        table.getColumn("reason")?.setFilterValue(event.target.value)
-                    }
-                    className="max-w-sm"
-                />
+        <Card>
+            <CardHeader>
+                <CardTitle>Appointments</CardTitle>
+                <CardDescription>
+                    Manage your patients' appointments, view details, update status, and more.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="flex items-center justify-between pb-4">
+                    <Input
+                        placeholder="Filter by reason..."
+                        value={(table.getColumn("reason")?.getFilterValue() as string) ?? ""}
+                        onChange={(event) =>
+                            table.getColumn("reason")?.setFilterValue(event.target.value)
+                        }
+                        className="max-w-sm"
+                    />
             </div>
             <div className="rounded-md border">
                 <Table>
@@ -340,6 +347,7 @@ export function AppointmentTable() {
                     </div>
                 </div>
             </div>
+            </CardContent>
         </Card>
     )
 }

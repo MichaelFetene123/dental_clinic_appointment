@@ -108,34 +108,34 @@ const data = {
     clinic: [
         {
             title: "Dashboard",
-            url: "#",
+            url: "/admin",
             icon: LayoutDashboardIcon,
         },
         {
             title: "Appointments",
-            url: "/appointment",
+            url: "/admin/appointment",
             icon: CalendarIcon,
         },
         {
             title: "Patients",
-            url: "/patients",
+            url: "/admin/patients",
             icon: Stethoscope,
         },
         {
             title: "Billing",
-            url: "/billing",
+            url: "/admin/billing",
             icon: ClipboardListIcon,
         },
         {
             title: "Staff list",
-            url: "/staff",
+            url: "/admin/staff",
             icon: UserIcon,
         }
     ],
     physicalAssets: [
         {
             title:"Stocks",
-            url:"/stocks",
+            url:"/admin/stocks",
             icon:BoxIcon
         }
     ]

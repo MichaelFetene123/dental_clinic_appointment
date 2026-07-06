@@ -34,7 +34,7 @@ function SectionCard({ title, value, description, icon, badge }: CardProps) {
                     {value}
                     {badge && (
                         <div className="right-4 top-4">
-                            <Badge variant="outline" className={`flex gap-1 rounded-lg text-xs bg-chart-1/20 border-chart-1 text-chart-1`}>
+                            <Badge variant="outline" className="flex gap-1 rounded-lg text-xs bg-emerald-500/10 border-emerald-500/50 text-emerald-600 dark:text-emerald-400">
                                 {badge.icon}
                                 {badge.text}
                             </Badge>

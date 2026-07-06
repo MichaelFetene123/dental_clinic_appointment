@@ -123,15 +123,15 @@ const chartData = [
 
 const chartConfig = {
     visitors: {
-        label: "Visitors",
+        label: "Patients",
     },
     desktop: {
-        label: "Desktop",
-        color: "#1E6091",
+        label: "New Patients",
+        color: "var(--chart-1)",
     },
     mobile: {
-        label: "Mobile",
-        color: "#FFC857",
+        label: "Returning Patients",
+        color: "var(--chart-2)",
     },
 } satisfies ChartConfig
 
@@ -162,7 +162,7 @@ export function ChartAreaInteractive() {
     return (
         <Card className="h-full flex flex-col">
             <CardHeader className="relative flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
-                <CardTitle>Total Visitors</CardTitle>
+                <CardTitle>Total Patients</CardTitle>
                 <CardDescription>
                     <span className="@[540px]/card:block hidden">
                         Total for the last 3 months

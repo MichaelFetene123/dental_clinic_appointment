@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ThemeProvider } from "@/components/theme-provider"
 import { Inter, Roboto, Instrument_Serif, Lato, Red_Hat_Text } from "next/font/google";
 import "./globals.css";
 
@@ -83,9 +84,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${roboto.variable} ${instrumentSerif.variable} ${lato.variable} ${redHatText.variable}`}>
+  <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
-        {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
       </body>
     </html>
   );

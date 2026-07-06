@@ -70,7 +70,7 @@ import {
     TabsContent,
 } from "@/components/ui/tabs"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Separator } from "@radix-ui/react-separator"
+import { Separator } from "@/components/ui/separator"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -161,34 +161,26 @@ export const columns: ColumnDef<z.infer<typeof schema>>[] = [
         header: "Due status",
         cell: ({ row }) => {
             const status = row.getValue("dueStatus");
-            if (status == "partiallyPaid") {
-                return (
-                    <div className="text-center -z-10">
-                        <p className=" bg-blue-100 text-center py-1 rounded-lg text-blue-600 font-[500]">Partially paid </p>
-                    </div>
-                )
-            }
-            if (status == "Pending") {
-                return (
-                    <div className="text-center -z-10">
-                        <p className=" bg-yellow-100 text-center py-1 rounded-lg text-yellow-600 font-[500]">Pending</p>
-                    </div>
-                )
-            }
-            if (status == "Paid") {
-                return (
-                    <div className="text-center -z-10">
-                        <p className=" bg-green-100 text-center py-1 rounded-lg text-green-600 font-[500]">Paid </p>
-                    </div>
-                )
-            }
-            if (status == "Overdue") {
-                return (
-                    <div className="text-center -z-10">
-                        <p className=" bg-blue-100 text-center py-1 rounded-lg text-blue-600 font-[500]">Overdue </p>
-                    </div>
-                )
-            }
+            const statusMap: Record<string, string> = {
+                partiallyPaid: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+                Pending:       "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
+                Paid:          "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+                Overdue:       "bg-destructive/10 text-destructive",
+            };
+            const label: Record<string, string> = {
+                partiallyPaid: "Partially Paid",
+                Pending: "Pending",
+                Paid: "Paid",
+                Overdue: "Overdue",
+            };
+            const cls = statusMap[status as string] ?? "bg-muted text-muted-foreground";
+            return (
+                <div className="text-center">
+                    <p className={`${cls} text-center py-1 px-2 rounded-lg text-xs font-medium`}>
+                        {label[status as string] ?? String(status)}
+                    </p>
+                </div>
+            );
         }
     },
     {
@@ -209,22 +201,22 @@ export const columns: ColumnDef<z.infer<typeof schema>>[] = [
                         <DropdownMenuContent
                             align="end"
                             side="bottom"
-                            className="z-[9999] p-3 bg-white rounded-lg shadow-lg border-2 space-y-3"
+                            className="z-[9999] p-3 rounded-lg shadow-lg space-y-1"
                         >
                             <DropdownMenuItem
-                                className="flex gap-2 px-3 py-2 hover:bg-slate-50 border-none rounded-md"
+                                className="flex gap-2 cursor-pointer"
                                 onClick={() => {
                                     if (typeof window !== 'undefined') {
                                         navigator.clipboard.writeText(String(patient.id))
                                     }
                                 }}
                             >
-                                Copy patient ID <CopyIcon size={20} />
+                                Copy patient ID <CopyIcon size={16} />
                             </DropdownMenuItem>
                             <Separator />
-                            <DropdownMenuItem className="flex gap-2 px-3 py-2 hover:bg-slate-50 border-none rounded-md">View patient details</DropdownMenuItem>
-                            <DropdownMenuItem className="flex gap-2 px-3 py-2 hover:bg-slate-50 border-none rounded-md">Edit patient details</DropdownMenuItem>
-                            <DropdownMenuItem className="flex gap-2 px-3 py-2 hover:bg-slate-50 border-none rounded-md">Delete patient</DropdownMenuItem>
+                            <DropdownMenuItem className="flex gap-2 cursor-pointer">View patient details</DropdownMenuItem>
+                            <DropdownMenuItem className="flex gap-2 cursor-pointer">Edit patient details</DropdownMenuItem>
+                            <DropdownMenuItem className="flex gap-2 cursor-pointer text-destructive focus:text-destructive">Delete patient</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>

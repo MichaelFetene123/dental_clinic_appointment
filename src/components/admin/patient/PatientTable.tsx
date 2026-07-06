@@ -108,17 +108,17 @@ export const columns: ColumnDef<z.infer<typeof schema>>[] = [
         header: "Name",
         cell: ({ row }) =>
             <Link href={`/admin/patients/${row.original.id}`} className="flex gap-2 items-center">
-                <div>
+                <div className="hidden md:block shrink-0">
                     <Image
                         src={"/images/download.jpg"}
                         alt="pp"
-                        width={40}
-                        height={40}
-                        className="rounded-full w-auto h-auto"
+                        width={35}
+                        height={35}
+                        className="rounded-full object-cover aspect-square"
                     />
                 </div>
                 <div>
-                    <p className="text-lg font-subheading font-medium">{row.getValue("name")}</p>
+                    <p className="text-[16px] font-subheading font-medium">{row.getValue("name")}</p>
                 </div>
             </Link>,
     },

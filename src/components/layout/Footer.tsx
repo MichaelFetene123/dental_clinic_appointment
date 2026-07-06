@@ -26,15 +26,16 @@ const Footer = () => {
           <p className="font-inter text-base md:text-lg font-normal text-primary-foreground/80 max-w-2xl mx-auto mb-10">
             Experience world-class dental care with our team of experts. Schedule your visit now and take the first step towards your perfect smile.
           </p>
-          <Link href="/appointment">
-            <Button
-              variant="default"
-              className="flex items-center gap-2 mx-auto px-8 py-6 rounded-full font-inter text-lg font-medium bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-300"
-            >
+          <Button
+            asChild
+            variant="default"
+            className="flex items-center gap-2 mx-auto px-8 py-6 rounded-full font-inter text-lg font-medium bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-300"
+          >
+            <Link href="/appointment">
               Book Appointment
               <Calendar className="w-5 h-5" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
 

@@ -42,6 +42,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, index }) => (
                 : service.description}
         </p>
         <Button
+            asChild
             variant="outline"
             className="h-[70px] px-8 border-2 border-primary rounded-none font-inter text-xl font-medium hover:bg-primary hover:text-primary-foreground transition-colors duration-200"
         >
@@ -84,6 +85,7 @@ const ServicesList: React.FC<ServiceListProps> = ({ isHidden }) => {
                             viewport={{ once: true }}
                         >
                             <Button
+                                asChild
                                 variant="outline"
                                 className="h-[70px] px-8 border-2 border-primary rounded-none font-inter text-xl font-medium hover:bg-primary hover:text-primary-foreground transition-colors duration-200"
                             >

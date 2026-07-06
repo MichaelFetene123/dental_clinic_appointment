@@ -70,14 +70,15 @@ const GetStarted = () => {
           viewport={{ once: true }}
           className="mt-16 text-center"
         >
-          <Link href="/appointment">
-            <Button
-              variant="default"
-              className="px-8 py-6 font-inter text-lg font-medium rounded-lg hover:transform hover:scale-105 transition-all duration-300"
-            >
+          <Button
+            asChild
+            variant="default"
+            className="px-8 py-6 font-inter text-lg font-medium rounded-lg hover:transform hover:scale-105 transition-all duration-300"
+          >
+            <Link href="/appointment">
               Request Appointment
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </motion.div>
       </div>
     </div>

@@ -44,14 +44,15 @@ const YourDentist: React.FC<YourDentistProps> = ({ isHidden }) => {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                         >
-                            <Link href="/about">
-                                <Button
-                                    variant="default"
-                                    className='w-fit rounded-none shadow-md font-inter text-xl font-medium px-8 py-8 border-none mt-10 flex'
-                                >
+                            <Button
+                                asChild
+                                variant="default"
+                                className='w-fit rounded-none shadow-md font-inter text-xl font-medium px-8 py-8 border-none mt-10 flex'
+                            >
+                                <Link href="/about">
                                     About Us
-                                </Button>
-                            </Link>
+                                </Link>
+                            </Button>
                         </motion.div>
                     )}
                 </motion.div>

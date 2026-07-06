@@ -55,14 +55,15 @@ const ContactUs = () => {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                     >
-                        <Link href="/appointment">
-                            <Button
-                                variant="default"
-                                className="h-[50px] w-fit mt-5 px-8 rounded-none shadow-md font-inter text-xl font-medium"
-                            >
+                        <Button
+                            asChild
+                            variant="default"
+                            className="h-[50px] w-fit mt-5 px-8 rounded-none shadow-md font-inter text-xl font-medium"
+                        >
+                            <Link href="/appointment">
                                 Request Appointment
-                            </Button>
-                        </Link>
+                            </Link>
+                        </Button>
                     </motion.div>
                 </motion.div>
             </div>

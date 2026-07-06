@@ -76,14 +76,15 @@ const HeroSection: React.FC<HeroSectionProps> = ({
 
                             {/* CTA Button */}
                             <div className="w-fit">
-                                <Link href="/appointment">
-                                    <Button
-                                        variant="default"
-                                        className="h-[70px] mt-2 px-8 rounded-none shadow-md text-xl font-inter font-medium"
-                                    >
+                                <Button
+                                    asChild
+                                    variant="default"
+                                    className="h-[70px] mt-2 px-8 rounded-none shadow-md text-xl font-inter font-medium"
+                                >
+                                    <Link href="/appointment">
                                         {buttonText}
-                                    </Button>
-                                </Link>
+                                    </Link>
+                                </Button>
                             </div>
 
                             {/* Phone and Location */}

@@ -51,7 +51,7 @@ const  MeetOurTeam = () => {
         {teamMembers.map((member, index) => (
           <motion.div 
             key={index} 
-            className="p-5 flex flex-col items-center text-center"
+            className="bg-card border border-border rounded-3xl shadow-xl p-5 flex flex-col items-center text-center overflow-hidden"
             variants={{ hidden: { opacity: 0, y: 50 }, visible: { opacity: 1, y: 0 } }}
           >
             <Image
@@ -59,7 +59,7 @@ const  MeetOurTeam = () => {
               alt={member.name}
               width={300}
               height={120}
-              className=" md:w-full md:h-full object-cover mb-4"
+              className="md:w-full md:h-full object-cover mb-4 rounded-xl"
             />
             <h3 className="text-xl font-semibold text-foreground">{member.name}</h3>
             <p className="text-muted-foreground">{member.role}</p>

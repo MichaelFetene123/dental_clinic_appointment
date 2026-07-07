@@ -24,13 +24,12 @@ const AboutUs = () => {
                             initial={{ opacity: 0, y: 50 }}
                             animate={isInView ? { opacity: 1, y: 0 } : {}}
                             transition={{ duration: 0.6, delay: index * 0.2 }}
-                            className="w-full h-full"
+                            className="bg-card border border-border rounded-3xl shadow-xl p-4 flex justify-center items-center overflow-hidden w-full h-full"
                         >
                             <Image
                                 src={src}
                                 alt={`About Us ${index + 1}`}
-                                className={`w-full ${index < 2 ? "h-[300px]" : "h-full"} 
-                                    ${index === 0 ? "rounded-tl-3xl" : ""} ${index === 3 ? "rounded-br-3xl" : ""}`}
+                                className={`w-full ${index < 2 ? "h-[300px]" : "h-full"} object-cover rounded-xl `}
                                 width={200}
                                 height={250}
                             />

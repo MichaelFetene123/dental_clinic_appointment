@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import React from 'react'
 import { Button } from '../ui/button'
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '../ui/card'
 import { motion } from 'framer-motion'
 import Link from 'next/link';
 import { servicesData } from '@/lib/constants';
@@ -16,7 +17,7 @@ interface ServiceCardProps {
 
 const ServiceCard: React.FC<ServiceCardProps> = ({ service, index }) => (
     <motion.div
-        className='w-full sm:w-80 lg:w-96 mx-auto p-4 hover:bg-card hover:shadow-md rounded-t-xl cursor-pointer hover:-translate-y-6 transition-all duration-300 ease-in-out'
+        className='w-full sm:w-80 lg:w-96 mx-auto cursor-pointer hover:-translate-y-6 transition-transform duration-300 ease-in-out'
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{
@@ -26,29 +27,39 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, index }) => (
         }}
         viewport={{ once: true }}
     >
-        <Image
-            src={service.imageSrc}
-            alt={service.alt}
-            width={380}
-            height={400}
-            className='rounded-t-md w-full h-80 object-cover'
-        />
-        <h2 className='font-instrument-serif text-2xl font-normal text-foreground my-3'>
-            {service.name}
-        </h2>
-        <p className='font-inter text-base font-normal text-muted-foreground mb-6'>
-            {service.description.length > 200
-                ? `${service.description.substring(0, 200)}...`
-                : service.description}
-        </p>
-        <Button
-            asChild
-            variant="outline"
-            size="lg"
-            className="h-10 md:h-14 lg:h-16 px-4 md:px-6 lg:px-8 border-2 border-primary font-inter text-sm md:text-base lg:text-lg font-medium hover:bg-primary hover:text-primary-foreground transition-colors duration-200"
-        >
-            <Link href={'/appointment'}>Request Appointment</Link>
-        </Button>
+        <Card className="group h-full overflow-hidden hover:shadow-xl hover:shadow-primary/20 hover:border-primary/40 transition-all duration-300 flex flex-col">
+            <div className="overflow-hidden">
+                <Image
+                    src={service.imageSrc}
+                    alt={service.alt}
+                    width={380}
+                    height={400}
+                    className='w-full h-80 object-cover transition-transform duration-500 group-hover:scale-105'
+                />
+            </div>
+            <CardHeader>
+                <CardTitle className='font-instrument-serif text-2xl font-normal text-foreground'>
+                    {service.name}
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="flex-grow">
+                <CardDescription className='font-inter text-base font-normal text-muted-foreground'>
+                    {service.description.length > 200
+                        ? `${service.description.substring(0, 200)}...`
+                        : service.description}
+                </CardDescription>
+            </CardContent>
+            <CardFooter className='justify-center'>
+                <Button
+                    asChild
+                    variant="outline"
+                    size="lg"
+                    className="h-10 md:h-14 lg:h-16 px-4 md:px-6 lg:px-8 border-2 border-primary font-inter text-sm md:text-base lg:text-lg font-medium hover:bg-primary hover:text-primary-foreground transition-colors duration-200 just"
+                >
+                    <Link href={'/appointment'}>Request Appointment</Link>
+                </Button>
+            </CardFooter>
+        </Card>
     </motion.div>
 );
 

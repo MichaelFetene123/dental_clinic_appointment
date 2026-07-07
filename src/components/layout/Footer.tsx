@@ -29,7 +29,7 @@ const Footer = () => {
           <Button
             asChild
             variant="default"
-            className="inline-flex w-fit items-center gap-2 px-5 py-4 md:px-6 md:py-5 lg:px-8 lg:py-6 rounded-full font-inter text-sm md:text-base lg:text-lg font-medium bg-accent text-accent-foreground hover:bg-accent/90 transition-all duration-300"
+            className="inline-flex w-fit items-center gap-2 px-5 py-4 md:px-6 md:py-5 lg:px-8 lg:py-6 rounded-full font-inter text-sm md:text-base lg:text-lg font-medium bg-accent text-accent-foreground hover:bg-accent/90 dark:bg-white dark:text-primary dark:hover:bg-white/90 transition-all duration-300"
           >
             <Link href="/appointment">
               Book Appointment

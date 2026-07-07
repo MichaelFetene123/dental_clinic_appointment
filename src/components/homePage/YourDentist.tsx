@@ -41,8 +41,8 @@ const YourDentist: React.FC<YourDentistProps> = ({ isHidden }) => {
                     {/* Animated Button */}
                     {!isHidden && (
                         <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
                         >
                             <Button
                                 asChild
@@ -66,13 +66,15 @@ const YourDentist: React.FC<YourDentistProps> = ({ isHidden }) => {
                     transition={{ duration: 0.8, ease: "easeOut", delay: 0.5 }}
                     viewport={{ once: true }}
                 >
-                    <Image
-                        src={'/images/doc.png'}
-                        alt="Your Dentist"
-                        width={500}
-                        height={500}
-                        className='object-contain w-auto h-auto'
-                    />
+                    <div className='bg-card border border-border rounded-3xl shadow-xl p-6 md:p-8 mt-10 lg:mt-0 max-w-[380px] flex justify-center items-center overflow-hidden'>
+                        <Image
+                            src={'/images/doc.png'}
+                            alt="Your Dentist"
+                            width={400}
+                            height={400}
+                            className='object-contain w-full h-auto'
+                        />
+                    </div>
                 </motion.div>
             </motion.div>
         </div>

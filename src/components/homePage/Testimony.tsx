@@ -140,8 +140,8 @@ const Testimony = () => {
                         disabled={!canScrollLeft}
                         aria-label="Previous testimonial"
                         className='flex-none flex items-center justify-center w-10 h-10 rounded-full bg-background border border-border shadow-md hover:bg-muted hover:border-primary transition-colors duration-150 disabled:opacity-30 disabled:cursor-not-allowed'
-                        whileHover={{ scale: 1.08 }}
-                        whileTap={{ scale: 0.93 }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                         transition={{ duration: 0.15 }}
                     >
                         <ChevronLeft className='w-5 h-5 text-foreground' />
@@ -207,8 +207,8 @@ const Testimony = () => {
                         disabled={!canScrollRight}
                         aria-label="Next testimonial"
                         className='flex-none flex items-center justify-center w-10 h-10 rounded-full bg-background border border-border shadow-md hover:bg-muted hover:border-primary transition-colors duration-150 disabled:opacity-30 disabled:cursor-not-allowed'
-                        whileHover={{ scale: 1.08 }}
-                        whileTap={{ scale: 0.93 }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                         transition={{ duration: 0.15 }}
                     >
                         <ChevronRight className='w-5 h-5 text-foreground' />

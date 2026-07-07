@@ -33,7 +33,7 @@ const JoinUs = () => {
                 <motion.a
                     href="mailto:careers@villagedental.com"
                     className="text-xl font-semibold text-accent hover:text-accent/80 transition-all duration-300"
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={{ scale: 1.02 }}
                 >
                     careers@villagedental.com
                 </motion.a>

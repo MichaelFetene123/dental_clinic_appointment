@@ -56,8 +56,8 @@ const TreatmentSteps = ({ treatmentName }: Props) => {
                                     <motion.div 
                                         className={`absolute w-14 h-14 rounded-full bg-card shadow-lg top-0 flex items-center justify-center 
                                             ${index % 2 === 0 ? '-left-7' : '-right-7'}`}
-                                        whileHover={{ scale: 1.1 }}
-                                        whileTap={{ scale: 0.95 }}
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
                                     >
                                         <FaCheckCircle size={28} className="text-primary" />
                                     </motion.div>

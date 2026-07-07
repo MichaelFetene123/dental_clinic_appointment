@@ -17,15 +17,15 @@ interface ServiceCardProps {
 
 const ServiceCard: React.FC<ServiceCardProps> = ({ service, index }) => (
     <motion.div
-        className='w-full sm:w-80 lg:w-96 mx-auto cursor-pointer hover:-translate-y-6 transition-transform duration-300 ease-in-out'
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
+        className='w-full sm:w-80 lg:w-96 mx-auto cursor-pointer hover:-translate-y-2 transition-transform duration-300 ease-in-out'
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
         transition={{
             duration: 0.6,
-            delay: index * 0.5,
+            delay: index * 0.15,
             ease: 'easeOut',
         }}
-        viewport={{ once: true }}
+        viewport={{ once: true, margin: "-50px" }}
     >
         <Card className="group h-full overflow-hidden hover:shadow-xl hover:shadow-primary/20 hover:border-primary/40 transition-all duration-300 flex flex-col">
             <div className="overflow-hidden">
@@ -34,7 +34,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, index }) => (
                     alt={service.alt}
                     width={380}
                     height={400}
-                    className='w-full h-80 object-cover transition-transform duration-500 group-hover:scale-105'
+                    className='w-full h-80 object-cover transition-transform duration-500 group-hover:scale-[1.03]'
                 />
             </div>
             <CardHeader>
@@ -92,8 +92,8 @@ const ServicesList: React.FC<ServiceListProps> = ({ isHidden }) => {
                 {!isHidden && (
                     <div className='flex justify-center mt-12 mb-5'>
                         <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
                             viewport={{ once: true }}
                         >
                             <Button

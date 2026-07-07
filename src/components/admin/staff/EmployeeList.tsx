@@ -49,7 +49,7 @@ const EmployeeList = () => {
                 <Button
                     asChild
                     variant="default"
-                    className="font-semibold hover:scale-105 transition-all ease-in-out duration-300"
+                    className="font-semibold"
                 >
                     <Link href="/admin/staff">
                         All Staff <ArrowRight className="ml-2 h-4 w-4" />

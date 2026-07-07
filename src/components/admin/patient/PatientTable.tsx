@@ -482,7 +482,7 @@ export function DataTable({
                 {
                     isDashboard && <div className="flex justify-center items-center py-3 w-full">
                         <Button
-                            className="card-bg font-semibold hover:scale-105 transition-all ease-in-out duration-300"
+                            className="card-bg font-semibold"
                             onClick={() => { window.location.href = "admin/patients" }}
                         >
                             All Patients <ArrowRight />

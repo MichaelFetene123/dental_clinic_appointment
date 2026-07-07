@@ -22,7 +22,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({ service, index }) => (
         whileInView={{ opacity: 1, y: 0 }}
         transition={{
             duration: 0.6,
-            delay: index * 0.15,
+            delay: index * 0.10,
             ease: 'easeOut',
         }}
         viewport={{ once: true, margin: "-50px" }}

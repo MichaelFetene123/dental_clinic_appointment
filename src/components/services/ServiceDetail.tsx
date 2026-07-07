@@ -14,7 +14,7 @@ interface ServiceDetailProps {
 const ServiceDetail: React.FC<ServiceDetailProps> = ({ serviceName,imageSrc }) => {
     return (
         <div className="py-20 bg-background">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
                 <motion.div
                     className="flex flex-col lg:flex-row gap-12"
                     initial={{ opacity: 0, y: 20 }}
@@ -23,13 +23,13 @@ const ServiceDetail: React.FC<ServiceDetailProps> = ({ serviceName,imageSrc }) =
                     viewport={{ once: true }}
                 >
                     {/* Left side - Service Image */}
-                    <div className="lg:w-1/2">
+                    <div className="lg:w-1/2 self-center">
                         <Image
                             src={imageSrc}
                             alt={`${serviceName} Service`}
                             width={600}
                             height={400}
-                            className="rounded-lg shadow-lg w-full h-[400px] object-cover"
+                            className="rounded-xl shadow-lg w-full h-[400px] object-cover"
                         />
                     </div>
 

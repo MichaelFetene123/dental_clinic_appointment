@@ -23,7 +23,7 @@ const AllSolutions = () => {
           alt="All-in-one Dental Solutions"
           width={500}
           height={400}
-          className="w-full"
+          className="w-full rounded-xl"
         />
       </div>
     </div>

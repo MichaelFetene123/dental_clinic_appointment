@@ -1,43 +1,50 @@
+"use client";
+
 import React from 'react'
 import { Phone, Mail, MapPin, Calendar, ChevronRight } from 'lucide-react';
 import { FaFacebook, FaInstagram, FaTwitter } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
-
+import { usePathname } from 'next/navigation';
 
 const Footer = () => {
+  const pathname = usePathname();
+  const isAppointmentPage = pathname === '/appointment';
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="w-full bg-background">
       {/* Call to Action Section */}
-      <div
-        className="w-full py-20 text-white relative overflow-hidden"
-        style={{
-          backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80')",
-          backgroundSize: "cover",
-          backgroundPosition: "center"
-        }}
-      >
-        <div className="absolute inset-0 bg-primary/80" />
-        <div className="relative w-[90%] mx-auto px-4 text-center">
-          <h2 className="font-instrument-serif text-3xl md:text-5xl lg:text-7xl font-normal text-white mb-6">
-            Transform Your Smile Today
-          </h2>
-          <p className="font-inter text-base md:text-lg font-normal text-primary-foreground/80 max-w-2xl mx-auto mb-10">
-            Experience world-class dental care with our team of experts. Schedule your visit now and take the first step towards your perfect smile.
-          </p>
-          <Button
-            asChild
-            variant="default"
-            className="inline-flex w-fit items-center gap-2 px-5 py-4 md:px-6 md:py-5 lg:px-8 lg:py-6 rounded-full font-inter text-sm md:text-base lg:text-lg font-medium bg-accent text-accent-foreground hover:bg-accent/90 dark:bg-white dark:text-primary dark:hover:bg-white/90 transition-all duration-300"
-          >
-            <Link href="/appointment">
-              Book Appointment
-              <Calendar className="w-5 h-5" />
-            </Link>
-          </Button>
+      {!isAppointmentPage && (
+        <div
+          className="w-full py-20 text-white relative overflow-hidden"
+          style={{
+            backgroundImage: "linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&q=80')",
+            backgroundSize: "cover",
+            backgroundPosition: "center"
+          }}
+        >
+          <div className="absolute inset-0 bg-primary/80" />
+          <div className="relative w-[90%] mx-auto px-4 text-center">
+            <h2 className="font-instrument-serif text-3xl md:text-5xl lg:text-7xl font-normal text-white mb-6">
+              Transform Your Smile Today
+            </h2>
+            <p className="font-inter text-base md:text-lg font-normal text-primary-foreground/80 max-w-2xl mx-auto mb-10">
+              Experience world-class dental care with our team of experts. Schedule your visit now and take the first step towards your perfect smile.
+            </p>
+            <Button
+              asChild
+              variant="default"
+              className="inline-flex w-fit items-center gap-2 px-5 py-4 md:px-6 md:py-5 lg:px-8 lg:py-6 rounded-full font-inter text-sm md:text-base lg:text-lg font-medium bg-accent text-accent-foreground hover:bg-accent/90 dark:bg-white dark:text-primary dark:hover:bg-white/90 transition-all duration-300"
+            >
+              <Link href="/appointment">
+                Book Appointment
+                <Calendar className="w-5 h-5" />
+              </Link>
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Main Footer */}
       <footer className="bg-primary text-primary-foreground">

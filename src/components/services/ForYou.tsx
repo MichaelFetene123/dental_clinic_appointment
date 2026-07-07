@@ -7,22 +7,22 @@ const ForYou = () => {
     {
       title: "Transparent Pricing",
       description: `At ${CLINIC_NAME} Dental, the cost of cosmetic dentistry treatment is clear and affordable.`,
-      icon: <CheckCircle size={32} className="text-blue-600" />,
+      icon: <CheckCircle size={32} className="text-primary" />,
     },
     {
       title: "A Dental Spa",
       description: "Essential oils, a warm compress — time to relax and have some fun.",
-      icon: <Smile size={32} className="text-blue-600" />,
+      icon: <Smile size={32} className="text-primary" />,
     },
     {
       title: "Efficient Care",
       description: "We know you’re busy. Your time with us will be efficient and well worth it.",
-      icon: <Clock size={32} className="text-blue-600" />,
+      icon: <Clock size={32} className="text-primary" />,
     },
     {
       title: "Safety First",
       description: "Medical-grade sterilization, enhanced PPE, and more to keep you safe.",
-      icon: <Shield size={32} className="text-blue-600" />,
+      icon: <Shield size={32} className="text-primary" />,
     },
   ];
 
@@ -34,7 +34,7 @@ const ForYou = () => {
           {items.map((item, index) => (
             <div
               key={index}
-              className="border border-border rounded-lg p-6 flex flex-col items-center text-center bg-muted/50"
+              className="bg-card border border-border rounded-3xl shadow-xl p-8 flex flex-col items-center text-center overflow-hidden"
             >
               {item.icon}
               <h3 className="text-xl font-semibold text-foreground mt-4">{item.title}</h3>

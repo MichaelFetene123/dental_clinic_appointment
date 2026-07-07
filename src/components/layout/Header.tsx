@@ -94,10 +94,14 @@ const navigation = [
 
 ]
 
+import { usePathname } from 'next/navigation';
+
 const Header = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
     const [openSections, setOpenSections] = React.useState<Record<string, boolean>>({});
     const [isScrolled, setIsScrolled] = React.useState(false);
+    const pathname = usePathname();
+    const isContactPage = pathname === '/contact';
 
     const toggleSection = (section: string) => {
         setOpenSections((prev) => ({

@@ -16,7 +16,7 @@ const TreatmentSteps = ({ treatmentName }: Props) => {
     });
 
     return (
-        <div className="py-20 bg-gradient-to-b from-gray-50 to-white" ref={containerRef}>
+        <div className="py-20 bg-background" ref={containerRef}>
             <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
                 <motion.h2
                     initial={{ opacity: 0, y: 50 }}

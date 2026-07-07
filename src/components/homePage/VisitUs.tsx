@@ -41,7 +41,7 @@ const contactDetails = [
 
 const VisitUs = () => {
   return (
-    <div className='w-full py-14 flex items-center'>
+    <div className='w-full py-14 flex items-center '>
       <div className='w-[90%] mx-auto h-full flex justify-between my-auto pt-10'>
 
         {/* Left Section - Contact Information */}

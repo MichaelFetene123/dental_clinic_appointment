@@ -127,7 +127,7 @@ const Header = () => {
     return (
         <header className="fixed w-screen inset-x-0 top-0 z-50 transition-all duration-500">
             <nav aria-label="Global" className="flex flex-col">
-                <div className={`flex items-center justify-between transition-all duration-500 shadow-sm ${isScrolled ? "bg-background shadow-sm" : "bg-transparent"} px-8 lg:px-14 pb-1 pt-2`}>
+                <div className={`flex items-center justify-between transition-all duration-500 shadow-sm ${isScrolled || isContactPage ? "bg-background shadow-sm" : "bg-transparent"} px-8 lg:px-14 pb-1 pt-2`}>
                     {/* Logo */}
                     <Link href={"/"} className="flex items-center gap-2">
                         <div
@@ -141,7 +141,7 @@ const Header = () => {
                             }}
                         ></div>
                         <h1 className="font-serif text-xl md:text-2xl font-semibold flex flex-col text-primary">
-                            <span className={`text-2xl md:text-3xl transition-colors duration-300 ${isScrolled ? "text-secondary" : "text-white"}`}>Classic</span>{" "}
+                            <span className={`text-2xl md:text-3xl transition-colors duration-300 ${isScrolled || isContactPage ? "text-secondary" : "text-white"}`}>Classic</span>{" "}
                             Specialty Dental Center
                         </h1>
                     </Link>
@@ -181,7 +181,7 @@ const Header = () => {
                                 <div key={item.name} className="group inline-block relative">
                                     <Link
                                         href={item.href}
-                                        className={`${isScrolled ? "text-foreground" : "text-white"} hover:text-primary cursor-pointer transition-colors duration-200`}
+                                        className={`${isScrolled || isContactPage  ?  "text-foreground" : "text-white"} hover:text-primary cursor-pointer transition-colors duration-200`}
                                     >
                                         {item.name}
                                     </Link>
@@ -229,7 +229,7 @@ const Header = () => {
                                 <Link
                                     key={item.name}
                                     href={item.href}
-                                    className={`${isScrolled ? "text-foreground" : "text-white"} hover:text-primary transition-colors duration-200`}
+                                    className={`${isScrolled || isContactPage  ? "text-foreground" : "text-white"} hover:text-primary transition-colors duration-200`}
                                 >
                                     {item.name}
                                 </Link>

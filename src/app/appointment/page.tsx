@@ -15,7 +15,6 @@ import { axiosInstance } from '@/utils/axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-
 const formSchema = z.object({
     firstName: z.string().min(2, 'First name is required'),
     lastName: z.string().min(2, 'Last name is required'),
@@ -102,19 +101,28 @@ const Page = () => {
 
     const [state, formAction, pending] = useActionState(submitAction, {} as FormState);
 
+    // Local errors state to allow clearing errors on user input
+    const [localErrors, setLocalErrors] = useState<Record<string, string>>({});
+
+    useEffect(() => {
+        setLocalErrors(state?.errors || {});
+    }, [state?.errors]);
+
+    // Clears the error for a specific field AND the general server error
+    const clearError = (field: string) => {
+        setLocalErrors(prev => {
+            if (!prev[field] && !prev._form) return prev;
+            const newErrors = { ...prev };
+            delete newErrors[field];
+            delete newErrors._form;
+            return newErrors;
+        });
+    };
+
     return (
         <Layout>
             <div className=' flex justify-center items-center'>
                 <Card className='flex max-w-6xl justify-center items-center h-max my-28 relative'>
-                    {/* <div className='bg-primary border-none rounded-none  shadow-none min-h-screen w-[30%] flex justify-center items-center'>
-                        <Image 
-                        src={"/images/logo/classic_logo.png"}
-                        alt='logo'
-                        width={300}
-                        height={400}
-                        />
-
-                    </div> */}
                     <Card className='border-none w-[90%] shadow-none '>
                         <CardHeader>
                             <h1 className='text-2xl font-bold text-center'>Appointment</h1>
@@ -122,66 +130,93 @@ const Page = () => {
                         </CardHeader>
                         <CardContent>
                             <form action={formAction} className='grid gap-4'>
+                                {/* Display Global/Server Error if it exists */}
+                                {localErrors?._form && (
+                                    <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-sm text-center">
+                                        {localErrors._form}
+                                    </div>
+                                )}
+
                                 <div className='grid md:grid-cols-2 gap-6'>
-                                    <Field data-invalid={!!state?.errors?.firstName}>
+                                    <Field data-invalid={!!localErrors?.firstName}>
                                         <FieldLabel htmlFor="firstName">First Name</FieldLabel>
-                                        <Input id="firstName" name="firstName" placeholder='Enter your first name' disabled={pending} />
-                                        {state?.errors?.firstName && <FieldError>{state.errors.firstName}</FieldError>}
+                                        <Input 
+                                            id="firstName" 
+                                            name="firstName" 
+                                            placeholder='Enter your first name' 
+                                            disabled={pending} 
+                                            onChange={() => clearError('firstName')}
+                                        />
+                                        {localErrors?.firstName && <FieldError>{localErrors.firstName}</FieldError>}
                                     </Field>
-                                    <Field data-invalid={!!state?.errors?.lastName}>
+                                    <Field data-invalid={!!localErrors?.lastName}>
                                         <FieldLabel htmlFor="lastName">Last Name</FieldLabel>
-                                        <Input id="lastName" name="lastName" placeholder='Enter your last name' disabled={pending} />
-                                        {state?.errors?.lastName && <FieldError>{state.errors.lastName}</FieldError>}
+                                        <Input 
+                                            id="lastName" 
+                                            name="lastName" 
+                                            placeholder='Enter your last name' 
+                                            disabled={pending} 
+                                            onChange={() => clearError('lastName')}
+                                        />
+                                        {localErrors?.lastName && <FieldError>{localErrors.lastName}</FieldError>}
                                     </Field>
 
-                                    <Field data-invalid={!!state?.errors?.phoneNumber}>
+                                    <Field data-invalid={!!localErrors?.phoneNumber}>
                                         <FieldLabel htmlFor="phoneNumber">Phone</FieldLabel>
                                         <PhoneInput
                                             id="phoneNumber"
                                             placeholder='Enter your phone number'
                                             value={phoneNumber}
-                                            onChange={(value) => setPhoneNumber(value || '')}
+                                            onChange={(value) => {
+                                                setPhoneNumber(value || '');
+                                                clearError('phoneNumber');
+                                            }}
                                             disabled={pending}
                                         />
                                         <input type="hidden" name="phoneNumber" value={phoneNumber} />
-                                        {state?.errors?.phoneNumber && <FieldError>{state.errors.phoneNumber}</FieldError>}
+                                        {localErrors?.phoneNumber && <FieldError>{localErrors.phoneNumber}</FieldError>}
                                     </Field>
 
-                                    <Field data-invalid={!!state?.errors?.email}>
+                                    <Field data-invalid={!!localErrors?.email}>
                                         <FieldLabel htmlFor="email">Email</FieldLabel>
-                                        <Input id="email" name="email" type="email" placeholder='Enter your email' disabled={pending} />
-                                        {state?.errors?.email && <FieldError>{state.errors.email}</FieldError>}
+                                        <Input 
+                                            id="email" 
+                                            name="email" 
+                                            type="email" 
+                                            placeholder='Enter your email' 
+                                            disabled={pending} 
+                                            onChange={() => clearError('email')}
+                                        />
+                                        {localErrors?.email && <FieldError>{localErrors.email}</FieldError>}
                                     </Field>
                                 </div>
 
-                                <Field data-invalid={!!state?.errors?.requestedDate} className='w-full flex flex-col justify-center'>
+                                <Field data-invalid={!!localErrors?.requestedDate} className='w-full flex flex-col justify-center'>
                                     <FieldLabel className='text-primary mt-3 self-center text-center text-lg font-subheading'>Pick your suitable date </FieldLabel>
                                     <Calendar
                                         mode="single"
                                         selected={selectedDate}
                                         onSelect={(date) => {
                                             setSelectedDate(date);
+                                            clearError('requestedDate');
                                         }}
-                                        className="h-full w-full flex"
-                                        classNames={{
-                                            months: "flex w-full flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0 flex-1",
-                                            month: "space-y-4 w-full flex flex-col",
-                                            month_grid: "w-full h-full border-collapse space-y-1",
-                                            week: "w-full mt-2",
-                                        }}
+                                        className="mx-auto rounded-lg border"
                                     />
                                     <input type="hidden" name="requestedDate" value={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : ''} />
-                                    {state?.errors?.requestedDate && <FieldError>{state.errors.requestedDate}</FieldError>}
+                                    {localErrors?.requestedDate && <FieldError>{localErrors.requestedDate}</FieldError>}
                                 </Field>
 
-                                <Field data-invalid={!!state?.errors?.requestedTime} className='w-full flex flex-col justify-center mb-10'>
+                                <Field data-invalid={!!localErrors?.requestedTime} className='w-full flex flex-col justify-center mb-10'>
                                     <FieldLabel className='text-primary self-center text-center text-lg font-subheading'>Pick available time </FieldLabel>
                                     <div className='flex flex-wrap gap-3 mb-10'>
                                         {timeSlots.map((slot, index) => (
                                             <Badge
                                                 key={`time-slot-${index}`}
                                                 variant={selectedTime === slot ? 'default' : 'outline'}
-                                                onClick={() => setSelectedTime(slot)}
+                                                onClick={() => {
+                                                    setSelectedTime(slot);
+                                                    clearError('requestedTime');
+                                                }}
                                                 className='cursor-pointer hover:bg-secondary hover:text-secondary-foreground font-normal text-base p-3'
                                             >
                                                 {slot}
@@ -189,7 +224,7 @@ const Page = () => {
                                         ))}
                                     </div>
                                     <input type="hidden" name="requestedTime" value={selectedTime} />
-                                    {state?.errors?.requestedTime && <FieldError>{state.errors.requestedTime}</FieldError>}
+                                    {localErrors?.requestedTime && <FieldError>{localErrors.requestedTime}</FieldError>}
                                 </Field>
 
                                 <Button type='submit' disabled={pending} className='w-full h-[60px] text-lg font-semibold'>

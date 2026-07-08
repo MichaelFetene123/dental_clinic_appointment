@@ -145,7 +145,7 @@ export default function Home() {
     };
 
     const renderDayView = () => (
-        <div className="grid grid-cols-2  ">
+        <div className="grid grid-cols-[80px_1fr]">
             <div className="sticky left-0 bg-background">
                 <div className="h-12 border-b border-border"></div>
                 {timeSlots.map((time) => (
@@ -201,7 +201,7 @@ export default function Home() {
     );
 
     const renderWeekView = () => (
-        <div className="grid grid-cols-8 divide-x divide-border">
+        <div className="grid grid-cols-[80px_repeat(7,1fr)] divide-x divide-border">
             <div className="sticky left-0 bg-background">
                 <div className="h-12 border-b border-border"></div>
                 {timeSlots.map((time) => (
@@ -309,7 +309,7 @@ export default function Home() {
 
     return (
         <div className="min-h-screen bg-background p-4 md:p-8">
-            <div className="max-w-[1600px] mx-auto">
+            <div className="max-w-7xl mx-auto">
                 <div className="mb-8">
                     <h1 className="text-4xl font-bold text-foreground">Dental Clinic Schedule</h1>
                     <p className="text-muted-foreground mt-2">Manage your appointments efficiently</p>
@@ -365,7 +365,7 @@ export default function Home() {
 
                 {/* New Appointment Dialog */}
                 <Dialog open={!!selectedSlot} onOpenChange={() => setSelectedSlot(null)}>
-                    <DialogContent className="sm:max-w-[425px]">
+                    <DialogContent className="sm:max-w-[550px]">
                         <DialogHeader>
                             <DialogTitle>New Appointment</DialogTitle>
                         </DialogHeader>
@@ -381,7 +381,7 @@ export default function Home() {
                                     <Label>Patient Name</Label>
                                     <Input placeholder="Enter patient name" />
                                 </div>
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label>Phone</Label>
                                         <Input type="tel" placeholder="+1234567890" />

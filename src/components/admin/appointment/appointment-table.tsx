@@ -16,6 +16,17 @@ import {
 import { ArrowUpDown, Eye, Edit, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import {
@@ -184,16 +195,34 @@ export const columns: ColumnDef<Appointment>[] = [
                     <Button size="sm" variant="outline" className="text-primary hover:text-primary/90" onClick={() => console.log("Editing", appointment.id)}>
                         <Edit className="w-4 h-4 mr-1" /> Update
                     </Button>
-                    <Button size="sm" variant="destructive" onClick={() => console.log("Deleting", appointment.id)}>
-                        <Trash2 className="w-4 h-4 mr-1" /> Delete
-                    </Button>
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button size="sm" variant="outline" className="text-destructive border-destructive hover:text-destructive  transition-colors">
+                                <Trash2 className="w-4 h-4 mr-1" /> Delete
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Appointment</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Are you sure you want to delete this appointment? This action cannot be undone.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => console.log("Deleting", appointment.id)} className="bg-transparent border border-destructive text-destructive hover:bg-red-500/10 hover:text-destructive transition-colors">
+                                    Delete
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 </div>
             )
         },
     },
 ]
 
-export function AppointmentTable() {
+export function     AppointmentTable() {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})

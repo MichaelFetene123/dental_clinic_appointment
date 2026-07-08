@@ -46,12 +46,12 @@ const Page = () => {
     ];
 
     return (
-        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
-            <div className='flex justify-between'>
+        <div className="flex flex-col w-full min-w-0 gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
+            <div className='flex flex-col sm:flex-row justify-between gap-4 items-start sm:items-center'>
                 <h1 className='text-2xl font-semibold'>Appointments</h1>
                 <Button
                     size="lg"
-                    className="font-semibold"
+                    className="font-semibold w-full sm:w-auto"
                     onClick={() => setShowForm(!showForm)} // Toggle form visibility
                 >
                     {showForm ? "Close Form" : "Add Appointment"}
@@ -60,7 +60,7 @@ const Page = () => {
 
             <SectionCards data={cardData} />
 
-            <AppointmentCalendar/>
+            <AppointmentCalendar />
 
             {/* Tab Navigation */}
             <div className="flex gap-4 border-b-2 py-2 px-4">

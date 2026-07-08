@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarCheck2, ChevronLeft, ChevronRight, Clock, Phone, User, Calendar, Mail } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
@@ -146,7 +146,7 @@ export default function Home() {
 
     const renderDayView = () => (
         <div className="grid grid-cols-[80px_1fr]">
-            <div className="sticky left-0 bg-background">
+            <div className="sticky left-0 z-10 bg-background border-r border-border shadow-[1px_0_0_0_hsl(var(--border))]">
                 <div className="h-12 border-b border-border"></div>
                 {timeSlots.map((time) => (
                     <div key={time} className="h-12 border-b border-border px-2 py-1">
@@ -202,7 +202,7 @@ export default function Home() {
 
     const renderWeekView = () => (
         <div className="grid grid-cols-[80px_repeat(7,1fr)] divide-x divide-border">
-            <div className="sticky left-0 bg-background">
+            <div className="sticky left-0 z-10 bg-background border-r border-border shadow-[1px_0_0_0_hsl(var(--border))]">
                 <div className="h-12 border-b border-border"></div>
                 {timeSlots.map((time) => (
                     <div key={time} className="h-12 border-b border-border px-2 py-1">
@@ -259,7 +259,7 @@ export default function Home() {
     );
 
     const renderMonthView = () => (
-        <div className="grid grid-cols-7 gap-px bg-border">
+        <div className="grid grid-cols-7 gap-px bg-border min-w-[700px]">
             {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => (
                 <div key={day} className="bg-muted/50 p-2 text-center text-xs font-medium">
                     {day}
@@ -308,57 +308,58 @@ export default function Home() {
     );
 
     return (
-        <div className="min-h-screen bg-background p-4 md:p-8">
-            <div className="max-w-7xl mx-auto">
-                <div className="mb-8">
+        <div className="w-full min-w-0 bg-background">
+            <div className="w-full min-w-0 max-w-7xl mx-auto">
+                <div className="mb-6">
                     <h1 className="text-4xl font-bold text-foreground">Dental Clinic Schedule</h1>
                     <p className="text-muted-foreground mt-2">Manage your appointments efficiently</p>
                 </div>
 
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-                        <div className="flex items-center gap-4">
+                <Card className="w-full overflow-hidden">
+                    <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0 pb-4">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
                             <CardTitle className="flex items-center gap-2">
                                 <CalendarCheck2 className="h-5 w-5" />
                                 Schedule
                             </CardTitle>
-                            <Tabs value={view} onValueChange={setView} className="ml-4">
-                                <TabsList>
+                            <Tabs value={view} onValueChange={setView} className="w-full sm:w-auto sm:ml-4">
+                                <TabsList className="grid w-full grid-cols-3 sm:flex">
                                     <TabsTrigger value="day">Day</TabsTrigger>
                                     <TabsTrigger value="week">Week</TabsTrigger>
                                     <TabsTrigger value="month">Month</TabsTrigger>
                                 </TabsList>
                             </Tabs>
                         </div>
-                        <div className="flex items-center gap-4">
-                            <Button variant="outline" size="icon" onClick={handlePrevious}>
+                        <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto mt-4 sm:mt-0">
+                            <Button variant="outline" size="icon" onClick={handlePrevious} className="shrink-0">
                                 <ChevronLeft className="h-4 w-4" />
                             </Button>
-                            <span className="font-medium">
+                            <span className="font-medium text-sm sm:text-base whitespace-nowrap text-center flex-1 sm:flex-none">
                                 {view === "month"
                                     ? format(currentDate, "MMMM yyyy")
                                     : view === "week"
                                         ? `${format(weekStart, "MMM d")} - ${format(addDays(weekStart, 6), "MMM d, yyyy")}`
                                         : format(currentDate, "MMMM d, yyyy")}
                             </span>
-                            <Button variant="outline" size="icon" onClick={handleNext}>
+                            <Button variant="outline" size="icon" onClick={handleNext} className="shrink-0">
                                 <ChevronRight className="h-4 w-4" />
                             </Button>
                         </div>
                     </CardHeader>
-                    <CardContent>
-                        <ScrollArea className="h-[800px] rounded-md border">
-                            <Tabs value={view}>
-                                <TabsContent value="day" className="m-0">
+                    <CardContent className="p-0 sm:p-6 sm:pt-0">
+                        <ScrollArea className="h-[600px] md:h-[800px] w-full rounded-none sm:rounded-md border-y sm:border">
+                            <Tabs value={view} className="w-full">
+                                <TabsContent value="day" className="m-0 min-w-[300px]">
                                     {renderDayView()}
                                 </TabsContent>
-                                <TabsContent value="week" className="m-0">
+                                <TabsContent value="week" className="m-0 min-w-[1340px]">
                                     {renderWeekView()}
                                 </TabsContent>
-                                <TabsContent value="month" className="m-0">
+                                <TabsContent value="month" className="m-0 min-w-[700px]">
                                     {renderMonthView()}
                                 </TabsContent>
                             </Tabs>
+                            <ScrollBar orientation="horizontal" />
                         </ScrollArea>
                     </CardContent>
                 </Card>

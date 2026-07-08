@@ -74,18 +74,7 @@ import { Separator } from "@/components/ui/separator"
 import Image from "next/image"
 import Link from "next/link"
 
-export const schema = z.object({
-    id: z.number(),
-    name: z.string(),
-    email: z.string(),
-    header: z.string(),
-    type: z.string(),
-    status: z.string(),
-    target: z.string(),
-    limit: z.string(),
-    reviewer: z.string(),
-    phone: z.string(),
-})
+import { patientTableSchema as schema } from '@/lib/validationSchema';
 
 export const columns: ColumnDef<z.infer<typeof schema>>[] = [
     {

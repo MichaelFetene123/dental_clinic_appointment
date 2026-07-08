@@ -30,39 +30,7 @@ const sections = [
   { title: "Dental Info", icon: <FaTooth size={24} /> }
 ];
 
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "Full Name must be at least 2 characters.",
-  }),
-  email: z.string().email({
-    message: "Invalid email address.",
-  }),
-  password: z.string(),
-  address: z.string(),
-  role: z.enum(["ADMIN", "DOCTOR", "PATIENT", "RECEPTIONIST"]),
-  phone: z.string(),
-  gender: z.enum(["MALE", "FEMALE", "OTHER"]),
-  dateOfBirth: z.string(),
-  bloodType: z.enum(["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-", "UNKNOWN"]),
-  medicalHistory: z.string(),
-  emergencyContactName: z.string(),
-  emergencyContactPhone: z.string(),
-  insuranceProvider: z.string(),
-  insuranceNumber: z.string(),
-  height: z.string(),
-  weight: z.string(),
-  bloodPressure: z.string(),
-  heartRate: z.string(),
-  bloodSugarLevel: z.string(),
-  allergies: z.string(),
-  medications: z.string(),
-  chronicDiseases: z.string(),
-  lastDentalVisit: z.string(),
-  gumCondition: z.enum(["Healthy", "Gingivitis", "Periodontitis"]),
-  toothDecay: z.string(),
-  missingTeethCount: z.string(),
-  prostheticsUsed: z.string(),
-});
+import { patientFormSchema as formSchema } from '@/lib/validationSchema';
 
 // Fields required per step for validation
 const stepFields: Record<number, string[]> = {

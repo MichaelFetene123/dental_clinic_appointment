@@ -26,15 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { IoClose } from "react-icons/io5";
 import { Separator } from "@/components/ui/separator";
 
-const appointmentSchema = z.object({
-    name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-    email: z.string().email({ message: "Invalid email address." }),
-    phone: z.string().min(10, { message: "Phone number must be at least 10 digits." }),
-    date: z.string().min(1, { message: "Date is required." }),
-    time: z.string().min(1, { message: "Time is required." }),
-    reason: z.string().min(5, { message: "Reason must be at least 5 characters." }),
-    notes: z.string().optional(),
-});
+import { appointmentFormSchema as appointmentSchema } from '@/lib/validationSchema';
 
 type FormState = {
     errors?: Record<string, string>;

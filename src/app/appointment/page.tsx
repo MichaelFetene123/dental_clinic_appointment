@@ -15,14 +15,8 @@ import { axiosInstance } from '@/utils/axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const formSchema = z.object({
-    firstName: z.string().min(2, 'First name is required'),
-    lastName: z.string().min(2, 'Last name is required'),
-    phoneNumber: z.string().min(10, 'Phone number is required'),
-    email: z.string().email('Invalid email'),
-    requestedDate: z.string().min(1, 'Date is required'),
-    requestedTime: z.string().min(1, 'Time is required')
-});
+import { appointmentPageSchema as formSchema } from '@/lib/validationSchema';
+
 
 type FormState = {
     errors?: Record<string, string>;

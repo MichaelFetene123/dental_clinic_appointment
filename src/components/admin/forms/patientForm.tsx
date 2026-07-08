@@ -15,7 +15,7 @@ import { IoClose } from "react-icons/io5";
 import { format } from "date-fns";
 import { z } from "zod";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
-import { useToast } from "@/hooks/use-toast"
+import { toast } from "sonner"
 import { FaTooth } from "react-icons/fa";
 
 interface PatientFormProps {
@@ -54,7 +54,6 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
   const [gumCondition, setGumCondition] = useState("Healthy");
   const [stepErrors, setStepErrors] = useState<Record<string, string>>({});
   const formRef = useRef<HTMLFormElement>(null);
-  const { toast } = useToast()
 
   async function submitAction(_prevState: FormState, formData: FormData): Promise<FormState> {
     const rawData: Record<string, string> = {};
@@ -80,9 +79,8 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
     }
 
     console.log("Form submitted", result.data);
-    toast({
-      title: "Scheduled: Catch up",
-      description: "Friday, February 10, 2023 at 5:57 PM",
+    toast.success("Patient submitted", {
+      description: "The patient record has been saved successfully.",
     });
     return { success: true };
   }

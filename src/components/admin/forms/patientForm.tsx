@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -8,22 +10,14 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { ClipboardIcon, PhoneCall, User } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useRef, useActionState } from "react";
 import { IoClose } from "react-icons/io5";
 import { format } from "date-fns";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { useToast } from "@/hooks/use-toast"
 import { FaTooth } from "react-icons/fa";
+
 interface PatientFormProps {
   show: boolean;
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
@@ -70,60 +64,104 @@ const formSchema = z.object({
   prostheticsUsed: z.string(),
 });
 
+// Fields required per step for validation
+const stepFields: Record<number, string[]> = {
+  0: ["name", "email", "phone", "address", "gender", "dateOfBirth", "bloodType"],
+  1: ["medicalHistory", "height", "weight", "bloodPressure", "heartRate", "bloodSugarLevel", "allergies", "medications", "chronicDiseases"],
+  2: ["emergencyContactName", "emergencyContactPhone", "insuranceProvider", "insuranceNumber"],
+  3: ["lastDentalVisit", "gumCondition", "toothDecay", "missingTeethCount", "prostheticsUsed"],
+};
+
+type FormState = {
+  errors?: Record<string, string>;
+  success?: boolean;
+};
+
 const PatientForm = ({ show, setShow }: PatientFormProps) => {
   const [step, setStep] = useState(0);
   const [date, setDate] = React.useState<Date | undefined>(new Date());
   const [lastVisitDate, setLastVisitDate] = React.useState<Date | undefined>(new Date());
+  const [gender, setGender] = useState("MALE");
+  const [bloodType, setBloodType] = useState("UNKNOWN");
+  const [gumCondition, setGumCondition] = useState("Healthy");
+  const [stepErrors, setStepErrors] = useState<Record<string, string>>({});
+  const formRef = useRef<HTMLFormElement>(null);
   const { toast } = useToast()
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-      address: "",
-      role: "PATIENT", // Default role
-      phone: "",
-      gender: "MALE",
-      dateOfBirth: "",
-      bloodType: "UNKNOWN", // Default blood type
-      medicalHistory: "",
-      emergencyContactName: "",
-      emergencyContactPhone: "",
-      insuranceProvider: "",
-      insuranceNumber: "",
-      height: "",
-      weight: "",
-      bloodPressure: "",
-      heartRate: "",
-      bloodSugarLevel: "",
-      allergies: "",
-      medications: "",
-      chronicDiseases: "",
-      lastDentalVisit: "",
-      gumCondition: "Healthy",
-      toothDecay: "",
-      missingTeethCount: "",
-      prostheticsUsed: "",
-    },
-  });
+  async function submitAction(_prevState: FormState, formData: FormData): Promise<FormState> {
+    const rawData: Record<string, string> = {};
+    formData.forEach((value, key) => {
+      rawData[key] = value as string;
+    });
 
-  const handleNext = () => {
-    form.handleSubmit((data) => {
-      if (step < sections.length - 1) {
-        setStep((prev) => Math.min(prev + 1, sections.length - 1));
-      } else {
-        console.log("Form submitted", data);
-        toast({
-          title: "Scheduled: Catch up",
-          description: "Friday, February 10, 2023 at 5:57 PM",
-        })
+    // Add defaults for fields not in form
+    rawData.role = rawData.role || "PATIENT";
+    rawData.password = rawData.password || "";
+
+    const result = formSchema.safeParse(rawData);
+
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      for (const issue of result.error.issues) {
+        const fieldName = issue.path[0] as string;
+        if (!fieldErrors[fieldName]) {
+          fieldErrors[fieldName] = issue.message;
+        }
       }
-    })();
+      return { errors: fieldErrors };
+    }
+
+    console.log("Form submitted", result.data);
+    toast({
+      title: "Scheduled: Catch up",
+      description: "Friday, February 10, 2023 at 5:57 PM",
+    });
+    return { success: true };
+  }
+
+  const [state, formAction, pending] = useActionState(submitAction, {} as FormState);
+
+  const validateCurrentStep = (): boolean => {
+    if (!formRef.current) return false;
+
+    const formData = new FormData(formRef.current);
+    const errors: Record<string, string> = {};
+    const fields = stepFields[step] || [];
+
+    for (const field of fields) {
+      const value = formData.get(field) as string;
+      // Use zod shape to validate individual fields if possible
+      const fieldSchema = formSchema.shape[field as keyof typeof formSchema.shape];
+      if (fieldSchema) {
+        const result = fieldSchema.safeParse(value);
+        if (!result.success) {
+          errors[field] = result.error.issues[0]?.message || "Invalid value";
+        }
+      }
+    }
+
+    setStepErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
-  const handlePrev = () => setStep((prev) => Math.max(prev - 1, 0));
+  const handleNext = () => {
+    if (step < sections.length - 1) {
+      if (validateCurrentStep()) {
+        setStep((prev) => Math.min(prev + 1, sections.length - 1));
+      }
+    } else {
+      // On last step, submit the form
+      formRef.current?.requestSubmit();
+    }
+  };
+
+  const handlePrev = () => {
+    setStepErrors({});
+    setStep((prev) => Math.max(prev - 1, 0));
+  };
+
+  // Merge step-level validation errors with action state errors
+  const errors = { ...state?.errors, ...stepErrors };
 
   if (!show) return null;
 
@@ -185,458 +223,275 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
 
         {/* Form Sections */}
         <CardContent className={" overflow-y-auto"}>
-          <Form {...form}>
+          <form ref={formRef} action={formAction}>
+            {/* Hidden inputs for controlled components */}
+            <input type="hidden" name="role" value="PATIENT" />
+            <input type="hidden" name="password" value="" />
+            <input type="hidden" name="gender" value={gender} />
+            <input type="hidden" name="dateOfBirth" value={date ? format(date, "yyyy-MM-dd") : ""} />
+            <input type="hidden" name="bloodType" value={bloodType} />
+            <input type="hidden" name="lastDentalVisit" value={lastVisitDate ? format(lastVisitDate, "yyyy-MM-dd") : ""} />
+            <input type="hidden" name="gumCondition" value={gumCondition} />
+
             {step === 0 && (
               <div className="grid gap-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Full Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Full Name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Email" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <Field data-invalid={!!errors?.name}>
+                    <FieldLabel htmlFor="name">Full Name</FieldLabel>
+                    <Input id="name" name="name" placeholder="Full Name" disabled={pending} />
+                    {errors?.name && <FieldError>{errors.name}</FieldError>}
+                  </Field>
+                  <Field data-invalid={!!errors?.email}>
+                    <FieldLabel htmlFor="email">Email</FieldLabel>
+                    <Input id="email" name="email" placeholder="Email" disabled={pending} />
+                    {errors?.email && <FieldError>{errors.email}</FieldError>}
+                  </Field>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Phone Number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="address"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Address</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Address" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <Field data-invalid={!!errors?.phone}>
+                    <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
+                    <Input id="phone" name="phone" placeholder="Phone Number" disabled={pending} />
+                    {errors?.phone && <FieldError>{errors.phone}</FieldError>}
+                  </Field>
+                  <Field data-invalid={!!errors?.address}>
+                    <FieldLabel htmlFor="address">Address</FieldLabel>
+                    <Input id="address" name="address" placeholder="Address" disabled={pending} />
+                    {errors?.address && <FieldError>{errors.address}</FieldError>}
+                  </Field>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="gender"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Gender</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select Gender" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="MALE">Male</SelectItem>
-                            <SelectItem value="FEMALE">Female</SelectItem>
-                            <SelectItem value="OTHER">Other</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="dateOfBirth"
-                    render={() => (
-                      <FormItem>
-                        <FormLabel>Date of Birth</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-full justify-start text-left font-normal",
-                                !date && "text-muted-foreground"
-                              )}
-                            >
-                              {date ? format(date, "PPP") : <span>Pick a date</span>}
-                            </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                              mode="single"
-                              selected={date}
-                              onSelect={setDate}
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <Field data-invalid={!!errors?.gender}>
+                    <FieldLabel htmlFor="gender">Gender</FieldLabel>
+                    <Select onValueChange={(value) => setGender(value)} defaultValue={gender}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Gender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="MALE">Male</SelectItem>
+                        <SelectItem value="FEMALE">Female</SelectItem>
+                        <SelectItem value="OTHER">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors?.gender && <FieldError>{errors.gender}</FieldError>}
+                  </Field>
+                  <Field data-invalid={!!errors?.dateOfBirth}>
+                    <FieldLabel htmlFor="dateOfBirth">Date of Birth</FieldLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !date && "text-muted-foreground"
+                          )}
+                        >
+                          {date ? format(date, "PPP") : <span>Pick a date</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={date}
+                          onSelect={setDate}
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    {errors?.dateOfBirth && <FieldError>{errors.dateOfBirth}</FieldError>}
+                  </Field>
                 </div>
-                <FormField
-                  control={form.control}
-                  name="bloodType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Blood Type</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select Blood Type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="A+">A+</SelectItem>
-                          <SelectItem value="A-">A-</SelectItem>
-                          <SelectItem value="B+">B+</SelectItem>
-                          <SelectItem value="B-">B-</SelectItem>
-                          <SelectItem value="O+">O+</SelectItem>
-                          <SelectItem value="O-">O-</SelectItem>
-                          <SelectItem value="AB+">AB+</SelectItem>
-                          <SelectItem value="AB-">AB-</SelectItem>
-                          <SelectItem value="UNKNOWN">Unknown</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <Field data-invalid={!!errors?.bloodType}>
+                  <FieldLabel htmlFor="bloodType">Blood Type</FieldLabel>
+                  <Select onValueChange={(value) => setBloodType(value)} defaultValue={bloodType}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Blood Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="A+">A+</SelectItem>
+                      <SelectItem value="A-">A-</SelectItem>
+                      <SelectItem value="B+">B+</SelectItem>
+                      <SelectItem value="B-">B-</SelectItem>
+                      <SelectItem value="O+">O+</SelectItem>
+                      <SelectItem value="O-">O-</SelectItem>
+                      <SelectItem value="AB+">AB+</SelectItem>
+                      <SelectItem value="AB-">AB-</SelectItem>
+                      <SelectItem value="UNKNOWN">Unknown</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors?.bloodType && <FieldError>{errors.bloodType}</FieldError>}
+                </Field>
               </div>
             )}
 
             {step === 1 && (
               <div className="grid gap-4">
-                <FormField
-                  control={form.control}
-                  name="medicalHistory"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Medical History</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="Medical History" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <Field data-invalid={!!errors?.medicalHistory}>
+                  <FieldLabel htmlFor="medicalHistory">Medical History</FieldLabel>
+                  <Textarea id="medicalHistory" name="medicalHistory" placeholder="Medical History" disabled={pending} />
+                  {errors?.medicalHistory && <FieldError>{errors.medicalHistory}</FieldError>}
+                </Field>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="height"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Height (cm)</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="Height (cm)" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="weight"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Weight (kg)</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="Weight (kg)" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <Field data-invalid={!!errors?.height}>
+                    <FieldLabel htmlFor="height">Height (cm)</FieldLabel>
+                    <Input id="height" name="height" type="number" placeholder="Height (cm)" disabled={pending} />
+                    {errors?.height && <FieldError>{errors.height}</FieldError>}
+                  </Field>
+                  <Field data-invalid={!!errors?.weight}>
+                    <FieldLabel htmlFor="weight">Weight (kg)</FieldLabel>
+                    <Input id="weight" name="weight" type="number" placeholder="Weight (kg)" disabled={pending} />
+                    {errors?.weight && <FieldError>{errors.weight}</FieldError>}
+                  </Field>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="bloodPressure"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Blood Pressure</FormLabel>
-                        <FormControl>
-                          <Input placeholder="e.g. 120/80" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="heartRate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Heart Rate (bpm)</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="Heart Rate (bpm)" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <Field data-invalid={!!errors?.bloodPressure}>
+                    <FieldLabel htmlFor="bloodPressure">Blood Pressure</FieldLabel>
+                    <Input id="bloodPressure" name="bloodPressure" placeholder="e.g. 120/80" disabled={pending} />
+                    {errors?.bloodPressure && <FieldError>{errors.bloodPressure}</FieldError>}
+                  </Field>
+                  <Field data-invalid={!!errors?.heartRate}>
+                    <FieldLabel htmlFor="heartRate">Heart Rate (bpm)</FieldLabel>
+                    <Input id="heartRate" name="heartRate" type="number" placeholder="Heart Rate (bpm)" disabled={pending} />
+                    {errors?.heartRate && <FieldError>{errors.heartRate}</FieldError>}
+                  </Field>
                 </div>
 
-                <FormField
-                  control={form.control}
-                  name="bloodSugarLevel"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Blood Sugar Level</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="Blood Sugar Level" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <Field data-invalid={!!errors?.bloodSugarLevel}>
+                  <FieldLabel htmlFor="bloodSugarLevel">Blood Sugar Level</FieldLabel>
+                  <Input id="bloodSugarLevel" name="bloodSugarLevel" type="number" placeholder="Blood Sugar Level" disabled={pending} />
+                  {errors?.bloodSugarLevel && <FieldError>{errors.bloodSugarLevel}</FieldError>}
+                </Field>
 
-                <FormField
-                  control={form.control}
-                  name="allergies"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Allergies</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="Allergies" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <Field data-invalid={!!errors?.allergies}>
+                  <FieldLabel htmlFor="allergies">Allergies</FieldLabel>
+                  <Textarea id="allergies" name="allergies" placeholder="Allergies" disabled={pending} />
+                  {errors?.allergies && <FieldError>{errors.allergies}</FieldError>}
+                </Field>
 
-                <FormField
-                  control={form.control}
-                  name="medications"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Medications</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="Medications" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <Field data-invalid={!!errors?.medications}>
+                  <FieldLabel htmlFor="medications">Medications</FieldLabel>
+                  <Textarea id="medications" name="medications" placeholder="Medications" disabled={pending} />
+                  {errors?.medications && <FieldError>{errors.medications}</FieldError>}
+                </Field>
 
-                <FormField
-                  control={form.control}
-                  name="chronicDiseases"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Chronic Diseases</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="Chronic Diseases" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <Field data-invalid={!!errors?.chronicDiseases}>
+                  <FieldLabel htmlFor="chronicDiseases">Chronic Diseases</FieldLabel>
+                  <Textarea id="chronicDiseases" name="chronicDiseases" placeholder="Chronic Diseases" disabled={pending} />
+                  {errors?.chronicDiseases && <FieldError>{errors.chronicDiseases}</FieldError>}
+                </Field>
               </div>
             )}
 
             {step === 2 && (
               <div className="grid gap-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="emergencyContactName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Emergency Contact Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Emergency Contact Name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="emergencyContactPhone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Emergency Contact Phone</FormLabel>
-                        <FormControl>
-                          <Input type="tel" placeholder="Emergency Contact Phone" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <Field data-invalid={!!errors?.emergencyContactName}>
+                    <FieldLabel htmlFor="emergencyContactName">Emergency Contact Name</FieldLabel>
+                    <Input id="emergencyContactName" name="emergencyContactName" placeholder="Emergency Contact Name" disabled={pending} />
+                    {errors?.emergencyContactName && <FieldError>{errors.emergencyContactName}</FieldError>}
+                  </Field>
+                  <Field data-invalid={!!errors?.emergencyContactPhone}>
+                    <FieldLabel htmlFor="emergencyContactPhone">Emergency Contact Phone</FieldLabel>
+                    <Input id="emergencyContactPhone" name="emergencyContactPhone" type="tel" placeholder="Emergency Contact Phone" disabled={pending} />
+                    {errors?.emergencyContactPhone && <FieldError>{errors.emergencyContactPhone}</FieldError>}
+                  </Field>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="insuranceProvider"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Insurance Provider</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Insurance Provider" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="insuranceNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Insurance Number</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Insurance Number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <Field data-invalid={!!errors?.insuranceProvider}>
+                    <FieldLabel htmlFor="insuranceProvider">Insurance Provider</FieldLabel>
+                    <Input id="insuranceProvider" name="insuranceProvider" placeholder="Insurance Provider" disabled={pending} />
+                    {errors?.insuranceProvider && <FieldError>{errors.insuranceProvider}</FieldError>}
+                  </Field>
+                  <Field data-invalid={!!errors?.insuranceNumber}>
+                    <FieldLabel htmlFor="insuranceNumber">Insurance Number</FieldLabel>
+                    <Input id="insuranceNumber" name="insuranceNumber" placeholder="Insurance Number" disabled={pending} />
+                    {errors?.insuranceNumber && <FieldError>{errors.insuranceNumber}</FieldError>}
+                  </Field>
                 </div>
               </div>
             )}
 
             {step === 3 && (
               <div className="grid gap-4">
-                <FormField
-                  control={form.control}
-                  name="lastDentalVisit"
-                  render={() => (
-                    <FormItem>
-                      <FormLabel>Last Dental Visit</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full justify-start text-left font-normal",
-                              !lastVisitDate && "text-muted-foreground"
-                            )}
-                          >
-                            {lastVisitDate ? format(lastVisitDate, "PPP") : <span>Pick a date</span>}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={lastVisitDate}
-                            onSelect={setLastVisitDate}
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <Field data-invalid={!!errors?.lastDentalVisit}>
+                  <FieldLabel htmlFor="lastDentalVisit">Last Dental Visit</FieldLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !lastVisitDate && "text-muted-foreground"
+                        )}
+                      >
+                        {lastVisitDate ? format(lastVisitDate, "PPP") : <span>Pick a date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={lastVisitDate}
+                        onSelect={setLastVisitDate}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  {errors?.lastDentalVisit && <FieldError>{errors.lastDentalVisit}</FieldError>}
+                </Field>
 
-                <FormField
-                  control={form.control}
-                  name="gumCondition"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Gum Condition</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select Gum Condition" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="Healthy">Healthy</SelectItem>
-                          <SelectItem value="Gingivitis">Gingivitis</SelectItem>
-                          <SelectItem value="Periodontitis">Periodontitis</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <Field data-invalid={!!errors?.gumCondition}>
+                  <FieldLabel htmlFor="gumCondition">Gum Condition</FieldLabel>
+                  <Select onValueChange={(value) => setGumCondition(value)} defaultValue={gumCondition}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select Gum Condition" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Healthy">Healthy</SelectItem>
+                      <SelectItem value="Gingivitis">Gingivitis</SelectItem>
+                      <SelectItem value="Periodontitis">Periodontitis</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors?.gumCondition && <FieldError>{errors.gumCondition}</FieldError>}
+                </Field>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="toothDecay"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Tooth Decay (0-10)</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            placeholder="Tooth Decay (0-10)"
-                            min="0"
-                            max="10"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="missingTeethCount"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Missing Teeth Count</FormLabel>
-                        <FormControl>
-                          <Input type="number" placeholder="Missing Teeth Count" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <Field data-invalid={!!errors?.toothDecay}>
+                    <FieldLabel htmlFor="toothDecay">Tooth Decay (0-10)</FieldLabel>
+                    <Input
+                      id="toothDecay"
+                      name="toothDecay"
+                      type="number"
+                      placeholder="Tooth Decay (0-10)"
+                      min="0"
+                      max="10"
+                      disabled={pending}
+                    />
+                    {errors?.toothDecay && <FieldError>{errors.toothDecay}</FieldError>}
+                  </Field>
+                  <Field data-invalid={!!errors?.missingTeethCount}>
+                    <FieldLabel htmlFor="missingTeethCount">Missing Teeth Count</FieldLabel>
+                    <Input id="missingTeethCount" name="missingTeethCount" type="number" placeholder="Missing Teeth Count" disabled={pending} />
+                    {errors?.missingTeethCount && <FieldError>{errors.missingTeethCount}</FieldError>}
+                  </Field>
                 </div>
 
-                <FormField
-                  control={form.control}
-                  name="prostheticsUsed"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Prosthetics Used</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="Prosthetics Used" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <Field data-invalid={!!errors?.prostheticsUsed}>
+                  <FieldLabel htmlFor="prostheticsUsed">Prosthetics Used</FieldLabel>
+                  <Textarea id="prostheticsUsed" name="prostheticsUsed" placeholder="Prosthetics Used" disabled={pending} />
+                  {errors?.prostheticsUsed && <FieldError>{errors.prostheticsUsed}</FieldError>}
+                </Field>
               </div>
             )}
-          </Form>
+          </form>
         </CardContent>
         {/* Navigation Buttons */}
         <CardFooter className="flex justify-between">
           <Button variant="outline" onClick={handlePrev} disabled={step === 0}>
             Previous
           </Button>
-          <Button onClick={handleNext}>{step === sections.length - 1 ? "Submit" : "Next"}</Button>
+          <Button onClick={handleNext} disabled={pending}>
+            {step === sections.length - 1 ? (pending ? "Submitting..." : "Submit") : "Next"}
+          </Button>
         </CardFooter>
       </Card>
     </div>

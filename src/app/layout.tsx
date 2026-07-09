@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 import { Inter, Roboto, Instrument_Serif, Lato, Red_Hat_Text } from "next/font/google";
 import "./globals.css";
+import ReactQueryProvider from "@/components/react-query-provider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -87,15 +88,17 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${roboto.variable} ${instrumentSerif.variable} ${lato.variable} ${redHatText.variable}`} suppressHydrationWarning>
       <body className="antialiased">
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-            <Toaster richColors closeButton />
-          </ThemeProvider>
+          <ReactQueryProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+              <Toaster richColors closeButton />
+            </ThemeProvider>
+          </ReactQueryProvider>
       </body>
     </html>
   );

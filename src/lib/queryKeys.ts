@@ -23,5 +23,6 @@ export const queryKeys = {
   staff: {
     all: ['staff'] as const,
     lists: () => [...queryKeys.staff.all, 'list'] as const,
+    list: (filters?: Record<string, any>) => [...queryKeys.staff.lists(), { filters }] as const,
   }
 };

@@ -1,0 +1,204 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/app/generated/prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+enum Role {
+  ADMIN
+  DOCTOR
+  PATIENT
+  RECEPTIONIST
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum BloodType {
+  A_PLUS
+  A_MINUS
+  B_PLUS
+  B_MINUS
+  O_PLUS
+  O_MINUS
+  AB_PLUS
+  AB_MINUS
+  UNKNOWN
+}
+
+enum GumCondition {
+  HEALTHY
+  GINGIVITIS
+  PERIODONTITIS
+}
+
+enum AppointmentStatus {
+  PENDING // In Queue
+  CONFIRMED // Accepted
+  COMPLETED // Archive
+  CANCELLED // Archive
+}
+
+enum TreatmentStatus {
+  SCHEDULED
+  ONGOING
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+}
+
+// ==========================================
+// MODELS
+// ==========================================
+
+model User {
+  id       String  @id @default(cuid())
+  email    String  @unique
+  password String // Hashed password
+  name     String
+  phone    String?
+  role     Role    @default(PATIENT)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  patientProfile  PatientProfile?
+  employeeProfile EmployeeProfile?
+
+  // Appointments where this user is the doctor
+  doctorAppointments Appointment[] @relation("DoctorAppointments")
+}
+
+model EmployeeProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  position   String // e.g., "Dentist", "Manager"
+  department String // e.g., "Orthodontics", "General"
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model PatientProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Basic Info
+  address     String?
+  gender      Gender?
+  dateOfBirth DateTime?
+
+  // Emergency & Insurance
+  emergencyContactName  String?
+  emergencyContactPhone String?
+  insuranceProvider     String?
+  insuranceNumber       String?
+
+  // Vitals & General Health
+  bloodType       BloodType @default(UNKNOWN)
+  height          String?
+  weight          String?
+  bloodPressure   String?
+  heartRate       String?
+  bloodSugarLevel String?
+  allergies       String?
+  medications     String?
+  chronicDiseases String?
+  medicalHistory  String?
+
+  // Dental Specific
+  lastDentalVisit   DateTime?
+  gumCondition      GumCondition @default(HEALTHY)
+  toothDecay        String?
+  missingTeethCount String?
+  prostheticsUsed   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  appointments     Appointment[]
+  dentalHistory    DentalHistory[]
+  medicalDocuments MedicalDocument[]
+}
+
+model Appointment {
+  id String @id @default(cuid())
+
+  // If the appointment belongs to a registered patient
+  patientId String?
+  patient   PatientProfile? @relation(fields: [patientId], references: [id], onDelete: SetNull)
+
+  // For Guest bookings (no account)
+  guestFirstName String?
+  guestLastName  String?
+  guestEmail     String?
+  guestPhone     String?
+
+  // Assigned Doctor
+  doctorId String?
+  doctor   User?   @relation("DoctorAppointments", fields: [doctorId], references: [id])
+
+  // Appointment Details
+  date   DateTime
+  time   String // e.g., "14:30"
+  reason String
+  notes  String?
+  status AppointmentStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  dentalHistory DentalHistory?
+}
+
+model DentalHistory {
+  id String @id @default(cuid())
+
+  patientId String
+  patient   PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  appointmentId String?      @unique
+  appointment   Appointment? @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
+
+  treatmentType   String
+  treatmentStatus TreatmentStatus @default(SCHEDULED)
+  paymentStatus   PaymentStatus   @default(PENDING)
+  date            DateTime        @default(now())
+  notes           String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MedicalDocument {
+  id String @id @default(cuid())
+
+  patientId String
+  patient   PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  name      String // e.g., "X-Ray_Report.pdf"
+  fileUrl   String // S3 URL or local path
+  sizeBytes Int // File size in bytes for dynamic conversion (e.g., "2.3mb")
+  type      String // MIME type
+
+  uploadedAt DateTime @default(now())
+}

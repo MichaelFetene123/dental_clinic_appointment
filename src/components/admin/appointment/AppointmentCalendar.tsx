@@ -1,6 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useActionState, useEffect } from "react";
+import { useCalendarAppointments } from "@/hooks/use-appointments";
+import { useQueryClient } from "@tanstack/react-query";
+import { createAppointment, type ActionResponse } from "@/lib/actions/mutations/appointment-mutations";
+import { toast } from "sonner";
+import { queryKeys } from "@/lib/queryKeys";
 import { format, addDays, startOfWeek, eachDayOfInterval, addMonths, startOfMonth, endOfMonth, isSameMonth, isSameDay } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -33,31 +38,6 @@ const APPOINTMENT_TYPES = {
     ],
 };
 
-const appointments = [
-    {
-        id: 1,
-        date: new Date(2024, 3, 15),
-        time: "09:00",
-        duration: 30,
-        patient: "John Doe",
-        type: "checkup",
-        phone: "+1234567890",
-        email: "john@example.com",
-        notes: "Regular check-up appointment"
-    },
-    {
-        id: 2,
-        date: new Date(2024, 3, 15),
-        time: "10:30",
-        duration: 90,
-        patient: "Jane Smith",
-        type: "braces_fitting",
-        phone: "+1234567891",
-        email: "jane@example.com",
-        notes: "Initial braces fitting"
-    },
-];
-
 const timeSlots = Array.from({ length: 24 }, (_, i) => {
     const hour = 8 + Math.floor(i / 2); // Start at 8:00 AM
     const minute = i % 2 === 0 ? "00" : "30"; // Half-hour increments
@@ -68,9 +48,37 @@ console.log(timeSlots);
 
 export default function Home() {
     const [currentDate, setCurrentDate] = useState(new Date());
+    const { data: serverAppointments } = useCalendarAppointments(currentDate);
+    const queryClient = useQueryClient();
+    const [state, formAction, isPending] = useActionState<ActionResponse, FormData>(createAppointment, { success: false, error: "" });
+    const errors = !state.success ? state.errors : undefined;
+
     const [selectedSlot, setSelectedSlot] = useState<{ date: Date; time: string } | null>(null);
+
+    useEffect(() => {
+        if (state.success) {
+            setSelectedSlot(null);
+            toast.success("Appointment successfully scheduled!");
+            queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
+            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+        }
+    }, [state.success, queryClient]);
+    
+    const appointments = serverAppointments?.map((apt) => ({
+        id: apt.id,
+        date: new Date(apt.date),
+        time: apt.time,
+        duration: 30,
+        patient: apt.patientName,
+        type: apt.reason,
+        phone: "N/A",
+        email: "N/A",
+        notes: "N/A",
+    })) || [];
+
+
     const [selectedAppointment, setSelectedAppointment] = useState<{
-        id: number;
+        id: string;
         date: Date;
         time: string;
         duration: number;
@@ -371,7 +379,10 @@ export default function Home() {
                             <DialogTitle>New Appointment</DialogTitle>
                         </DialogHeader>
                         {selectedSlot && (
-                            <div className="space-y-4 py-4">
+                            <form action={formAction} className="space-y-4 py-4">
+                                <input type="hidden" name="date" value={format(selectedSlot.date, "yyyy-MM-dd")} />
+                                <input type="hidden" name="time" value={selectedSlot.time} />
+                                
                                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                                     <CalendarCheck2 className="h-4 w-4" />
                                     <span>
@@ -380,16 +391,19 @@ export default function Home() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Patient Name</Label>
-                                    <Input placeholder="Enter patient name" />
+                                    <Input name="name" placeholder="Enter patient name" />
+                                    {errors?.name && <p className="text-sm text-destructive">{errors.name}</p>}
                                 </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label>Phone</Label>
-                                        <Input type="tel" placeholder="+1234567890" />
+                                        <Input name="phone" type="tel" placeholder="+1234567890" />
+                                        {errors?.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
                                     </div>
                                     <div className="space-y-2">
                                         <Label>Email</Label>
-                                        <Input type="email" placeholder="patient@example.com" />
+                                        <Input name="email" type="email" placeholder="patient@example.com" />
+                                        {errors?.email && <p className="text-sm text-destructive">{errors.email}</p>}
                                     </div>
                                 </div>
                                 <div className="space-y-2">
@@ -407,7 +421,7 @@ export default function Home() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Appointment Type</Label>
-                                    <Select>
+                                    <Select name="reason">
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select type" />
                                         </SelectTrigger>
@@ -424,13 +438,19 @@ export default function Home() {
                                             ))}
                                         </SelectContent>
                                     </Select>
+                                    {errors?.reason && <p className="text-sm text-destructive">{errors.reason}</p>}
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Notes</Label>
-                                    <Textarea placeholder="Add any additional notes..." />
+                                    <Textarea name="notes" placeholder="Add any additional notes..." />
                                 </div>
-                                <Button className="w-full">Schedule Appointment</Button>
-                            </div>
+                                {!state.success && state.error && !state.errors && (
+                                    <p className="text-sm text-destructive font-medium">{state.error}</p>
+                                )}
+                                <Button type="submit" disabled={isPending} className="w-full">
+                                    {isPending ? "Scheduling..." : "Schedule Appointment"}
+                                </Button>
+                            </form>
                         )}
                     </DialogContent>
                 </Dialog>

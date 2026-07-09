@@ -1,5 +1,5 @@
 "use client"
-export const dynamic = 'force-dynamic'
+
 
 import { DataTable } from '@/components/admin/patient/PatientTable'
 import { Button } from '@/components/ui/button'

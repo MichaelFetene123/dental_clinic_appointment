@@ -3,14 +3,7 @@ import { MoreHorizontal } from 'lucide-react';
 import React from 'react';
 import { AiOutlineCloudDownload } from "react-icons/ai";
 
-const documents = [
-    { name: "Medical_Document.pdf", size: "2.3mb" },
-    { name: "X-Ray_Report.pdf", size: "1.8mb" },
-    { name: "Lab_Results.pdf", size: "3.1mb" },
-    { name: "Prescription.pdf", size: "512kb" },
-];
-
-const MedicalDocument = () => {
+const MedicalDocument = ({ documents }: { documents: any[] }) => {
     return (
         <Card className='pb-4'>
             <CardHeader>
@@ -20,6 +13,11 @@ const MedicalDocument = () => {
                 </div>
             </CardHeader>
             <div className='grid grid-cols-1 gap-3'>
+                {documents.length === 0 && (
+                    <div className="text-center text-sm text-muted-foreground p-4 border border-border w-[90%] mx-auto rounded-lg">
+                        No medical documents available.
+                    </div>
+                )}
                 {documents.map((doc, index) => (
                     <div key={index} className='flex items-center gap-3 justify-between border border-border w-[90%] mx-auto p-2 rounded-lg shadow-sm hover:shadow-md transition-shadow'>
                         <div className='flex items-center gap-3'>
@@ -30,10 +28,10 @@ const MedicalDocument = () => {
                             </div>
                             <div>
                                 <h3 className="text-sm font-medium text-foreground">{doc.name}</h3>
-                                <p className='text-xs text-muted-foreground'>{doc.size}</p>
+                                <p className='text-xs text-muted-foreground'>{doc.sizeBytes} bytes</p>
                             </div>
                         </div>
-                        <a href={`/path-to-your-file/${doc.name}`} download>
+                        <a href={doc.fileUrl} download>
                             <AiOutlineCloudDownload className="text-xl cursor-pointer text-muted-foreground hover:text-primary transition-colors" />
                         </a>
                     </div>

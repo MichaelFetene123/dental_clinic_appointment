@@ -18,6 +18,7 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['react-icons', 'framer-motion', 'lucide-react'],
   },
+  cacheComponents: true,
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },

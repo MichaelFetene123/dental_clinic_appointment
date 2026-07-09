@@ -10,20 +10,16 @@ import { ColumnDef, useReactTable, flexRender, getCoreRowModel } from "@tanstack
 import { MoreHorizontal, Check } from "lucide-react";
 import { FaTooth } from "react-icons/fa";
 
-// Sample data
-const initialData = [
-    { id: 1, treatmentType: "Teeth Cleaning", date: "2024-02-10", treatmentStatus: "Completed", paymentStatus: "Paid" },
-    { id: 2, treatmentType: "Root Canal", date: "2024-03-05", treatmentStatus: "Ongoing", paymentStatus: "Pending" },
-    { id: 3, treatmentType: "Braces Adjustment", date: "2024-03-20", treatmentStatus: "Scheduled", paymentStatus: "Paid" },
-    { id: 4, treatmentType: "Teeth Cleaning", date: "2024-02-10", treatmentStatus: "Completed", paymentStatus: "Paid" },
-    { id: 5, treatmentType: "Root Canal", date: "2024-03-05", treatmentStatus: "Ongoing", paymentStatus: "Pending" },
-    { id: 6, treatmentType: "Braces Adjustment", date: "2024-03-20", treatmentStatus: "Scheduled", paymentStatus: "Paid" },
-];
-
-const DentalHistoryTable = () => {
-    const [data] = useState(initialData);
+const DentalHistoryTable = ({ history }: { history: any[] }) => {
+    const data = history.length > 0 ? history.map(item => ({
+        id: item.id,
+        treatmentType: item.treatmentType,
+        date: new Date(item.date).toISOString().split('T')[0],
+        treatmentStatus: item.treatmentStatus,
+        paymentStatus: item.paymentStatus
+    })) : []
     const [selectedHistory, setSelectedHistory] = useState<{
-        id: number;
+        id: string;
         treatmentType: string;
         date: string;
         treatmentStatus: string;
@@ -33,7 +29,7 @@ const DentalHistoryTable = () => {
 
     // Function to open modal and set selected history data
     const handleViewDetail = (history: { 
-        id: number;
+        id: string;
         treatmentType: string;
         date: string;
         treatmentStatus: string;
@@ -45,7 +41,7 @@ const DentalHistoryTable = () => {
 
     // Define columns inside the component so it has access to `handleViewDetail`
     const columns: ColumnDef<{
-        id: number;
+        id: string;
         treatmentType: string;
         date: string;
         treatmentStatus: string;
@@ -140,15 +136,23 @@ const DentalHistoryTable = () => {
                         ))}
                     </TableHeader>
                     <TableBody>
-                        {table.getRowModel().rows.map((row) => (
-                            <TableRow key={row.id}>
-                                {row.getVisibleCells().map((cell) => (
-                                    <TableCell key={cell.id}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </TableCell>
-                                ))}
+                        {table.getRowModel().rows?.length ? (
+                            table.getRowModel().rows.map((row) => (
+                                <TableRow key={row.id}>
+                                    {row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={columns.length} className="h-24 text-center">
+                                    No dental history records found.
+                                </TableCell>
                             </TableRow>
-                        ))}
+                        )}
                     </TableBody>
                 </Table>
             </CardContent>

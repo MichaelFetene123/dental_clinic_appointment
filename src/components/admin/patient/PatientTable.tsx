@@ -45,7 +45,6 @@ import {
     CopyIcon,
     MoreHorizontal,
 } from "lucide-react"
-import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -73,10 +72,11 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Separator } from "@/components/ui/separator"
 import Image from "next/image"
 import Link from "next/link"
+import { usePatients } from "@/hooks/use-patients"
+import type { PatientRow } from "@/lib/actions/queries/patient-queries"
+import { Skeleton } from "@/components/ui/skeleton"
 
-import { patientTableSchema as schema } from '@/lib/validationSchema';
-
-export const columns: ColumnDef<z.infer<typeof schema>>[] = [
+export const columns: ColumnDef<PatientRow>[] = [
     {
         accessorKey: "id",
         header: ({ column }) => (
@@ -133,12 +133,12 @@ export const columns: ColumnDef<z.infer<typeof schema>>[] = [
     {
         accessorKey: "lastVisited",
         header: "Last visit",
-        cell: ({ row }) => <div>{row.getValue("lastVisited")}</div>,
+        cell: ({ row }) => <div>{row.getValue("lastVisited") || "N/A"}</div>,
     },
     {
         accessorKey: "appointmentDate",
         header: "Appointment",
-        cell: ({ row }) => <div>{row.getValue("appointmentDate")}</div>,
+        cell: ({ row }) => <div>{row.getValue("appointmentDate") || "N/A"}</div>,
     },
     {
         accessorKey: "dueDate",
@@ -214,7 +214,7 @@ export const columns: ColumnDef<z.infer<typeof schema>>[] = [
     },
 
 ]
-function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
+function DraggableRow({ row }: { row: Row<PatientRow> }) {
     const { transform, transition, setNodeRef, isDragging } = useSortable({
         id: row.original.id,
     })
@@ -240,13 +240,14 @@ function DraggableRow({ row }: { row: Row<z.infer<typeof schema>> }) {
 }
 
 export function DataTable({
-    data: initialData,
     isDashboard
 }: {
-    data: z.infer<typeof schema>[]
     isDashboard: boolean
 }) {
-    const [data, setData] = React.useState(() => initialData);
+    const { data: queryData, isLoading } = usePatients();
+    const initialData = React.useMemo(() => queryData?.data ?? [], [queryData?.data]);
+    
+    const [data, setData] = React.useState<PatientRow[]>([]);
     const [rowSelection, setRowSelection] = React.useState({});
     const [columnVisibility, setColumnVisibility] =
         React.useState<VisibilityState>({})
@@ -340,6 +341,13 @@ export function DataTable({
                         className="outline-none w-[40%]  focus:outline-none border-2 border-input px-4 py-2 rounded-lg"
                     />
                 </div>
+                {isLoading ? (
+                    <div className="space-y-3">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                            <Skeleton key={i} className="h-12 w-full rounded-md" />
+                        ))}
+                    </div>
+                ) : (
                 <div>
                     <DndContext
                         collisionDetection={closestCenter}
@@ -391,6 +399,7 @@ export function DataTable({
                         </Table>
                     </DndContext>
                 </div>
+                )}
                 <div className="flex items-center justify-between px-4">
                     <div className="hidden flex-1 text-sm text-muted-foreground lg:flex">
                         {table.getFilteredSelectedRowModel().rows.length} of{" "}

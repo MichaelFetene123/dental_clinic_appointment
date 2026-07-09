@@ -17,6 +17,9 @@ import { z } from "zod";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { toast } from "sonner"
 import { FaTooth } from "react-icons/fa";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/queryKeys";
+import { createPatient } from "@/lib/actions/mutations/patient-mutations";
 
 interface PatientFormProps {
   show: boolean;
@@ -55,37 +58,17 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
   const [stepErrors, setStepErrors] = useState<Record<string, string>>({});
   const formRef = useRef<HTMLFormElement>(null);
 
-  async function submitAction(_prevState: FormState, formData: FormData): Promise<FormState> {
-    const rawData: Record<string, string> = {};
-    formData.forEach((value, key) => {
-      rawData[key] = value as string;
-    });
+  const queryClient = useQueryClient();
+  const [state, formAction, pending] = useActionState(createPatient, { success: false, error: "" });
 
-    // Add defaults for fields not in form
-    rawData.role = rawData.role || "PATIENT";
-    rawData.password = rawData.password || "";
-
-    const result = formSchema.safeParse(rawData);
-
-    if (!result.success) {
-      const fieldErrors: Record<string, string> = {};
-      for (const issue of result.error.issues) {
-        const fieldName = issue.path[0] as string;
-        if (!fieldErrors[fieldName]) {
-          fieldErrors[fieldName] = issue.message;
-        }
-      }
-      return { errors: fieldErrors };
+  React.useEffect(() => {
+    if (state?.success) {
+      toast.success("Patient created successfully!");
+      queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+      setShow(false);
     }
-
-    console.log("Form submitted", result.data);
-    toast.success("Patient submitted", {
-      description: "The patient record has been saved successfully.",
-    });
-    return { success: true };
-  }
-
-  const [state, formAction, pending] = useActionState(submitAction, {} as FormState);
+  }, [state?.success, queryClient, setShow]);
 
   const validateCurrentStep = (): boolean => {
     if (!formRef.current) return false;

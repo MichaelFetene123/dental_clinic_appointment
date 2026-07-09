@@ -4,44 +4,46 @@ import { AppointmentTable } from '@/components/admin/appointment/appointment-tab
 import Archive from '@/components/admin/appointment/archive';
 import InQueue from '@/components/admin/appointment/inQueue';
 import { SectionCards } from '@/components/admin/sidebar/section-cards';
-import { AlertTriangleIcon, CalendarCheckIcon, CircleCheckBig, TrendingDownIcon, TrendingUpIcon, Users } from 'lucide-react';
+import { AlertTriangleIcon, CalendarCheckIcon, CircleCheckBig, TrendingUpIcon, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import AppointmentForm from '@/components/admin/forms/appointmentForm';
 import AppointmentCalendar from '@/components/admin/appointment/AppointmentCalendar';
+import { useDashboardStats } from '@/hooks/use-dashboard';
 
 const Page = () => {
     const [activeTab, setActiveTab] = useState<'accepted' | 'queue' | 'archive'>('accepted');
-    const [showForm, setShowForm] = useState(false); // State to manage form visibility
+    const [showForm, setShowForm] = useState(false);
+    const { data: dashData } = useDashboardStats();
 
     const cardData = [
         {
-            title: "Total Patients",
-            value: 125,
-            description: "Number of Patients",
+            title: "Total registered patients",
+            value: dashData?.stats.totalPatients ?? 0,
+            description: "Total Patients",
             icon: <Users className="text-primary" />,
-            badge: { text: "+10%", icon: <TrendingUpIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
+            badge: { text: "Live", icon: <TrendingUpIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
         },
         {
-            title: "Scheduled Appointments",
-            value: 340,
-            description: "Number of Appointments",
+            title: "Currently confirmed appointments",
+            value: dashData?.stats.scheduledAppointments ?? 0,
+            description: "Scheduled Appointments",
             icon: <CalendarCheckIcon className="text-primary" />,
-            badge: { text: "+5%", icon: <TrendingUpIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
+            badge: { text: "Live", icon: <TrendingUpIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
         },
         {
-            title: "Completed Procedures",
-            value: 210,
-            description: "Number of Procedures",
+            title: "Successfully completed procedures",
+            value: dashData?.stats.completedProcedures ?? 0,
+            description: "Completed Procedures",
             icon: <CircleCheckBig className="text-primary" />,
-            badge: { text: "+12%", icon: <TrendingUpIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
+            badge: { text: "Live", icon: <TrendingUpIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
         },
         {
-            title: "Emergency Cases",
-            value: 8,
-            description: "Number of Cases",
+            title: "Appointments awaiting confirmation",
+            value: dashData?.stats.pendingInQueue ?? 0,
+            description: "In Queue",
             icon: <AlertTriangleIcon className="text-primary" />,
-            badge: { text: "Critical", icon: <TrendingDownIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
+            badge: { text: "Pending", icon: <AlertTriangleIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
         },
     ];
 

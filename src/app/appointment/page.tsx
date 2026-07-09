@@ -6,22 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 import { Calendar } from '@/components/ui/calendar';
-import { z } from 'zod';
 import { format } from 'date-fns';
 import { useState, useEffect, useActionState } from 'react';
 import { Badge } from "@/components/ui/badge"
 import { PhoneInput } from "@/components/ui/phone-input";
-import { axiosInstance } from '@/utils/axios';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { createGuestAppointment, type ActionResponse } from '@/lib/actions/mutations/appointment-mutations';
+import { toast } from 'sonner';
 
-import { appointmentPageSchema as formSchema } from '@/lib/validationSchema';
-
-
-type FormState = {
-    errors?: Record<string, string>;
-    success?: boolean;
-};
 
 const Page = () => {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
@@ -40,67 +31,23 @@ const Page = () => {
     // Ensure all values are unique and trimmed
     const timeSlots = Array.from(new Set(rawTimeSlots.map(slot => slot.trim())));
     
-    const [showToast, setShowToast] = useState(false);
-
-    useEffect(() => {
-        if (showToast) {
-            toast.success("You have successfully logged in.");
-            setShowToast(false);
-        }
-    }, [showToast]);
-
-    async function submitAction(_prevState: FormState, formData: FormData): Promise<FormState> {
-        const rawData = {
-            firstName: formData.get('firstName') as string,
-            lastName: formData.get('lastName') as string,
-            phoneNumber: formData.get('phoneNumber') as string,
-            email: formData.get('email') as string,
-            requestedDate: formData.get('requestedDate') as string,
-            requestedTime: formData.get('requestedTime') as string,
-        };
-
-        const result = formSchema.safeParse(rawData);
-
-        if (!result.success) {
-            const fieldErrors: Record<string, string> = {};
-            for (const issue of result.error.issues) {
-                const fieldName = issue.path[0] as string;
-                if (!fieldErrors[fieldName]) {
-                    fieldErrors[fieldName] = issue.message;
-                }
-            }
-            return { errors: fieldErrors };
-        }
-
-        const formattedDate = rawData.requestedDate; // Already in yyyy-MM-dd format
-        const formattedTime = rawData.requestedTime; // Already in HH:mm format
-
-        const appointmentData = {
-            ...result.data,
-            requestedDate: formattedDate,
-            requestedTime: formattedTime,
-        };
-
-        try {
-            const response = await axiosInstance.post('/appointment/guest', appointmentData);
-            console.log('Appointment booked successfully:', response.data);
-            toast.success('Your appointment has been booked successfully.');
-            return { success: true };
-        } catch (error) {
-            console.error('Error booking appointment:', error);
-            toast.error('Failed to book your appointment. Please try again.');
-            return { errors: { _form: 'Failed to book your appointment. Please try again.' } };
-        }
-    }
-
-    const [state, formAction, pending] = useActionState(submitAction, {} as FormState);
+    const [state, formAction, pending] = useActionState<ActionResponse, FormData>(
+        createGuestAppointment,
+        { success: false, error: '' }
+    );
 
     // Local errors state to allow clearing errors on user input
     const [localErrors, setLocalErrors] = useState<Record<string, string>>({});
 
     useEffect(() => {
-        setLocalErrors(state?.errors || {});
-    }, [state?.errors]);
+        setLocalErrors(state?.success === false ? (state.errors ?? {}) : {});
+    }, [state]);
+
+    useEffect(() => {
+        if (state?.success) {
+            toast.success('Your appointment has been booked successfully.');
+        }
+    }, [state?.success]);
 
     // Clears the error for a specific field AND the general server error
     const clearError = (field: string) => {
@@ -229,7 +176,7 @@ const Page = () => {
                     </Card>
                 </Card>
             </div>
-            <ToastContainer />
+
         </Layout>
     );
 };

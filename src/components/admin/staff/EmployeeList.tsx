@@ -7,14 +7,13 @@ import Link from 'next/link'
 import React from 'react'
 
 
-const employees = [
-    { name: 'Abel Mekonn', position: 'Manager', department: 'Sales', contact: '987-654-3210' },
-    { name: 'Sara Johnson', position: 'Developer', department: 'Engineering', contact: '123-456-7890' },
-    { name: 'John Doe', position: 'HR Specialist', department: 'Human Resources', contact: '555-123-4567' },
-    { name: 'Emily Smith', position: 'Designer', department: 'Creative', contact: '222-333-4444' },
-]
+import { Skeleton } from '@/components/ui/skeleton'
+import { useStaff } from '@/hooks/use-staff'
 
 const EmployeeList = () => {
+    const { data, isLoading } = useStaff()
+    const employees = data?.data ?? []
+
     return (
         <Card className='flex flex-col min-h-[430px]'>
             <CardHeader className="flex flex-row items-center justify-between pb-6">
@@ -25,7 +24,18 @@ const EmployeeList = () => {
                 <Ellipsis className="text-muted-foreground h-5 w-5" />
             </CardHeader>
             <CardContent className="flex-1">
-                {employees.map((employee, index) => (
+                {isLoading ? (
+                    <div className="space-y-4">
+                        {Array.from({ length: 4 }).map((_, i) => (
+                            <Skeleton key={i} className="h-12 w-full rounded-md" />
+                        ))}
+                    </div>
+                ) : employees.length === 0 ? (
+                    <div className="text-center py-8 text-sm text-muted-foreground">
+                        No staff members found.
+                    </div>
+                ) : (
+                    employees.slice(0, 5).map((employee, index) => (
                     <div key={index} className='mb-4'>
                         <div className='flex items-center gap-4 mb-4'>
                             <Avatar className="h-9 w-9">
@@ -38,12 +48,12 @@ const EmployeeList = () => {
                                 <span className='text-sm text-muted-foreground mt-1.5'>{employee.position}</span>
                             </div>
                             <div className='flex flex-col items-end'>
-                                <p className='text-xs text-muted-foreground'>{employee.contact}</p>
+                                <p className='text-xs text-muted-foreground'>{employee.phone}</p>
                             </div>
                         </div>
-                        {index < employees.length - 1 && <Separator />}
+                        {index < Math.min(employees.length, 5) - 1 && <Separator />}
                     </div>
-                ))}
+                )))}
             </CardContent>
             <CardFooter className='flex justify-center pt-2'>
                 <Button

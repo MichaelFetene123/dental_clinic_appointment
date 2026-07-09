@@ -21,8 +21,9 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
+import { format } from 'date-fns'
 
-const PatientDetail = () => {
+const PatientDetail = ({ patient }: { patient: any }) => {
   return (
     <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
       <div className='grid grid-cols-1 gap-6 lg:col-span-2'>
@@ -36,42 +37,42 @@ const PatientDetail = () => {
                 <VenusAndMars />
                 <div>
                   <p className='text-sm text-muted-foreground'>Gender</p>
-                  <p>Male</p>
+                  <p>{patient.gender}</p>
                 </div>
               </div>
               <div className='flex gap-3 mb-7 items-center'>
                 <Cake />
                 <div>
                   <p className='text-sm text-muted-foreground'>Birth date</p>
-                  <p>Jan-20-2000</p>
+                  <p>{patient.dateOfBirth ? format(new Date(patient.dateOfBirth), 'MMM-dd-yyyy') : 'N/A'}</p>
                 </div>
               </div>
               <div className='flex gap-3 mb-7 items-center'>
                 <Phone />
                 <div>
                   <p className='text-sm text-muted-foreground'>Phone Number</p>
-                  <p>096637523542</p>
+                  <p>{patient.user.phone || 'N/A'}</p>
                 </div>
               </div>
               <div className='flex gap-3 mb-7 items-center'>
                 <Mail />
                 <div>
                   <p className='text-sm text-muted-foreground'>Mail</p>
-                  <p>jhone@gmailcom</p>
+                  <p>{patient.user.email}</p>
                 </div>
               </div>
               <div className="flex gap-3 mb-7 items-center">
                 <Home />
                 <div>
                   <p className="text-sm text-muted-foreground">Address</p>
-                  <p>1234 Elm St, Springfield</p>
+                  <p>{patient.user.address || 'N/A'}</p>
                 </div>
               </div>
               <div className="flex gap-3 mb-7 items-center">
                 <CalendarCheck />
                 <div>
                   <p className="text-sm text-muted-foreground">Last Visit</p>
-                  <p>Feb-10-2024</p>
+                  <p>{patient.lastDentalVisit ? format(new Date(patient.lastDentalVisit), 'MMM-dd-yyyy') : 'N/A'}</p>
                 </div>
               </div>
             </CardContent>
@@ -83,16 +84,19 @@ const PatientDetail = () => {
             <div className="relative px-2">
               <p className="absolute top-0 mt-2 left-[17px] h-[90%] border-2 border-dashed border-primary/40"></p>
 
-              {[...Array(4)].map((_, index) => (
-                <CardContent key={index} className={` ${index === 3 ? "opacity-50" : ""}`}>
+              {patient.appointments.length === 0 && (
+                <p className="text-sm text-muted-foreground px-4">No appointments found.</p>
+              )}
+              {patient.appointments.map((appt: any, index: number) => (
+                <CardContent key={index} className={` ${index === patient.appointments.length - 1 ? "opacity-50" : ""}`}>
                   <div className="absolute left-[7px] flex items-center justify-center h-6 w-6 border-2 bg-background border-primary rounded-full">
                     <div className="h-4 w-4 bg-primary rounded-full"></div>
                   </div>
-                  <p className="text-sm text-muted-foreground px-2 mb-1">Jan-20-2024</p>
+                  <p className="text-sm text-muted-foreground px-2 mb-1">{format(new Date(appt.date), 'MMM-dd-yyyy')} at {appt.time}</p>
                   <Card className='bg-primary text-primary-foreground'>
                     <CardHeader className='text-lg font-semibold'>
-                      Brace treatment
-                      <p className="text-sm text-primary-foreground/70 font-normal">Follow-up for braces adjustment.</p>
+                      {appt.reason}
+                      <p className="text-sm text-primary-foreground/70 font-normal">{appt.notes || "No additional notes."}</p>
                     </CardHeader>
                   </Card>
                 </CardContent>
@@ -104,7 +108,7 @@ const PatientDetail = () => {
           </Card>
         </div>
         <div className='w-full'>
-          <DentalHistoryTable />
+          <DentalHistoryTable history={patient.dentalHistory || []} />
         </div>
 
       </div>
@@ -180,7 +184,7 @@ const PatientDetail = () => {
           </Card>
         </div>
         <DentalWellBeingChart />
-        <MedicalDocument />
+        <MedicalDocument documents={patient.medicalDocuments || []} />
       </div>
     </div>
   )

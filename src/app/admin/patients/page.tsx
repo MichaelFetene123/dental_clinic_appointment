@@ -2,56 +2,46 @@
 import { DataTable } from '@/components/admin/patient/PatientTable'
 import { Button } from '@/components/ui/button'
 import React, { useState } from 'react'
-import data from "../data.json"
 import { SectionCards } from '@/components/admin/sidebar/section-cards'
-import { AlertTriangleIcon, CalendarCheckIcon, CircleCheckBig, TrendingDownIcon, TrendingUpIcon, Users } from 'lucide-react'
+import { AlertTriangleIcon, CalendarCheckIcon, CircleCheckBig, TrendingUpIcon, Users } from 'lucide-react'
 import PatientForm from '@/components/admin/forms/patientForm'
+import { useDashboardStats } from '@/hooks/use-dashboard'
 
 
 const Page = () => {
-    const [showForm, setShowForm] = useState(false); // State to manage form visibility
+    const [showForm, setShowForm] = useState(false);
+    const { data: dashData } = useDashboardStats();
 
     const cardData = [
         {
-            title: "Total Patients",
-            value: 125,
+            title: "Total registered patients",
+            value: dashData?.stats.totalPatients ?? 0,
             description: "Number of all patients",
             icon: <Users className="text-primary" />,
-            badge: { text: "+10%", icon: <TrendingUpIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
+            badge: { text: "Live", icon: <TrendingUpIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
         },
         {
-            title: "New Patients",
-            value: 340,
+            title: "New Patients (This Month)",
+            value: 0, // Placeholder for future logic
             description: "Number of new patients",
             icon: <CalendarCheckIcon className="text-primary" />,
-            badge: { text: "+5%", icon: <TrendingUpIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
+            badge: { text: "Live", icon: <TrendingUpIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
         },
         {
-            title: "Active Patients",
-            value: 210,
-            description: "Number of active patients",
+            title: "Appointments awaiting confirmation",
+            value: dashData?.stats.pendingInQueue ?? 0,
+            description: "Pending patients",
             icon: <CircleCheckBig className="text-primary" />,
-            badge: { text: "+12%", icon: <TrendingUpIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
+            badge: { text: "Live", icon: <TrendingUpIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
         },
         {
-            title: "Inactive Patients",
-            value: 8,
-            description: "Number of inactive patients",
+            title: "Currently confirmed appointments",
+            value: dashData?.stats.scheduledAppointments ?? 0,
+            description: "Scheduled patients",
             icon: <AlertTriangleIcon className="text-primary" />,
-            badge: { text: "Critical", icon: <TrendingDownIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
+            badge: { text: "Live", icon: <AlertTriangleIcon className="size-3" />, color: "green", textColor: "green", borderColor: "green" },
         },
     ];
-
-    const dataWithDefaults = data.map(item => ({
-        ...item,
-        id: Number(item.id), // Convert id to number
-        header: "Default Header",
-        type: "Default Type",
-        status: "Default Status",
-        target: "Default Target",
-        limit: "Default Limit",
-        reviewer: "Default Reviewer"
-    }));
 
     return (
         <>
@@ -72,7 +62,7 @@ const Page = () => {
                     </div>
                 </div>
                 <SectionCards data={cardData} />
-                <DataTable data={dataWithDefaults} isDashboard={false} />
+                <DataTable isDashboard={false} />
             </div>
             {showForm && <PatientForm show={showForm} setShow={setShowForm} />}
         </>

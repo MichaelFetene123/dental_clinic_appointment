@@ -5,10 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import * as React from "react";
-import { useState, useActionState } from "react";
+import { useState, useActionState, useEffect } from "react";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/queryKeys";
+import { toast } from "sonner";
+import { createAppointment } from "@/lib/actions/mutations/appointment-mutations";
 import {
     Popover,
     PopoverContent,
@@ -42,35 +46,18 @@ export function AppointmentForm({ show, setShow }: AppointmentFormProps) {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
     const [selectedReason, setSelectedReason] = useState("");
 
-    async function submitAction(_prevState: FormState, formData: FormData): Promise<FormState> {
-        const rawData = {
-            name: formData.get("name") as string,
-            email: formData.get("email") as string,
-            phone: formData.get("phone") as string,
-            date: formData.get("date") as string,
-            time: formData.get("time") as string,
-            reason: formData.get("reason") as string,
-            notes: (formData.get("notes") as string) || undefined,
-        };
+    const queryClient = useQueryClient();
 
-        const result = appointmentSchema.safeParse(rawData);
+    const [state, formAction, pending] = useActionState(createAppointment, { success: false, error: "" });
 
-        if (!result.success) {
-            const fieldErrors: Record<string, string> = {};
-            for (const issue of result.error.issues) {
-                const fieldName = issue.path[0] as string;
-                if (!fieldErrors[fieldName]) {
-                    fieldErrors[fieldName] = issue.message;
-                }
-            }
-            return { errors: fieldErrors };
+    useEffect(() => {
+        if (state?.success) {
+            toast.success("Appointment booked successfully!");
+            queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
+            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+            setShow(false);
         }
-
-        console.log("Appointment Data:", result.data);
-        return { success: true };
-    }
-
-    const [state, formAction, pending] = useActionState(submitAction, {} as FormState);
+    }, [state?.success]);
 
     if (!show) return null;
 

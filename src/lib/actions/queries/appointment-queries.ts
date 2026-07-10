@@ -23,6 +23,9 @@ export type CalendarAppointment = {
   status: AppointmentStatus;
   reason: string;
   patientName: string;
+  patientEmail: string | null;
+  patientPhone: string | null;
+  notes: string | null;
 };
 
 export type AppointmentListResult = {
@@ -82,7 +85,7 @@ export async function getCalendarAppointments(
   const rows = await prisma.appointment.findMany({
     where: { date: { gte: start, lte: end } },
     include: {
-      patient: { include: { user: { select: { name: true } } } },
+      patient: { include: { user: { select: { name: true, email: true, phone: true } } } },
     },
   });
 
@@ -96,5 +99,8 @@ export async function getCalendarAppointments(
       a.patient?.user.name ??
       (`${a.guestFirstName ?? ""} ${a.guestLastName ?? ""}`.trim() ||
         "Guest"),
+    patientEmail: a.patient?.user.email ?? a.guestEmail ?? null,
+    patientPhone: a.patient?.user.phone ?? a.guestPhone ?? null,
+    notes: a.notes ?? null,
   }));
 }

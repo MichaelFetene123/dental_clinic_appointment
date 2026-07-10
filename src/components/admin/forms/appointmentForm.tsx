@@ -29,6 +29,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { IoClose } from "react-icons/io5";
 import { Separator } from "@/components/ui/separator";
+import Form from "next/form";
 
 import { appointmentFormSchema as appointmentSchema } from '@/lib/validationSchema';
 
@@ -49,6 +50,7 @@ export function AppointmentForm({ show, setShow }: AppointmentFormProps) {
     const queryClient = useQueryClient();
 
     const [state, formAction, pending] = useActionState(createAppointment, { success: false, error: "" });
+    const actionErrors = !state?.success ? state?.errors : undefined;
 
     useEffect(() => {
         if (state?.success) {
@@ -73,28 +75,28 @@ export function AppointmentForm({ show, setShow }: AppointmentFormProps) {
             </CardHeader>
             <Separator />
             <CardContent>
-                <form action={formAction} className="space-y-6 mt-3">
+                <Form action={formAction} className="space-y-6 mt-3">
                     <div className="flex justify-between gap-5">
-                        <Field data-invalid={!!state?.errors?.name} className="w-1/2">
+                        <Field data-invalid={!!actionErrors?.name} className="w-1/2">
                             <FieldLabel htmlFor="name">Name</FieldLabel>
                             <Input id="name" name="name" placeholder="John Doe" disabled={pending} />
-                            {state?.errors?.name && <FieldError>{state.errors.name}</FieldError>}
+                            {actionErrors?.name && <FieldError>{actionErrors.name}</FieldError>}
                         </Field>
 
-                        <Field data-invalid={!!state?.errors?.email} className="w-1/2">
+                        <Field data-invalid={!!actionErrors?.email} className="w-1/2">
                             <FieldLabel htmlFor="email">Email</FieldLabel>
                             <Input id="email" name="email" type="email" placeholder="example@email.com" disabled={pending} />
-                            {state?.errors?.email && <FieldError>{state.errors.email}</FieldError>}
+                            {actionErrors?.email && <FieldError>{actionErrors.email}</FieldError>}
                         </Field>
                     </div>
 
                     <div className="flex justify-between gap-5">
-                        <Field data-invalid={!!state?.errors?.phone} className="w-1/2">
+                        <Field data-invalid={!!actionErrors?.phone} className="w-1/2">
                             <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
                             <Input id="phone" name="phone" type="tel" placeholder="123-456-7890" disabled={pending} />
-                            {state?.errors?.phone && <FieldError>{state.errors.phone}</FieldError>}
+                            {actionErrors?.phone && <FieldError>{actionErrors.phone}</FieldError>}
                         </Field>
-                        <Field data-invalid={!!state?.errors?.reason} className="w-1/2">
+                        <Field data-invalid={!!actionErrors?.reason} className="w-1/2">
                             <FieldLabel htmlFor="reason">Reason</FieldLabel>
                             <Select
                                 onValueChange={(value) => setSelectedReason(value)}
@@ -112,12 +114,12 @@ export function AppointmentForm({ show, setShow }: AppointmentFormProps) {
                                 </SelectContent>
                             </Select>
                             <input type="hidden" name="reason" value={selectedReason} />
-                            {state?.errors?.reason && <FieldError>{state.errors.reason}</FieldError>}
+                            {actionErrors?.reason && <FieldError>{actionErrors.reason}</FieldError>}
                         </Field>
                     </div>
 
                     <div className="flex justify-between gap-5">
-                        <Field data-invalid={!!state?.errors?.date} className="w-1/2">
+                        <Field data-invalid={!!actionErrors?.date} className="w-1/2">
                             <FieldLabel htmlFor="date">Date</FieldLabel>
                             <Popover>
                                 <PopoverTrigger asChild>
@@ -139,26 +141,26 @@ export function AppointmentForm({ show, setShow }: AppointmentFormProps) {
                                 </PopoverContent>
                             </Popover>
                             <input type="hidden" name="date" value={selectedDate ? format(selectedDate, "yyyy-MM-dd") : ""} />
-                            {state?.errors?.date && <FieldError>{state.errors.date}</FieldError>}
+                            {actionErrors?.date && <FieldError>{actionErrors.date}</FieldError>}
                         </Field>
 
-                        <Field data-invalid={!!state?.errors?.time} className="w-1/2">
+                        <Field data-invalid={!!actionErrors?.time} className="w-1/2">
                             <FieldLabel htmlFor="time">Time</FieldLabel>
                             <Input id="time" name="time" type="time" disabled={pending} />
-                            {state?.errors?.time && <FieldError>{state.errors.time}</FieldError>}
+                            {actionErrors?.time && <FieldError>{actionErrors.time}</FieldError>}
                         </Field>
                     </div>
 
-                    <Field data-invalid={!!state?.errors?.notes}>
+                    <Field data-invalid={!!actionErrors?.notes}>
                         <FieldLabel htmlFor="notes">Notes</FieldLabel>
                         <Textarea id="notes" name="notes" placeholder="Additional notes (optional)" disabled={pending} />
-                        {state?.errors?.notes && <FieldError>{state.errors.notes}</FieldError>}
+                        {actionErrors?.notes && <FieldError>{actionErrors.notes}</FieldError>}
                     </Field>
 
                     <Button type="submit" variant="default" className="w-full" disabled={pending}>
                         {pending ? "Booking..." : "Book Appointment"}
                     </Button>
-                </form>
+                </Form>
             </CardContent>
         </Card>
     );

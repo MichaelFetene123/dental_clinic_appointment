@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Suspense } from 'react'
 
 import JoinUs from '@/components/about/JoinUs';
 import HeroSection from '@/components/Hero';
@@ -20,13 +20,12 @@ const toSentenceCase = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 };
 
-const Service = async ({ params }: { params: Promise<{ service: string }> }) => {
+async function ServiceWrapper({ params }: { params: Promise<{ service: string }> }) {
   const { service } = await params;
   // let filter the servicesData array and return the service that matches the service parameter
   const serviceData = servicesData.find((serviceData) => {
     return serviceData.params.toLowerCase() === service.toLowerCase();
   });
-  
   
   return (
     <Layout>
@@ -35,7 +34,6 @@ const Service = async ({ params }: { params: Promise<{ service: string }> }) => 
         subtitle={
           <>
             <span className="inline-block md:mb-2 mt-2 md:mt-0 text-5xl py-3   text-white ">
-              {/* Experience Unmatched Quality and    */}
               {toSentenceCase(service)} Services
             </span>
             <span className="block text-[50px] leading-[50px]">
@@ -65,4 +63,10 @@ const Service = async ({ params }: { params: Promise<{ service: string }> }) => 
   );
 }
 
-export default Service;
+export default function Service({ params }: { params: Promise<{ service: string }> }) {
+  return (
+    <Suspense fallback={<div>Loading service...</div>}>
+      <ServiceWrapper params={params} />
+    </Suspense>
+  )
+}

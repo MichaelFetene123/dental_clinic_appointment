@@ -147,3 +147,60 @@ export async function createGuestAppointment(
     };
   }
 }
+
+// ─── Update appointment (Admin form) ──────────────────────────────────────────
+export async function updateAppointmentAdmin(
+  _prevState: ActionResponse,
+  formData: FormData
+): Promise<ActionResponse> {
+  const id = formData.get("id") as string;
+  if (!id) return { success: false, error: "Appointment ID is required" };
+
+  const rawData = {
+    name: formData.get("name") as string,
+    email: formData.get("email") as string,
+    phone: formData.get("phone") as string,
+    date: formData.get("date") as string,
+    time: formData.get("time") as string,
+    reason: formData.get("reason") as string,
+    notes: (formData.get("notes") as string) || undefined,
+  };
+
+  const result = appointmentFormSchema.safeParse(rawData);
+
+  if (!result.success) {
+    const errors: Record<string, string> = {};
+    for (const issue of result.error.issues) {
+      const field = issue.path[0] as string;
+      if (!errors[field]) errors[field] = issue.message;
+    }
+    return { success: false, error: "Validation failed", errors };
+  }
+
+  const { name, email, phone, date, time, reason, notes } = result.data;
+
+  try {
+    await prisma.appointment.update({
+      where: { id },
+      data: {
+        guestFirstName: name.split(" ")[0],
+        guestLastName: name.split(" ").slice(1).join(" ") || undefined,
+        guestEmail: email,
+        guestPhone: phone,
+        date: new Date(date),
+        time,
+        reason,
+        notes: notes ?? null,
+      },
+    });
+
+    updateTag("appointments");
+    updateTag("appointments-calendar");
+    updateTag("dashboard");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating appointment:", error);
+    return { success: false, error: "Failed to update appointment." };
+  }
+}

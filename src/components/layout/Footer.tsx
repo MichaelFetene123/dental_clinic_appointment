@@ -1,16 +1,23 @@
 "use client";
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Phone, Mail, MapPin, Calendar, ChevronRight } from 'lucide-react';
 import { FaFacebook, FaInstagram, FaTwitter } from 'react-icons/fa';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
+import Form from 'next/form';
 import { usePathname } from 'next/navigation';
 
 const Footer = () => {
   const pathname = usePathname();
   const isAppointmentPage = pathname === '/appointment';
+  
+  const [currentYear, setCurrentYear] = useState<number>(2026);
+  
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
 
   return (
     <div className="w-full bg-background">
@@ -135,7 +142,7 @@ const Footer = () => {
               <p className="font-inter text-base font-normal mb-4 text-primary-foreground/70">
                 Subscribe to our newsletter for dental health tips and updates.
               </p>
-              <form className="space-y-3">
+              <Form action="" className="space-y-3">
                 <Input
                   type="email"
                   placeholder="Your email address"
@@ -147,7 +154,7 @@ const Footer = () => {
                 >
                   Subscribe
                 </Button>
-              </form>
+              </Form>
             </div>
           </div>
 
@@ -155,7 +162,7 @@ const Footer = () => {
           <div className="mt-12 pt-8 border-t border-primary-foreground/20">
             <div className="flex flex-col md:flex-row justify-between items-center gap-6">
               <div className="font-inter text-sm font-normal text-primary-foreground/70">
-                © {new Date().getFullYear()} DentalCare Plus. All rights reserved.
+                © {currentYear} DentalCare Plus. All rights reserved.
               </div>
               <div className="flex gap-4">
                 {[

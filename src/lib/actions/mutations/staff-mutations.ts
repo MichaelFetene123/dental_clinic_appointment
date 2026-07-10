@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { unstable_updateTag as updateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import { Role } from "@prisma/client";
 
 export type ActionResponse<T = void> =

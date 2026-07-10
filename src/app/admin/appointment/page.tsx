@@ -1,5 +1,5 @@
 "use client"
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { AppointmentTable } from '@/components/admin/appointment/appointment-table';
 import Archive from '@/components/admin/appointment/archive';
 import InQueue from '@/components/admin/appointment/inQueue';
@@ -8,7 +8,8 @@ import { AlertTriangleIcon, CalendarCheckIcon, CircleCheckBig, TrendingUpIcon, U
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import AppointmentForm from '@/components/admin/forms/appointmentForm';
-import AppointmentCalendar from '@/components/admin/appointment/AppointmentCalendar';
+import AppointmentCalendar from '@/components/admin/appointment/calendar/AppointmentCalendar';
+import { AppointmentCalendarSkeleton } from '@/lib/skeleton/AppointmentCalendarSkeleton';
 import { useDashboardStats } from '@/hooks/use-dashboard';
 
 const Page = () => {
@@ -62,7 +63,9 @@ const Page = () => {
 
             <SectionCards data={cardData} />
 
-            <AppointmentCalendar />
+            <Suspense fallback={<AppointmentCalendarSkeleton />}>
+                <AppointmentCalendar />
+            </Suspense>
 
             {/* Tab Navigation */}
             <div className="flex gap-4 border-b-2 py-2 px-4">

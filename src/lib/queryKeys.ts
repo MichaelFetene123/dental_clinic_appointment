@@ -8,7 +8,7 @@ export const queryKeys = {
     lists: () => [...queryKeys.appointments.all, 'list'] as const,
     list: (filters?: Record<string, any>) => [...queryKeys.appointments.lists(), { filters }] as const,
     details: () => [...queryKeys.appointments.all, 'detail'] as const,
-    detail: (id: number) => [...queryKeys.appointments.details(), id] as const,
+    detail: (id: string) => [...queryKeys.appointments.details(), id] as const,
     calendar: (month: string) => [...queryKeys.appointments.all, 'calendar', month] as const,
   },
   patients: {
@@ -16,9 +16,9 @@ export const queryKeys = {
     lists: () => [...queryKeys.patients.all, 'list'] as const,
     list: (filters?: Record<string, any>) => [...queryKeys.patients.lists(), { filters }] as const,
     details: () => [...queryKeys.patients.all, 'detail'] as const,
-    detail: (id: number) => [...queryKeys.patients.details(), id] as const,
-    history: (id: number) => [...queryKeys.patients.detail(id), 'history'] as const,
-    documents: (id: number) => [...queryKeys.patients.detail(id), 'documents'] as const,
+    detail: (id: string) => [...queryKeys.patients.details(), id] as const,
+    history: (id: string) => [...queryKeys.patients.detail(id), 'history'] as const,
+    documents: (id: string) => [...queryKeys.patients.detail(id), 'documents'] as const,
   },
   staff: {
     all: ['staff'] as const,

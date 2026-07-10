@@ -2,6 +2,7 @@ import React from 'react'
 import Image from 'next/image'
 import { BiArrowBack } from 'react-icons/bi'
 import Link from 'next/link'
+import Form from 'next/form'
 
 const Page = () => {
     return (
@@ -17,7 +18,7 @@ const Page = () => {
                     <h1 className='text-3xl font-boruna text-accent'>Classic Dental Clinic</h1>
                 </div>
 
-                <form className="w-full flex flex-col gap-[18px] mb-[15px]">
+                <Form action="" className="w-full flex flex-col gap-[18px] mb-[15px]">
                     <input 
                         type="email or phone number" 
                         className="rounded-md border border-input outline-none p-3 w-full bg-background text-foreground" 
@@ -34,7 +35,7 @@ const Page = () => {
                     <button className="py-2.5 px-4 font-inter rounded-full border-0 outline-none bg-primary text-primary-foreground cursor-pointer shadow-md active:shadow-none hover:bg-primary/90 transition-colors">
                         Log in
                     </button>
-                </form>
+                </Form>
             </div>
         </div>
     )

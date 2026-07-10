@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { unstable_updateTag as updateTag } from "next/cache";
+import { updateTag } from "next/cache";
 import { patientFormSchema } from "@/lib/validationSchema";
 import { Gender, BloodType, GumCondition } from "@prisma/client";
 
@@ -58,13 +58,13 @@ export async function createPatient(
           password: data.password, // In a real app, hash this!
           role: "PATIENT",
           phone: data.phone,
-          address: data.address,
         },
       });
 
       const profile = await tx.patientProfile.create({
         data: {
           userId: user.id,
+          address: data.address,
           gender: data.gender as Gender,
           dateOfBirth: new Date(data.dateOfBirth),
           bloodType: data.bloodType as BloodType,
@@ -73,24 +73,18 @@ export async function createPatient(
           emergencyContactPhone: data.emergencyContactPhone,
           insuranceProvider: data.insuranceProvider,
           insuranceNumber: data.insuranceNumber,
-          height: parseFloat(data.height),
-          weight: parseFloat(data.weight),
+          height: data.height,
+          weight: data.weight,
           bloodPressure: data.bloodPressure,
-          heartRate: parseInt(data.heartRate),
-          bloodSugarLevel: parseFloat(data.bloodSugarLevel),
+          heartRate: data.heartRate,
+          bloodSugarLevel: data.bloodSugarLevel,
           allergies: data.allergies,
           medications: data.medications,
           chronicDiseases: data.chronicDiseases,
           lastDentalVisit: new Date(data.lastDentalVisit),
-        },
-      });
-
-      await tx.dentalHistory.create({
-        data: {
-          patientId: profile.id,
           gumCondition: data.gumCondition as GumCondition,
-          toothDecay: parseInt(data.toothDecay),
-          missingTeethCount: parseInt(data.missingTeethCount),
+          toothDecay: data.toothDecay,
+          missingTeethCount: data.missingTeethCount,
           prostheticsUsed: data.prostheticsUsed,
         },
       });

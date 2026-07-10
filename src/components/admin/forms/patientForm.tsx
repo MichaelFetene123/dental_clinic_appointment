@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { ClipboardIcon, PhoneCall, User } from "lucide-react";
 import React, { useState, useRef, useActionState } from "react";
 import { IoClose } from "react-icons/io5";
+import Form from "next/form";
 import { format } from "date-fns";
 import { z } from "zod";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
@@ -109,8 +110,8 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
     setStep((prev) => Math.max(prev - 1, 0));
   };
 
-  // Merge step-level validation errors with action state errors
-  const errors = { ...state?.errors, ...stepErrors };
+  const actionErrors = !state?.success ? state?.errors : undefined;
+  const errors = { ...actionErrors, ...stepErrors };
 
   if (!show) return null;
 
@@ -172,7 +173,7 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
 
         {/* Form Sections */}
         <CardContent className={" overflow-y-auto"}>
-          <form ref={formRef} action={formAction}>
+          <Form ref={formRef} action={formAction}>
             {/* Hidden inputs for controlled components */}
             <input type="hidden" name="role" value="PATIENT" />
             <input type="hidden" name="password" value="" />
@@ -431,7 +432,7 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
                 </Field>
               </div>
             )}
-          </form>
+          </Form>
         </CardContent>
         {/* Navigation Buttons */}
         <CardFooter className="flex justify-between">

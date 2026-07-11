@@ -35,13 +35,17 @@ export type AppointmentListResult = {
 };
 
 export async function getAppointments(
-  status?: AppointmentStatus
+  status?: AppointmentStatus | AppointmentStatus[]
 ): Promise<AppointmentListResult> {
   "use cache";
   cacheTag("appointments");
   cacheLife("hours");
 
-  const where = status ? { status } : {};
+  const where = status
+    ? Array.isArray(status)
+      ? { status: { in: status } }
+      : { status }
+    : {};
 
   const [rows, total] = await Promise.all([
     prisma.appointment.findMany({

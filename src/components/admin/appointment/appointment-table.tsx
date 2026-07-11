@@ -210,7 +210,7 @@ const columns: ColumnDef<AppointmentRow>[] = [
 ]
 
 interface AppointmentTableProps {
-    statusFilter?: AppointmentStatus;
+    statusFilter?: AppointmentStatus | AppointmentStatus[];
 }
 
 export function AppointmentTable({ statusFilter }: AppointmentTableProps = {}) {

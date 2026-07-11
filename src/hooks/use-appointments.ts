@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 
 // ─── Appointment List Query ───────────────────────────────────────────────────
-export function useAppointments(status?: AppointmentStatus) {
+export function useAppointments(status?: AppointmentStatus | AppointmentStatus[]) {
   return useQuery({
     queryKey: queryKeys.appointments.list({ status }),
     queryFn: () => getAppointments(status),

@@ -1,8 +1,6 @@
 "use client"
 import { useState, Suspense } from 'react';
 import { AppointmentTable } from '@/components/admin/appointment/appointment-table';
-import Archive from '@/components/admin/appointment/archive';
-import InQueue from '@/components/admin/appointment/inQueue';
 import { SectionCards } from '@/components/admin/sidebar/section-cards';
 import { AlertTriangleIcon, CalendarCheckIcon, CircleCheckBig, TrendingUpIcon, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,7 +11,7 @@ import { AppointmentCalendarSkeleton } from '@/lib/skeleton/AppointmentCalendarS
 import { useDashboardStats } from '@/hooks/use-dashboard';
 
 const Page = () => {
-    const [activeTab, setActiveTab] = useState<'accepted' | 'confirmed' | 'cancelled' | 'queue' | 'archive'>('accepted');
+    const [activeTab, setActiveTab] = useState<'all' | 'confirmed' | 'queue' | 'archive'>('all');
     const [showForm, setShowForm] = useState(false);
     const { data: dashData } = useDashboardStats();
 
@@ -70,11 +68,18 @@ const Page = () => {
             {/* Tab Navigation */}
             <div className="flex gap-4 border-b-2 py-2 px-4 flex-wrap">
                 <button
-                    className={`relative px-4 py-2 text-foreground transition-all duration-300 ${activeTab === 'accepted' ? 'font-semibold' : 'text-muted-foreground'}`}
-                    onClick={() => setActiveTab('accepted')}
+                    className={`relative px-4 py-2 text-foreground transition-all duration-300 ${activeTab === 'all' ? 'font-semibold' : 'text-muted-foreground'}`}
+                    onClick={() => setActiveTab('all')}
                 >
-                    Accepted
-                    <div className={`absolute left-0 bottom-0 w-full h-0.5 bg-primary transition-all duration-300 ${activeTab === 'accepted' ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}></div>
+                    All Appointments
+                    <div className={`absolute left-0 bottom-0 w-full h-0.5 bg-primary transition-all duration-300 ${activeTab === 'all' ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}></div>
+                </button>
+                <button
+                    className={`relative px-4 py-2 text-foreground transition-all duration-300 ${activeTab === 'queue' ? 'font-semibold' : 'text-muted-foreground'}`}
+                    onClick={() => setActiveTab('queue')}
+                >
+                    In Queue
+                    <div className={`absolute left-0 bottom-0 w-full h-0.5 bg-primary transition-all duration-300 ${activeTab === 'queue' ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}></div>
                 </button>
                 <button
                     className={`relative px-4 py-2 text-foreground transition-all duration-300 ${activeTab === 'confirmed' ? 'font-semibold' : 'text-muted-foreground'}`}
@@ -82,20 +87,6 @@ const Page = () => {
                 >
                     Confirmed
                     <div className={`absolute left-0 bottom-0 w-full h-0.5 bg-primary transition-all duration-300 ${activeTab === 'confirmed' ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}></div>
-                </button>
-                <button
-                    className={`relative px-4 py-2 text-foreground transition-all duration-300 ${activeTab === 'cancelled' ? 'font-semibold' : 'text-muted-foreground'}`}
-                    onClick={() => setActiveTab('cancelled')}
-                >
-                    Cancelled
-                    <div className={`absolute left-0 bottom-0 w-full h-0.5 bg-primary transition-all duration-300 ${activeTab === 'cancelled' ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}></div>
-                </button>
-                <button
-                    className={`relative px-4 py-2 text-foreground transition-all duration-300 ${activeTab === 'queue' ? 'font-semibold' : 'text-muted-foreground'}`}
-                    onClick={() => setActiveTab('queue')}
-                >
-                    Pending
-                    <div className={`absolute left-0 bottom-0 w-full h-0.5 bg-primary transition-all duration-300 ${activeTab === 'queue' ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}></div>
                 </button>
                 <button
                     className={`relative px-4 py-2 text-foreground transition-all duration-300 ${activeTab === 'archive' ? 'font-semibold' : 'text-muted-foreground'}`}
@@ -108,15 +99,26 @@ const Page = () => {
 
             {/* Conditional Rendering with Animation */}
             <AnimatePresence mode="wait">
-                {activeTab === 'accepted' && (
+                {activeTab === 'all' && (
                     <motion.div
-                        key="accepted"
+                        key="all"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
                     >
                         <AppointmentTable />
+                    </motion.div>
+                )}
+                {activeTab === 'queue' && (
+                    <motion.div
+                        key="queue"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <AppointmentTable statusFilter="PENDING" />
                     </motion.div>
                 )}
                 {activeTab === 'confirmed' && (
@@ -130,28 +132,6 @@ const Page = () => {
                         <AppointmentTable statusFilter="CONFIRMED" />
                     </motion.div>
                 )}
-                {activeTab === 'cancelled' && (
-                    <motion.div
-                        key="cancelled"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        <AppointmentTable statusFilter="CANCELLED" />
-                    </motion.div>
-                )}
-                {activeTab === 'queue' && (
-                    <motion.div
-                        key="queue"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.3 }}
-                    >
-                        <InQueue />
-                    </motion.div>
-                )}
                 {activeTab === 'archive' && (
                     <motion.div
                         key="archive"
@@ -160,7 +140,7 @@ const Page = () => {
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
                     >
-                        <Archive />
+                        <AppointmentTable statusFilter={["COMPLETED", "CANCELLED"]} />
                     </motion.div>
                 )}
             </AnimatePresence>

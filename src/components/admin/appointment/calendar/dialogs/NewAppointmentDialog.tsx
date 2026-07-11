@@ -29,6 +29,14 @@ export function NewAppointmentDialog({
 }: NewAppointmentDialogProps) {
     const errors = !state.success ? state.errors : undefined;
 
+    // CLIENT SIDE VALIDATION
+    const isPast = selectedSlot ? (() => {
+        const [hours, minutes] = selectedSlot.time.split(':').map(Number);
+        const selectedDateTime = new Date(selectedSlot.date);
+        selectedDateTime.setHours(hours, minutes, 0, 0);
+        return selectedDateTime < new Date();
+    })() : false;
+
     return (
         <Dialog open={!!selectedSlot} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[550px]">
@@ -40,6 +48,13 @@ export function NewAppointmentDialog({
                     <Form action={formAction} className="space-y-4 py-4">
                         <input type="hidden" name="date" value={format(selectedSlot.date, "yyyy-MM-dd")} />
                         <input type="hidden" name="time" value={selectedSlot.time} />
+
+                        {/* Client-level error for past dates */}
+                        {isPast && (
+                            <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-sm text-center font-medium">
+                                Appointments cannot be scheduled in the past.
+                            </div>
+                        )}
 
                         {/* Slot summary */}
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -70,20 +85,7 @@ export function NewAppointmentDialog({
                             </div>
                         </div>
 
-                        {/* Category (display-only filter, not submitted) */}
-                        <div className="space-y-2">
-                            <Label>Appointment Category</Label>
-                            <Select>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Select category" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="general">General</SelectItem>
-                                    <SelectItem value="treatments">Treatments</SelectItem>
-                                    <SelectItem value="orthodontics">Orthodontics</SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
+
 
                         {/* Appointment type */}
                         <div className="space-y-2">
@@ -119,7 +121,7 @@ export function NewAppointmentDialog({
                             <p className="text-sm text-destructive font-medium">{state.error}</p>
                         )}
 
-                        <Button type="submit" disabled={isPending} className="w-full">
+                        <Button type="submit" disabled={isPending || isPast} className="w-full">
                             {isPending ? "Scheduling..." : "Schedule Appointment"}
                         </Button>
                     </Form>

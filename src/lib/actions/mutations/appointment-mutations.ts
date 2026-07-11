@@ -24,7 +24,18 @@ export async function createAppointment(
     notes: (formData.get("notes") as string) || undefined,
   };
 
-  const result = appointmentFormSchema.safeParse(rawData);
+  const result = appointmentFormSchema.superRefine((data, ctx) => {
+    const [year, month, day] = data.date.split("-").map(Number);
+    const [hours, minutes] = data.time.split(":").map(Number);
+    const selectedDateTime = new Date(year, month - 1, day, hours, minutes);
+    if (selectedDateTime < new Date()) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Appointments cannot be scheduled in the past.",
+        path: ["time"],
+      });
+    }
+  }).safeParse(rawData);
 
   if (!result.success) {
     const errors: Record<string, string> = {};
@@ -37,7 +48,7 @@ export async function createAppointment(
 
   const { name, email, date, time, reason, notes } = result.data;
 
-  await prisma.appointment.create({
+  const appt = await prisma.appointment.create({
     data: {
       guestFirstName: name.split(" ")[0],
       guestLastName: name.split(" ").slice(1).join(" ") || undefined,
@@ -48,11 +59,14 @@ export async function createAppointment(
       notes: notes ?? null,
       status: AppointmentStatus.PENDING,
     },
+    select: { patientId: true },
   });
 
   updateTag("appointments");
   updateTag("appointments-calendar");
   updateTag("dashboard");
+  updateTag("patients");
+  if (appt.patientId) updateTag(`patient-${appt.patientId}`);
 
   return { success: true };
 }
@@ -63,13 +77,17 @@ export async function updateAppointmentStatus(
   status: AppointmentStatus
 ): Promise<ActionResponse> {
   try {
-    await prisma.appointment.update({
+    const appt = await prisma.appointment.update({
       where: { id },
       data: { status },
+      select: { patientId: true },
     });
 
     updateTag("appointments");
     updateTag("dashboard");
+    updateTag("appointments-calendar");
+    updateTag("patients");
+    if (appt.patientId) updateTag(`patient-${appt.patientId}`);
 
     return { success: true };
   } catch {
@@ -82,10 +100,16 @@ export async function deleteAppointment(
   id: string
 ): Promise<ActionResponse> {
   try {
-    await prisma.appointment.delete({ where: { id } });
+    const appt = await prisma.appointment.delete({ 
+      where: { id },
+      select: { patientId: true },
+    });
 
     updateTag("appointments");
     updateTag("dashboard");
+    updateTag("appointments-calendar");
+    updateTag("patients");
+    if (appt.patientId) updateTag(`patient-${appt.patientId}`);
 
     return { success: true };
   } catch {
@@ -107,7 +131,18 @@ export async function createGuestAppointment(
     requestedTime: formData.get("requestedTime") as string,
   };
 
-  const result = appointmentPageSchema.safeParse(rawData);
+  const result = appointmentPageSchema.superRefine((data, ctx) => {
+    const [year, month, day] = data.requestedDate.split("-").map(Number);
+    const [hours, minutes] = data.requestedTime.split(":").map(Number);
+    const selectedDateTime = new Date(year, month - 1, day, hours, minutes);
+    if (selectedDateTime < new Date()) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Appointments cannot be scheduled in the past.",
+        path: ["requestedTime"],
+      });
+    }
+  }).safeParse(rawData);
 
   if (!result.success) {
     const errors: Record<string, string> = {};
@@ -121,7 +156,7 @@ export async function createGuestAppointment(
   const { firstName, lastName, phoneNumber, email, requestedDate, requestedTime } = result.data;
 
   try {
-    await prisma.appointment.create({
+    const appt = await prisma.appointment.create({
       data: {
         guestFirstName: firstName,
         guestLastName: lastName,
@@ -132,11 +167,14 @@ export async function createGuestAppointment(
         reason: "General Consultation",
         status: AppointmentStatus.PENDING,
       },
+      select: { patientId: true },
     });
 
     updateTag("appointments");
     updateTag("appointments-calendar");
     updateTag("dashboard");
+    updateTag("patients");
+    if (appt.patientId) updateTag(`patient-${appt.patientId}`);
 
     return { success: true };
   } catch (error) {
@@ -180,7 +218,7 @@ export async function updateAppointmentAdmin(
   const { name, email, phone, date, time, reason, notes } = result.data;
 
   try {
-    await prisma.appointment.update({
+    const appt = await prisma.appointment.update({
       where: { id },
       data: {
         guestFirstName: name.split(" ")[0],
@@ -192,11 +230,14 @@ export async function updateAppointmentAdmin(
         reason,
         notes: notes ?? null,
       },
+      select: { patientId: true },
     });
 
     updateTag("appointments");
     updateTag("appointments-calendar");
     updateTag("dashboard");
+    updateTag("patients");
+    if (appt.patientId) updateTag(`patient-${appt.patientId}`);
 
     return { success: true };
   } catch (error) {

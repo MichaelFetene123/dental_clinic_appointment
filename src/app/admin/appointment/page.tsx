@@ -13,7 +13,7 @@ import { AppointmentCalendarSkeleton } from '@/lib/skeleton/AppointmentCalendarS
 import { useDashboardStats } from '@/hooks/use-dashboard';
 
 const Page = () => {
-    const [activeTab, setActiveTab] = useState<'accepted' | 'queue' | 'archive'>('accepted');
+    const [activeTab, setActiveTab] = useState<'accepted' | 'confirmed' | 'cancelled' | 'queue' | 'archive'>('accepted');
     const [showForm, setShowForm] = useState(false);
     const { data: dashData } = useDashboardStats();
 
@@ -68,7 +68,7 @@ const Page = () => {
             </Suspense>
 
             {/* Tab Navigation */}
-            <div className="flex gap-4 border-b-2 py-2 px-4">
+            <div className="flex gap-4 border-b-2 py-2 px-4 flex-wrap">
                 <button
                     className={`relative px-4 py-2 text-foreground transition-all duration-300 ${activeTab === 'accepted' ? 'font-semibold' : 'text-muted-foreground'}`}
                     onClick={() => setActiveTab('accepted')}
@@ -77,10 +77,24 @@ const Page = () => {
                     <div className={`absolute left-0 bottom-0 w-full h-0.5 bg-primary transition-all duration-300 ${activeTab === 'accepted' ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}></div>
                 </button>
                 <button
+                    className={`relative px-4 py-2 text-foreground transition-all duration-300 ${activeTab === 'confirmed' ? 'font-semibold' : 'text-muted-foreground'}`}
+                    onClick={() => setActiveTab('confirmed')}
+                >
+                    Confirmed
+                    <div className={`absolute left-0 bottom-0 w-full h-0.5 bg-primary transition-all duration-300 ${activeTab === 'confirmed' ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}></div>
+                </button>
+                <button
+                    className={`relative px-4 py-2 text-foreground transition-all duration-300 ${activeTab === 'cancelled' ? 'font-semibold' : 'text-muted-foreground'}`}
+                    onClick={() => setActiveTab('cancelled')}
+                >
+                    Cancelled
+                    <div className={`absolute left-0 bottom-0 w-full h-0.5 bg-primary transition-all duration-300 ${activeTab === 'cancelled' ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}></div>
+                </button>
+                <button
                     className={`relative px-4 py-2 text-foreground transition-all duration-300 ${activeTab === 'queue' ? 'font-semibold' : 'text-muted-foreground'}`}
                     onClick={() => setActiveTab('queue')}
                 >
-                    In Queue
+                    Pending
                     <div className={`absolute left-0 bottom-0 w-full h-0.5 bg-primary transition-all duration-300 ${activeTab === 'queue' ? 'opacity-100 scale-x-100' : 'opacity-0 scale-x-0'}`}></div>
                 </button>
                 <button
@@ -103,6 +117,28 @@ const Page = () => {
                         transition={{ duration: 0.3 }}
                     >
                         <AppointmentTable />
+                    </motion.div>
+                )}
+                {activeTab === 'confirmed' && (
+                    <motion.div
+                        key="confirmed"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <AppointmentTable statusFilter="CONFIRMED" />
+                    </motion.div>
+                )}
+                {activeTab === 'cancelled' && (
+                    <motion.div
+                        key="cancelled"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <AppointmentTable statusFilter="CANCELLED" />
                     </motion.div>
                 )}
                 {activeTab === 'queue' && (

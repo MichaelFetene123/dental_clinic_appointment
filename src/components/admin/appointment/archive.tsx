@@ -1,9 +1,7 @@
-import React from 'react'
+"use client"
 
-const Archive = () => {
-  return (
-    <div>archive</div>
-  )
+import { AppointmentTable } from "@/components/admin/appointment/appointment-table"
+
+export default function Archive() {
+    return <AppointmentTable statusFilter="COMPLETED" />
 }
-
-export default Archive

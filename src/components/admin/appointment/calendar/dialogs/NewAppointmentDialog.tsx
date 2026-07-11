@@ -16,6 +16,7 @@ interface NewAppointmentDialogProps {
     selectedSlot: { date: Date; time: string } | null;
     onClose:      () => void;
     formAction:   (payload: FormData) => void;
+    onSubmit:     () => void;
     state:        ActionResponse;
     isPending:    boolean;
 }
@@ -24,6 +25,7 @@ export function NewAppointmentDialog({
     selectedSlot,
     onClose,
     formAction,
+    onSubmit,
     state,
     isPending,
 }: NewAppointmentDialogProps) {
@@ -45,7 +47,13 @@ export function NewAppointmentDialog({
                 </DialogHeader>
 
                 {selectedSlot && (
-                    <Form action={formAction} className="space-y-4 py-4">
+                    <Form
+                        action={(formData) => {
+                            onSubmit();
+                            formAction(formData);
+                        }}
+                        className="space-y-4 py-4"
+                    >
                         <input type="hidden" name="date" value={format(selectedSlot.date, "yyyy-MM-dd")} />
                         <input type="hidden" name="time" value={selectedSlot.time} />
 

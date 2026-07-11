@@ -36,24 +36,34 @@ export default function AppointmentCalendar() {
     const [selectedSlot, setSelectedSlot] = useState<{ date: Date; time: string } | null>(null);
     const [pendingSlot, setPendingSlot] = useState<{ date: string; time: string } | null>(null);
 
-    // Ref to capture selectedSlot inside the effect without adding it to deps
-    const selectedSlotRef = useRef<{ date: Date; time: string } | null>(null);
-    selectedSlotRef.current = selectedSlot;
+    // Track the slot that was active when the form was submitted
+    // (selectedSlot may be cleared before the effect fires)
+    const submittedSlotRef = useRef<{ date: Date; time: string } | null>(null);
+
+    // Detect a *new* success response — useActionState never resets state between
+    // submissions, so depending on state.success alone skips the effect on repeat submits.
+    const prevStateRef = useRef<ActionResponse | null>(null);
 
     useEffect(() => {
+        // Only react when a genuinely new state object has arrived AND it's a success.
+        // This ensures repeated submissions each trigger the toast + close.
+        if (prevStateRef.current === state) return;
+        prevStateRef.current = state;
+
         if (state.success) {
-            if (selectedSlotRef.current) {
+            if (submittedSlotRef.current) {
                 setPendingSlot({
-                    date: format(selectedSlotRef.current.date, "yyyy-MM-dd"),
-                    time: selectedSlotRef.current.time,
+                    date: format(submittedSlotRef.current.date, "yyyy-MM-dd"),
+                    time: submittedSlotRef.current.time,
                 });
+                submittedSlotRef.current = null;
             }
             setSelectedSlot(null);
             toast.success("Appointment successfully scheduled!");
             queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
             queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
         }
-    }, [state.success, queryClient]);
+    }, [state, queryClient]);
 
     // Clear the optimistic skeleton once the refetch settles
     useEffect(() => {
@@ -167,6 +177,7 @@ export default function AppointmentCalendar() {
                     selectedSlot={selectedSlot}
                     onClose={() => setSelectedSlot(null)}
                     formAction={formAction}
+                    onSubmit={() => { submittedSlotRef.current = selectedSlot; }}
                     state={state}
                     isPending={isPending}
                 />

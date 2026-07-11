@@ -165,6 +165,11 @@ const columns: ColumnDef<AppointmentRow>[] = [
         cell: ({ row }) => <div className="font-medium">{row.getValue("patientName")}</div>,
     },
     {
+        accessorKey: "patientPhone",
+        header: "Phone",
+        cell: ({ row }) => <div className="text-sm">{row.getValue("patientPhone") || "N/A"}</div>,
+    },
+    {
         accessorKey: "date",
         header: ({ column }) => (
             <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>

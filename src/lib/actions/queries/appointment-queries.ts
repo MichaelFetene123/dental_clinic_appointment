@@ -14,6 +14,7 @@ export type AppointmentRow = {
   time: string;
   patientName: string;
   patientEmail: string | null;
+  patientPhone: string | null;
 };
 
 export type CalendarAppointment = {
@@ -47,7 +48,7 @@ export async function getAppointments(
       where,
       orderBy: { createdAt: "desc" },
       include: {
-        patient: { include: { user: { select: { name: true, email: true } } } },
+        patient: { include: { user: { select: { name: true, email: true, phone: true } } } },
       },
     }),
     prisma.appointment.count({ where }),
@@ -66,6 +67,7 @@ export async function getAppointments(
         (`${a.guestFirstName ?? ""} ${a.guestLastName ?? ""}`.trim() ||
           "Guest"),
       patientEmail: a.patient?.user.email ?? a.guestEmail ?? null,
+      patientPhone: a.patient?.user.phone ?? a.guestPhone ?? null,
     })),
     total,
   };

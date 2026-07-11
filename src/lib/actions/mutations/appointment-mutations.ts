@@ -46,13 +46,14 @@ export async function createAppointment(
     return { success: false, error: "Validation failed", errors };
   }
 
-  const { name, email, date, time, reason, notes } = result.data;
+  const { name, email, phone, date, time, reason, notes } = result.data;
 
   const appt = await prisma.appointment.create({
     data: {
       guestFirstName: name.split(" ")[0],
       guestLastName: name.split(" ").slice(1).join(" ") || undefined,
       guestEmail: email,
+      guestPhone: phone,
       date: new Date(date),
       time,
       reason,

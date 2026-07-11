@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useRef, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast }   from "sonner";
 import { format }  from "date-fns";
@@ -32,9 +32,45 @@ export function EditAppointmentForm({
     );
     const editErrors = !editState.success ? editState.errors : undefined;
 
+    // Track whether the submitted data differed from the original appointment
+    const hadChangesRef = useRef(false);
+
+    const handleSubmit = useCallback(
+        (formData: FormData) => {
+            const name  = formData.get("name") as string;
+            const email = formData.get("email") as string;
+            const phone = formData.get("phone") as string;
+            const date  = formData.get("date") as string;
+            const time  = formData.get("time") as string;
+            const reason = formData.get("reason") as string;
+            const notes = (formData.get("notes") as string) ?? "";
+
+            const originalDate  = format(selectedAppointment.date, "yyyy-MM-dd");
+            const originalNotes = selectedAppointment.notes !== "N/A" ? selectedAppointment.notes : "";
+            const originalPhone = selectedAppointment.phone !== "N/A" ? selectedAppointment.phone : "";
+            const originalEmail = selectedAppointment.email !== "N/A" ? selectedAppointment.email : "";
+
+            hadChangesRef.current =
+                name   !== selectedAppointment.patient ||
+                email  !== originalEmail ||
+                phone  !== originalPhone ||
+                date   !== originalDate ||
+                time   !== selectedAppointment.time ||
+                reason !== selectedAppointment.type ||
+                notes  !== originalNotes;
+
+            editAction(formData);
+        },
+        [editAction, selectedAppointment]
+    );
+
     useEffect(() => {
         if (editState.success) {
-            toast.success("Appointment successfully updated!");
+            if (hadChangesRef.current) {
+                toast.success("Appointment successfully updated!");
+            } else {
+                toast.warning("No changes were made to the appointment.");
+            }
             queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
             queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
             onSuccess();
@@ -42,7 +78,7 @@ export function EditAppointmentForm({
     }, [editState.success, queryClient, onSuccess]);
 
     return (
-        <Form action={editAction} className="space-y-4 py-4">
+        <Form action={handleSubmit} className="space-y-4 py-4">
             <input type="hidden" name="id" value={selectedAppointment.id} />
 
             {/* Patient name */}

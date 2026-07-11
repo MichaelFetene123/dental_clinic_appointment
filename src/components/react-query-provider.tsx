@@ -11,7 +11,11 @@ export default function ReactQueryProvider({ children }: { children: React.React
       new QueryClient({
         queryCache: new QueryCache({
           onError: (error) => {
-            toast.error(`Network or Server Error: ${error.message}`);
+            // Log full error details for debugging
+            console.error("Query Error:", error);
+            
+            // Show a clean, user-friendly message
+            toast.error("Unable to load data. Please check your connection and try again.");
           },
         }),
         defaultOptions: {

@@ -13,7 +13,10 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, Eye, Trash2, CheckCircle, XCircle } from "lucide-react"
+import { ArrowUpDown, Eye, Trash2, CheckCircle, XCircle, Calendar, Clock, Phone, FileText } from "lucide-react"
+
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Separator } from "@/components/ui/separator"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -27,6 +30,13 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import {
@@ -220,6 +230,7 @@ export function AppointmentTable({ statusFilter }: AppointmentTableProps = {}) {
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
     const [rowSelection, setRowSelection] = React.useState({})
     const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 10 })
+    const [selectedAppointment, setSelectedAppointment] = React.useState<AppointmentRow | null>(null)
 
     const tableData = data?.data ?? []
 
@@ -286,9 +297,20 @@ export function AppointmentTable({ statusFilter }: AppointmentTableProps = {}) {
                         <TableBody>
                             {table.getRowModel().rows.length ? (
                                 table.getRowModel().rows.map((row) => (
-                                    <TableRow key={row.id}>
+                                    <TableRow 
+                                        key={row.id}
+                                        className="cursor-pointer hover:bg-muted/50"
+                                        onClick={() => setSelectedAppointment(row.original)}
+                                    >
                                         {row.getVisibleCells().map((cell) => (
-                                            <TableCell key={cell.id}>
+                                            <TableCell 
+                                                key={cell.id}
+                                                onClick={(e) => {
+                                                    if (cell.column.id === "select" || cell.column.id === "actions") {
+                                                        e.stopPropagation();
+                                                    }
+                                                }}
+                                            >
                                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                             </TableCell>
                                         ))}
@@ -342,6 +364,83 @@ export function AppointmentTable({ statusFilter }: AppointmentTableProps = {}) {
                     </div>
                 </div>
             </CardContent>
+
+            <Dialog open={!!selectedAppointment} onOpenChange={(open) => !open && setSelectedAppointment(null)}>
+                <DialogContent className="sm:max-w-xl md:max-w-2xl w-[95vw]">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl">Appointment Details</DialogTitle>
+                        <DialogDescription>
+                            Review the complete details of this appointment.
+                        </DialogDescription>
+                    </DialogHeader>
+                    {selectedAppointment && (
+                        <div className="space-y-6 mt-4">
+                            {/* Header Section */}
+                            <Card className="bg-muted border-border/50 shadow-sm">
+                                <CardContent className="p-5 flex items-start justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <Avatar className="h-14 w-14 border-2">
+                                            <AvatarFallback className="bg-primary/10 text-primary font-bold text-xl">
+                                                {selectedAppointment.patientName.charAt(0).toUpperCase()}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <h3 className="text-xl font-semibold leading-tight">{selectedAppointment.patientName}</h3>
+                                            <div className="flex items-center text-sm text-muted-foreground mt-2">
+                                                <Phone className="mr-2 h-4 w-4" />
+                                                {selectedAppointment.patientPhone || "N/A"}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span className={`inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase shadow-sm ${statusColors[selectedAppointment.status]}`}>
+                                        {selectedAppointment.status}
+                                    </span>
+                                </CardContent>
+                            </Card>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {/* Date & Time Section */}
+                                <Card className="bg-muted border-border/50 shadow-sm">
+                                    <CardContent className="p-5">
+                                        <div className="space-y-4">
+                                            <div>
+                                                <div className="flex items-center text-sm text-muted-foreground mb-1.5 font-medium">
+                                                    <Calendar className="mr-2 h-4 w-4" /> Date
+                                                </div>
+                                                <p className="font-semibold text-foreground md:text-lg ml-6">
+                                                    {format(new Date(selectedAppointment.date), "EEEE, MMMM d, yyyy")}
+                                                </p>
+                                            </div>
+                                            <Separator />
+                                            <div>
+                                                <div className="flex items-center text-sm text-muted-foreground mb-1.5 font-medium">
+                                                    <Clock className="mr-2 h-4 w-4" /> Time
+                                                </div>
+                                                <p className="font-semibold text-foreground md:text-lg ml-6">
+                                                    {selectedAppointment.time}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Reason Section */}
+                                <Card className="bg-muted border-border/50 shadow-sm">
+                                    <CardContent className="p-5 h-full flex flex-col">
+                                        <div className="flex items-center text-sm font-semibold mb-3 text-muted-foreground">
+                                            <FileText className="mr-2 h-4 w-4" /> 
+                                            Reason for Visit
+                                        </div>
+                                        <div className="flex-1 text-sm md:text-base text-foreground/90 leading-relaxed">
+                                            {selectedAppointment.reason}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </div>
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
         </Card>
     )
 }

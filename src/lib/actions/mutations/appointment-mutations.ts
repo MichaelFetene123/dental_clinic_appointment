@@ -48,28 +48,33 @@ export async function createAppointment(
 
   const { name, email, phone, date, time, reason, notes } = result.data;
 
-  const appt = await prisma.appointment.create({
-    data: {
-      guestFirstName: name.split(" ")[0],
-      guestLastName: name.split(" ").slice(1).join(" ") || undefined,
-      guestEmail: email,
-      guestPhone: phone,
-      date: new Date(date),
-      time,
-      reason,
-      notes: notes ?? null,
-      status: AppointmentStatus.PENDING,
-    },
-    select: { patientId: true },
-  });
+  try {
+    const appt = await prisma.appointment.create({
+      data: {
+        guestFirstName: name.split(" ")[0],
+        guestLastName: name.split(" ").slice(1).join(" ") || undefined,
+        guestEmail: email,
+        guestPhone: phone,
+        date: new Date(date),
+        time,
+        reason,
+        notes: notes ?? null,
+        status: AppointmentStatus.PENDING,
+      },
+      select: { patientId: true },
+    });
 
-  updateTag("appointments");
-  updateTag("appointments-calendar");
-  updateTag("dashboard");
-  updateTag("patients");
-  if (appt.patientId) updateTag(`patient-${appt.patientId}`);
+    updateTag("appointments");
+    updateTag("appointments-calendar");
+    updateTag("dashboard");
+    updateTag("patients");
+    if (appt.patientId) updateTag(`patient-${appt.patientId}`);
 
-  return { success: true };
+    return { success: true };
+  } catch (error) {
+    console.error("Error creating appointment:", error);
+    return { success: false, error: "Failed to create appointment. Please try again." };
+  }
 }
 
 // ─── Update appointment status ─────────────────────────────────────────────────
@@ -91,7 +96,8 @@ export async function updateAppointmentStatus(
     if (appt.patientId) updateTag(`patient-${appt.patientId}`);
 
     return { success: true };
-  } catch {
+  } catch (error) {
+    console.error("Error updating appointment status:", error);
     return { success: false, error: "Failed to update appointment status." };
   }
 }

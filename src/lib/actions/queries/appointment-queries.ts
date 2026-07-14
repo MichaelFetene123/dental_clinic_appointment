@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { cacheTag, cacheLife } from "next/cache";
-import { AppointmentStatus } from "@prisma/client";
+import { AppointmentStatus } from "@/app/generated/prisma/client";
 import { format } from "date-fns";
 
 export type AppointmentRow = {
@@ -52,7 +52,7 @@ export async function getAppointments(
       where,
       orderBy: { createdAt: "desc" },
       include: {
-        patient: { include: { user: { select: { name: true, email: true, phone: true } } } },
+        patient: true,
       },
     }),
     prisma.appointment.count({ where }),
@@ -66,12 +66,9 @@ export async function getAppointments(
       notes: a.notes,
       date: a.date,
       time: a.time,
-      patientName:
-        a.patient?.user.name ??
-        (`${a.guestFirstName ?? ""} ${a.guestLastName ?? ""}`.trim() ||
-          "Guest"),
-      patientEmail: a.patient?.user.email ?? a.guestEmail ?? null,
-      patientPhone: a.patient?.user.phone ?? a.guestPhone ?? null,
+      patientName: a.patient.name,
+      patientEmail: a.patient.email,
+      patientPhone: a.patient.phone,
     })),
     total,
   };
@@ -91,7 +88,7 @@ export async function getCalendarAppointments(
   const rows = await prisma.appointment.findMany({
     where: { date: { gte: start, lte: end } },
     include: {
-      patient: { include: { user: { select: { name: true, email: true, phone: true } } } },
+      patient: true,
     },
   });
 
@@ -101,12 +98,9 @@ export async function getCalendarAppointments(
     time: a.time,
     status: a.status,
     reason: a.reason,
-    patientName:
-      a.patient?.user.name ??
-      (`${a.guestFirstName ?? ""} ${a.guestLastName ?? ""}`.trim() ||
-        "Guest"),
-    patientEmail: a.patient?.user.email ?? a.guestEmail ?? null,
-    patientPhone: a.patient?.user.phone ?? a.guestPhone ?? null,
+    patientName: a.patient.name,
+    patientEmail: a.patient.email,
+    patientPhone: a.patient.phone,
     notes: a.notes ?? null,
   }));
 }

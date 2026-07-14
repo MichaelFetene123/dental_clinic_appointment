@@ -14,7 +14,6 @@ datasource db {
 enum Role {
   ADMIN
   DOCTOR
-  PATIENT
   RECEPTIONIST
 }
 
@@ -70,13 +69,13 @@ model User {
   password String // Hashed password
   name     String
   phone    String?
-  role     Role    @default(PATIENT)
+  role     Role    @default(RECEPTIONIST)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  patientProfile  PatientProfile?
+  patient         Patient? // Optional link to a Patient (for portal access)
   employeeProfile EmployeeProfile?
 
   // Appointments where this user is the doctor
@@ -95,10 +94,18 @@ model EmployeeProfile {
   updatedAt DateTime @updatedAt
 }
 
-model PatientProfile {
-  id     String @id @default(cuid())
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+// ─── Patient is now an independent root entity ────────────────────────────────
+// A patient does NOT need a User account to exist.
+// userId is optional — only set if the patient has been granted portal access.
+model Patient {
+  id     String  @id @default(cuid())
+  userId String? @unique
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Core contact info stored directly on the Patient
+  name  String
+  email String?
+  phone String?
 
   // Basic Info
   address     String?
@@ -137,20 +144,16 @@ model PatientProfile {
   appointments     Appointment[]
   dentalHistory    DentalHistory[]
   medicalDocuments MedicalDocument[]
+
+  @@map("PatientProfile")
 }
 
 model Appointment {
   id String @id @default(cuid())
 
-  // If the appointment belongs to a registered patient
-  patientId String?
-  patient   PatientProfile? @relation(fields: [patientId], references: [id], onDelete: SetNull)
-
-  // For Guest bookings (no account)
-  guestFirstName String?
-  guestLastName  String?
-  guestEmail     String?
-  guestPhone     String?
+  // Every appointment MUST belong to a Patient
+  patientId String
+  patient   Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
 
   // Assigned Doctor
   doctorId String?
@@ -174,7 +177,7 @@ model DentalHistory {
   id String @id @default(cuid())
 
   patientId String
-  patient   PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patient   Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
 
   appointmentId String?      @unique
   appointment   Appointment? @relation(fields: [appointmentId], references: [id], onDelete: SetNull)
@@ -193,7 +196,7 @@ model MedicalDocument {
   id String @id @default(cuid())
 
   patientId String
-  patient   PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patient   Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
 
   name      String // e.g., "X-Ray_Report.pdf"
   fileUrl   String // S3 URL or local path

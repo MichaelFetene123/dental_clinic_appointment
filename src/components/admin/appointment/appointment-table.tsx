@@ -64,7 +64,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import { format } from "date-fns"
-import type { AppointmentStatus } from "@prisma/client"
+import type { AppointmentStatus } from "@/app/generated/prisma/client"
 import { useAppointments, useDeleteAppointment, useUpdateAppointmentStatus } from "@/hooks/use-appointments"
 import type { AppointmentRow } from "@/lib/actions/queries/appointment-queries"
 

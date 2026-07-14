@@ -4,7 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryKeys";
 import { getAppointments, getCalendarAppointments } from "@/lib/actions/queries/appointment-queries";
 import { updateAppointmentStatus, deleteAppointment } from "@/lib/actions/mutations/appointment-mutations";
-import type { AppointmentStatus } from "@prisma/client";
+import type { AppointmentStatus } from "@/app/generated/prisma/client";
 import { toast } from "sonner";
 import { format } from "date-fns";
 

@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { updateTag } from "next/cache";
-import { AppointmentStatus } from "@prisma/client";
+import { AppointmentStatus } from "@/app/generated/prisma/client";
 import { appointmentFormSchema, appointmentPageSchema } from "@/lib/validationSchema";
 
 export type ActionResponse<T = void> =
@@ -10,13 +10,14 @@ export type ActionResponse<T = void> =
   | { success: false; error: string; errors?: Record<string, string> };
 
 // ─── Create appointment (Admin form) ──────────────────────────────────────────
+// Always creates or finds a Patient record first, then links the Appointment.
 export async function createAppointment(
   _prevState: ActionResponse,
   formData: FormData
 ): Promise<ActionResponse> {
   const rawData = {
     name: formData.get("name") as string,
-    email: formData.get("email") as string,
+    email: (formData.get("email") as string) || "",
     phone: formData.get("phone") as string,
     date: formData.get("date") as string,
     time: formData.get("time") as string,
@@ -49,26 +50,31 @@ export async function createAppointment(
   const { name, email, phone, date, time, reason, notes } = result.data;
 
   try {
-    const appt = await prisma.appointment.create({
+    // Step 1: Create a Patient record for this person
+    const patient = await prisma.patient.create({
       data: {
-        guestFirstName: name.split(" ")[0],
-        guestLastName: name.split(" ").slice(1).join(" ") || undefined,
-        guestEmail: email,
-        guestPhone: phone,
+        name,
+        email: email || null,
+        phone: phone || null,
+      },
+    });
+
+    // Step 2: Create the Appointment linked to the Patient
+    await prisma.appointment.create({
+      data: {
+        patientId: patient.id,
         date: new Date(date),
         time,
         reason,
         notes: notes ?? null,
         status: AppointmentStatus.PENDING,
       },
-      select: { patientId: true },
     });
 
     updateTag("appointments");
     updateTag("appointments-calendar");
     updateTag("dashboard");
     updateTag("patients");
-    if (appt.patientId) updateTag(`patient-${appt.patientId}`);
 
     return { success: true };
   } catch (error) {
@@ -93,7 +99,7 @@ export async function updateAppointmentStatus(
     updateTag("dashboard");
     updateTag("appointments-calendar");
     updateTag("patients");
-    if (appt.patientId) updateTag(`patient-${appt.patientId}`);
+    updateTag(`patient-${appt.patientId}`);
 
     return { success: true };
   } catch (error) {
@@ -116,15 +122,17 @@ export async function deleteAppointment(
     updateTag("dashboard");
     updateTag("appointments-calendar");
     updateTag("patients");
-    if (appt.patientId) updateTag(`patient-${appt.patientId}`);
+    updateTag(`patient-${appt.patientId}`);
 
     return { success: true };
-  } catch {
+  } catch (error) {
+    console.error("Error deleting appointment:", error);
     return { success: false, error: "Failed to delete appointment." };
   }
 }
 
 // ─── Create guest appointment (Public booking form) ───────────────────────────
+// Creates a Patient record for the visitor, then links the Appointment.
 export async function createGuestAppointment(
   _prevState: ActionResponse,
   formData: FormData
@@ -163,25 +171,30 @@ export async function createGuestAppointment(
   const { firstName, lastName, phoneNumber, email, requestedDate, requestedTime } = result.data;
 
   try {
-    const appt = await prisma.appointment.create({
+    // Step 1: Create a Patient record for this visitor
+    const patient = await prisma.patient.create({
       data: {
-        guestFirstName: firstName,
-        guestLastName: lastName,
-        guestEmail: email,
-        guestPhone: phoneNumber,
+        name: `${firstName} ${lastName}`.trim(),
+        email: email || null,
+        phone: phoneNumber || null,
+      },
+    });
+
+    // Step 2: Create the Appointment linked to the Patient
+    await prisma.appointment.create({
+      data: {
+        patientId: patient.id,
         date: new Date(requestedDate),
         time: requestedTime,
         reason: "General Consultation",
         status: AppointmentStatus.PENDING,
       },
-      select: { patientId: true },
     });
 
     updateTag("appointments");
     updateTag("appointments-calendar");
     updateTag("dashboard");
     updateTag("patients");
-    if (appt.patientId) updateTag(`patient-${appt.patientId}`);
 
     return { success: true };
   } catch (error) {
@@ -193,7 +206,8 @@ export async function createGuestAppointment(
   }
 }
 
-// ─── Update appointment (Admin form) ──────────────────────────────────────────
+// ─── Update appointment (Admin edit form) ─────────────────────────────────────
+// Updates both the Appointment and the linked Patient's contact info.
 export async function updateAppointmentAdmin(
   _prevState: ActionResponse,
   formData: FormData
@@ -203,7 +217,7 @@ export async function updateAppointmentAdmin(
 
   const rawData = {
     name: formData.get("name") as string,
-    email: formData.get("email") as string,
+    email: (formData.get("email") as string) || "",
     phone: formData.get("phone") as string,
     date: formData.get("date") as string,
     time: formData.get("time") as string,
@@ -225,26 +239,42 @@ export async function updateAppointmentAdmin(
   const { name, email, phone, date, time, reason, notes } = result.data;
 
   try {
-    const appt = await prisma.appointment.update({
+    // Fetch the appointment to get the patientId
+    const existing = await prisma.appointment.findUnique({
       where: { id },
-      data: {
-        guestFirstName: name.split(" ")[0],
-        guestLastName: name.split(" ").slice(1).join(" ") || undefined,
-        guestEmail: email,
-        guestPhone: phone,
-        date: new Date(date),
-        time,
-        reason,
-        notes: notes ?? null,
-      },
       select: { patientId: true },
     });
+
+    if (!existing) {
+      return { success: false, error: "Appointment not found." };
+    }
+
+    // Update both the Patient's contact info and the Appointment details in parallel
+    await Promise.all([
+      prisma.patient.update({
+        where: { id: existing.patientId },
+        data: {
+          name,
+          email: email || null,
+          phone: phone || null,
+        },
+      }),
+      prisma.appointment.update({
+        where: { id },
+        data: {
+          date: new Date(date),
+          time,
+          reason,
+          notes: notes ?? null,
+        },
+      }),
+    ]);
 
     updateTag("appointments");
     updateTag("appointments-calendar");
     updateTag("dashboard");
     updateTag("patients");
-    if (appt.patientId) updateTag(`patient-${appt.patientId}`);
+    updateTag(`patient-${existing.patientId}`);
 
     return { success: true };
   } catch (error) {

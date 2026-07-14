@@ -140,9 +140,12 @@ exports.Prisma.EmployeeProfileScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.PatientProfileScalarFieldEnum = {
+exports.Prisma.PatientScalarFieldEnum = {
   id: 'id',
   userId: 'userId',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
   address: 'address',
   gender: 'gender',
   dateOfBirth: 'dateOfBirth',
@@ -172,10 +175,6 @@ exports.Prisma.PatientProfileScalarFieldEnum = {
 exports.Prisma.AppointmentScalarFieldEnum = {
   id: 'id',
   patientId: 'patientId',
-  guestFirstName: 'guestFirstName',
-  guestLastName: 'guestLastName',
-  guestEmail: 'guestEmail',
-  guestPhone: 'guestPhone',
   doctorId: 'doctorId',
   date: 'date',
   time: 'time',
@@ -226,7 +225,6 @@ exports.Prisma.NullsOrder = {
 exports.Role = exports.$Enums.Role = {
   ADMIN: 'ADMIN',
   DOCTOR: 'DOCTOR',
-  PATIENT: 'PATIENT',
   RECEPTIONIST: 'RECEPTIONIST'
 };
 
@@ -275,7 +273,7 @@ exports.PaymentStatus = exports.$Enums.PaymentStatus = {
 exports.Prisma.ModelName = {
   User: 'User',
   EmployeeProfile: 'EmployeeProfile',
-  PatientProfile: 'PatientProfile',
+  Patient: 'Patient',
   Appointment: 'Appointment',
   DentalHistory: 'DentalHistory',
   MedicalDocument: 'MedicalDocument'

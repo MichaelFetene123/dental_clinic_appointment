@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { cacheTag, cacheLife } from "next/cache";
-import { AppointmentStatus } from "@prisma/client";
+import { AppointmentStatus } from "@/app/generated/prisma/client";
 
 export type DashboardStats = {
   totalPatients: number;
@@ -38,7 +38,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     recentAppointments,
   ] = await Promise.all([
     // Total registered patients
-    prisma.patientProfile.count(),
+    prisma.patient.count(),
 
     // Appointments confirmed (accepted)
     prisma.appointment.count({
@@ -60,9 +60,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       take: 5,
       orderBy: { createdAt: "desc" },
       include: {
-        patient: {
-          include: { user: { select: { name: true } } },
-        },
+        patient: true,
       },
     }),
   ]);
@@ -76,7 +74,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     },
     recentAppointments: recentAppointments.map((appt) => ({
       id: appt.id,
-      patientName: appt.patient?.user.name ?? `${appt.guestFirstName ?? ""} ${appt.guestLastName ?? ""}`.trim(),
+      patientName: appt.patient.name,
       reason: appt.reason,
       date: appt.date,
       time: appt.time,

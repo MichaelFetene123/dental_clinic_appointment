@@ -26,45 +26,39 @@ export async function getPatients(): Promise<PatientListResult> {
   cacheTag("patients");
   cacheLife("hours");
 
-  const [users, total] = await Promise.all([
-    prisma.user.findMany({
-      where: { role: "PATIENT" },
+  const [patients, total] = await Promise.all([
+    prisma.patient.findMany({
       include: {
-        patientProfile: {
-          include: {
-            appointments: {
-              orderBy: { date: "desc" },
-              take: 1,
-            },
-            dentalHistory: true,
-          },
+        appointments: {
+          orderBy: { date: "desc" },
+          take: 1,
         },
+        dentalHistory: true,
       },
       orderBy: { createdAt: "desc" },
     }),
-    prisma.user.count({ where: { role: "PATIENT" } }),
+    prisma.patient.count(),
   ]);
 
-  const data: PatientRow[] = users.map((user) => {
-    const profile = user.patientProfile;
-    const lastAppt = profile?.appointments[0];
+  const data: PatientRow[] = patients.map((patient) => {
+    const lastAppt = patient.appointments[0];
     
     // Calculate age
     let age = null;
-    if (profile?.dateOfBirth) {
-      const diffMs = Date.now() - profile.dateOfBirth.getTime();
+    if (patient.dateOfBirth) {
+      const diffMs = Date.now() - patient.dateOfBirth.getTime();
       const ageDt = new Date(diffMs);
       age = Math.abs(ageDt.getUTCFullYear() - 1970);
     }
 
     return {
-      id: profile?.id ?? user.id, // Using profile ID as patient ID
-      name: user.name,
-      email: user.email,
-      phone: user.phone ?? "N/A",
+      id: patient.id,
+      name: patient.name,
+      email: patient.email || "N/A",
+      phone: patient.phone || "N/A",
       age,
-      gender: profile?.gender ?? "N/A",
-      lastVisited: profile?.lastDentalVisit ? profile.lastDentalVisit.toISOString().split("T")[0] : null,
+      gender: patient.gender ?? "N/A",
+      lastVisited: patient.lastDentalVisit ? patient.lastDentalVisit.toISOString().split("T")[0] : null,
       appointmentDate: lastAppt ? lastAppt.date.toISOString().split("T")[0] : null,
       dueDate: null, // Replace with real billing logic when implemented
       dueStatus: "Paid", // Replace with real billing logic when implemented
@@ -79,10 +73,10 @@ export async function getPatientDetail(id: string) {
   cacheTag(`patient-${id}`);
   cacheLife("hours");
 
-  const patient = await prisma.patientProfile.findUnique({
+  const patient = await prisma.patient.findUnique({
     where: { id },
     include: {
-      user: true,
+      user: true, // optional if linked to portal
       dentalHistory: true,
       appointments: {
         orderBy: { date: "desc" },

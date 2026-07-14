@@ -3,7 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { updateTag } from "next/cache";
 import { patientFormSchema } from "@/lib/validationSchema";
-import { Gender, BloodType, GumCondition } from "@prisma/client";
+import { Gender, BloodType, GumCondition } from "@/app/generated/prisma/client";
 
 export type ActionResponse<T = void> =
   | { success: true; data?: T }
@@ -17,10 +17,6 @@ export async function createPatient(
   formData.forEach((value, key) => {
     rawData[key] = value as string;
   });
-
-  // Default values
-  rawData.role = "PATIENT";
-  rawData.password = rawData.password || "default-password-change-me"; // Dummy password for manual patient creation by admin
 
   const result = patientFormSchema.safeParse(rawData);
 
@@ -36,58 +32,34 @@ export async function createPatient(
   const data = result.data;
 
   try {
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email: data.email },
-    });
-
-    if (existingUser) {
-      return {
-        success: false,
-        error: "A user with this email already exists.",
-        errors: { email: "Email already exists" },
-      };
-    }
-
-    // Use transaction to create user, profile, and dental history
-    await prisma.$transaction(async (tx) => {
-      const user = await tx.user.create({
-        data: {
-          name: data.name,
-          email: data.email,
-          password: data.password, // In a real app, hash this!
-          role: "PATIENT",
-          phone: data.phone,
-        },
-      });
-
-      const profile = await tx.patientProfile.create({
-        data: {
-          userId: user.id,
-          address: data.address,
-          gender: data.gender as Gender,
-          dateOfBirth: new Date(data.dateOfBirth),
-          bloodType: data.bloodType as BloodType,
-          medicalHistory: data.medicalHistory,
-          emergencyContactName: data.emergencyContactName,
-          emergencyContactPhone: data.emergencyContactPhone,
-          insuranceProvider: data.insuranceProvider,
-          insuranceNumber: data.insuranceNumber,
-          height: data.height,
-          weight: data.weight,
-          bloodPressure: data.bloodPressure,
-          heartRate: data.heartRate,
-          bloodSugarLevel: data.bloodSugarLevel,
-          allergies: data.allergies,
-          medications: data.medications,
-          chronicDiseases: data.chronicDiseases,
-          lastDentalVisit: new Date(data.lastDentalVisit),
-          gumCondition: data.gumCondition as GumCondition,
-          toothDecay: data.toothDecay,
-          missingTeethCount: data.missingTeethCount,
-          prostheticsUsed: data.prostheticsUsed,
-        },
-      });
+    const patient = await prisma.patient.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        address: data.address,
+        gender: data.gender as Gender,
+        dateOfBirth: new Date(data.dateOfBirth),
+        bloodType: data.bloodType as BloodType,
+        medicalHistory: data.medicalHistory,
+        emergencyContactName: data.emergencyContactName,
+        emergencyContactPhone: data.emergencyContactPhone,
+        insuranceProvider: data.insuranceProvider,
+        insuranceNumber: data.insuranceNumber,
+        height: data.height,
+        weight: data.weight,
+        bloodPressure: data.bloodPressure,
+        heartRate: data.heartRate,
+        bloodSugarLevel: data.bloodSugarLevel,
+        allergies: data.allergies,
+        medications: data.medications,
+        chronicDiseases: data.chronicDiseases,
+        lastDentalVisit: new Date(data.lastDentalVisit),
+        gumCondition: data.gumCondition as GumCondition,
+        toothDecay: data.toothDecay,
+        missingTeethCount: data.missingTeethCount,
+        prostheticsUsed: data.prostheticsUsed,
+      },
     });
 
     updateTag("patients");

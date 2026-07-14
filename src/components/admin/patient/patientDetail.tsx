@@ -7,23 +7,18 @@ import { Label, PolarGrid, PolarRadiusAxis, RadialBar, RadialBarChart } from 're
 import DentalHistoryTable from './dentalHistory'
 import MedicalDocument from './medicalDocument'
 import DentalWellBeingChart from './DentalWellBeingChart'
-
-const chartData = [
-  { browser: "safari", visitors: 23, fill: "var(--color-safari)" },
-]
-const chartConfig = {
-  visitors: {
-    label: "Days",
-  },
-  safari: {
-    label: "Safari",
-    color: "rgb(36,145,235)",
-  },
-} satisfies ChartConfig
-
 import { format } from 'date-fns'
 
 const PatientDetail = ({ patient }: { patient: any }) => {
+  const appointmentCount = patient.appointments?.length ?? 0;
+  const chartData = [
+    { browser: "safari", visitors: appointmentCount, fill: "var(--color-safari)" },
+  ];
+  const chartConfig = {
+    visitors: { label: "Visits" },
+    safari: { label: "Appointments", color: "rgb(36,145,235)" },
+  } satisfies ChartConfig;
+
   return (
     <div className='grid grid-cols-1 lg:grid-cols-3 gap-6'>
       <div className='grid grid-cols-1 gap-6 lg:col-span-2'>
@@ -51,21 +46,21 @@ const PatientDetail = ({ patient }: { patient: any }) => {
                 <Phone />
                 <div>
                   <p className='text-sm text-muted-foreground'>Phone Number</p>
-                  <p>{patient.user.phone || 'N/A'}</p>
+                  <p>{patient.phone || 'N/A'}</p>
                 </div>
               </div>
               <div className='flex gap-3 mb-7 items-center'>
                 <Mail />
                 <div>
                   <p className='text-sm text-muted-foreground'>Mail</p>
-                  <p>{patient.user.email}</p>
+                  <p>{patient.email}</p>
                 </div>
               </div>
               <div className="flex gap-3 mb-7 items-center">
                 <Home />
                 <div>
                   <p className="text-sm text-muted-foreground">Address</p>
-                  <p>{patient.user.address || 'N/A'}</p>
+                  <p>{patient.address || 'N/A'}</p>
                 </div>
               </div>
               <div className="flex gap-3 mb-7 items-center">
@@ -162,7 +157,7 @@ const PatientDetail = ({ patient }: { patient: any }) => {
                                   y={(viewBox.cy || 0) + 20} // Adjust text spacing
                                   className="fill-muted-foreground text-sm"
                                 >
-                                  Days
+                                  Visits
                                 </tspan>
                               </text>
                             )
@@ -175,7 +170,7 @@ const PatientDetail = ({ patient }: { patient: any }) => {
               </CardContent>
               <div className='flex-1 self-center mr-4'>
                 <p className='text-muted-foreground'>Start date joined</p>
-                <p className='font-semibold text-xl mb-3'>Jan 2 2025</p>
+                <p className='font-semibold text-xl mb-3'>{patient.createdAt ? format(new Date(patient.createdAt), 'MMM d, yyyy') : 'N/A'}</p>
                 <Button variant="outline" className='px-6 flex items-center font-semibold text-base'>
                   Extend <ArrowUpRight />
                 </Button>

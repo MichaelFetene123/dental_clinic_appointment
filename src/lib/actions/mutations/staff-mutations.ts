@@ -2,7 +2,8 @@
 
 import { prisma } from "@/lib/prisma";
 import { updateTag } from "next/cache";
-import { Role } from "@prisma/client";
+import { Role } from "@/app/generated/prisma/client";
+import { hashPassword } from "@/lib/bcrypt";
 
 export type ActionResponse<T = void> =
   | { success: true; data?: T }
@@ -39,7 +40,7 @@ export async function createStaff(
           email,
           phone,
           role,
-          password: "default-password-change-me",
+          password: await hashPassword("ChangeMe@123"),
         },
       });
 

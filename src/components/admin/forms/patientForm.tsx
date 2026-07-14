@@ -55,7 +55,7 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
   const [lastVisitDate, setLastVisitDate] = React.useState<Date | undefined>(new Date());
   const [gender, setGender] = useState("MALE");
   const [bloodType, setBloodType] = useState("UNKNOWN");
-  const [gumCondition, setGumCondition] = useState("Healthy");
+  const [gumCondition, setGumCondition] = useState("HEALTHY");
   const [stepErrors, setStepErrors] = useState<Record<string, string>>({});
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -175,8 +175,6 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
         <CardContent className={" overflow-y-auto"}>
           <Form ref={formRef} action={formAction}>
             {/* Hidden inputs for controlled components */}
-            <input type="hidden" name="role" value="PATIENT" />
-            <input type="hidden" name="password" value="" />
             <input type="hidden" name="gender" value={gender} />
             <input type="hidden" name="dateOfBirth" value={date ? format(date, "yyyy-MM-dd") : ""} />
             <input type="hidden" name="bloodType" value={bloodType} />
@@ -256,14 +254,14 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
                       <SelectValue placeholder="Select Blood Type" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="A+">A+</SelectItem>
-                      <SelectItem value="A-">A-</SelectItem>
-                      <SelectItem value="B+">B+</SelectItem>
-                      <SelectItem value="B-">B-</SelectItem>
-                      <SelectItem value="O+">O+</SelectItem>
-                      <SelectItem value="O-">O-</SelectItem>
-                      <SelectItem value="AB+">AB+</SelectItem>
-                      <SelectItem value="AB-">AB-</SelectItem>
+                      <SelectItem value="A_PLUS">A+</SelectItem>
+                      <SelectItem value="A_MINUS">A-</SelectItem>
+                      <SelectItem value="B_PLUS">B+</SelectItem>
+                      <SelectItem value="B_MINUS">B-</SelectItem>
+                      <SelectItem value="O_PLUS">O+</SelectItem>
+                      <SelectItem value="O_MINUS">O-</SelectItem>
+                      <SelectItem value="AB_PLUS">AB+</SelectItem>
+                      <SelectItem value="AB_MINUS">AB-</SelectItem>
                       <SelectItem value="UNKNOWN">Unknown</SelectItem>
                     </SelectContent>
                   </Select>
@@ -396,9 +394,9 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
                       <SelectValue placeholder="Select Gum Condition" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="Healthy">Healthy</SelectItem>
-                      <SelectItem value="Gingivitis">Gingivitis</SelectItem>
-                      <SelectItem value="Periodontitis">Periodontitis</SelectItem>
+                      <SelectItem value="HEALTHY">Healthy</SelectItem>
+                      <SelectItem value="GINGIVITIS">Gingivitis</SelectItem>
+                      <SelectItem value="PERIODONTITIS">Periodontitis</SelectItem>
                     </SelectContent>
                   </Select>
                   {errors?.gumCondition && <FieldError>{errors.gumCondition}</FieldError>}

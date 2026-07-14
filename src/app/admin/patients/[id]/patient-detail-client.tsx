@@ -52,8 +52,8 @@ export default function PatientDetailClient({ id }: PatientDetailClientProps) {
                         />
                     </div>
                     <div>
-                        <p className="text-lg font-heading font-medium">{patient.user.name}</p>
-                        <p className="text-sm text-muted-foreground">Joined since {patient.user.createdAt.toString().split('T')[0]}</p>
+                        <p className="text-lg font-heading font-medium">{patient.name}</p>
+                        <p className="text-sm text-muted-foreground">Joined since {patient.createdAt.toString().split('T')[0]}</p>
                     </div>
                 </div>
                 <div className='flex gap-3'>

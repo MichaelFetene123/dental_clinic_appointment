@@ -81,7 +81,7 @@ const DentalHistoryTable = ({ history }: { history: any[] }) => {
             cell: ({ row }) => (
                 <span
                     className={`px-3 py-1 text-sm rounded-md ${
-                        row.original.paymentStatus === "Paid"
+                        row.original.paymentStatus === "PAID"
                             ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                             : "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400"
                     }`}

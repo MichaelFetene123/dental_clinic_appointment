@@ -3,7 +3,7 @@
 
 import { DataTable } from '@/components/admin/patient/PatientTable'
 import { Button } from '@/components/ui/button'
-import React, { useState } from 'react'
+import React, { Suspense, useState } from 'react'
 import { SectionCards } from '@/components/admin/sidebar/section-cards'
 import { AlertTriangleIcon, CalendarCheckIcon, CircleCheckBig, TrendingUpIcon, Users } from 'lucide-react'
 import PatientForm from '@/components/admin/forms/patientForm'
@@ -64,7 +64,9 @@ const Page = () => {
                     </div>
                 </div>
                 <SectionCards data={cardData} />
-                <DataTable isDashboard={false} />
+                <Suspense fallback={<div className="h-96 rounded-lg border animate-pulse bg-muted/40" />}>
+                    <DataTable isDashboard={false} />
+                </Suspense>
             </div>
             {showForm && <PatientForm show={showForm} setShow={setShowForm} />}
         </>

@@ -107,7 +107,9 @@ const Page = () => {
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
                     >
-                        <AppointmentTable />
+                        <Suspense fallback={<div className="h-96 rounded-lg border animate-pulse bg-muted/40" />}>
+                            <AppointmentTable />
+                        </Suspense>
                     </motion.div>
                 )}
                 {activeTab === 'queue' && (
@@ -118,7 +120,9 @@ const Page = () => {
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
                     >
-                        <AppointmentTable statusFilter="PENDING" />
+                        <Suspense fallback={<div className="h-96 rounded-lg border animate-pulse bg-muted/40" />}>
+                            <AppointmentTable statusFilter="PENDING" />
+                        </Suspense>
                     </motion.div>
                 )}
                 {activeTab === 'confirmed' && (
@@ -129,7 +133,9 @@ const Page = () => {
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
                     >
-                        <AppointmentTable statusFilter="CONFIRMED" />
+                        <Suspense fallback={<div className="h-96 rounded-lg border animate-pulse bg-muted/40" />}>
+                            <AppointmentTable statusFilter="CONFIRMED" />
+                        </Suspense>
                     </motion.div>
                 )}
                 {activeTab === 'archive' && (
@@ -140,7 +146,9 @@ const Page = () => {
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
                     >
-                        <AppointmentTable statusFilter={["COMPLETED", "CANCELLED"]} />
+                        <Suspense fallback={<div className="h-96 rounded-lg border animate-pulse bg-muted/40" />}>
+                            <AppointmentTable statusFilter={["COMPLETED", "CANCELLED"]} />
+                        </Suspense>
                     </motion.div>
                 )}
             </AnimatePresence>

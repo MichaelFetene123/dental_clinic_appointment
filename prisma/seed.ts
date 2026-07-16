@@ -10,17 +10,42 @@ const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
+  console.log("Seeding permissions...");
+
+  const resources = ["patient", "appointment", "staff"];
+  const actions = ["read", "create", "edit", "delete"];
+
+  for (const resource of resources) {
+    for (const action of actions) {
+      const id = `${resource}.${action}`;
+      await prisma.permission.upsert({
+        where: { id },
+        update: {},
+        create: {
+          id,
+          resource,
+          action,
+          description: `Can ${action} ${resource}`,
+        },
+      });
+    }
+  }
+  
+  console.log("Permissions seeded.");
+  console.log("Seeding super admin...");
+
   const hashedPassword = await hashPassword("admin@123");
   const admin = await prisma.user.upsert({
     where: { email: "admin@clinic.com" },
     update: {
-        password: hashedPassword,
-     },
+      password: hashedPassword,
+      isSuperAdmin: true,
+    },
     create: {
       email: "admin@clinic.com",
       password: hashedPassword,
       name: "Admin User",
-      role: "ADMIN",
+      isSuperAdmin: true,
     },
   });
   

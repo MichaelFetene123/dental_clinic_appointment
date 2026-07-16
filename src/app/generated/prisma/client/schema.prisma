@@ -11,12 +11,6 @@ datasource db {
 // ENUMS
 // ==========================================
 
-enum Role {
-  ADMIN
-  DOCTOR
-  RECEPTIONIST
-}
-
 enum Gender {
   MALE
   FEMALE
@@ -64,12 +58,12 @@ enum PaymentStatus {
 // ==========================================
 
 model User {
-  id       String  @id @default(cuid())
-  email    String  @unique
-  password String // Hashed password
-  name     String
-  phone    String?
-  role     Role    @default(RECEPTIONIST)
+  id           String  @id @default(cuid())
+  email        String  @unique
+  password     String // Hashed password
+  name         String
+  phone        String?
+  isSuperAdmin Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -80,6 +74,11 @@ model User {
 
   // Appointments where this user is the doctor
   doctorAppointments Appointment[] @relation("DoctorAppointments")
+
+  // Auth & RBAC Relations
+  userRoles UserRole[]
+  sessions  Session[]
+  auditLogs AuditLog[]
 }
 
 model EmployeeProfile {
@@ -204,4 +203,85 @@ model MedicalDocument {
   type      String // MIME type
 
   uploadedAt DateTime @default(now())
+}
+
+// ==========================================
+// RBAC MODELS
+// ==========================================
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  isSystem    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users       UserRole[]
+  permissions RolePermission[]
+}
+
+model Permission {
+  id          String   @id // e.g., "patient.read"
+  resource    String // e.g., "patient"
+  action      String // e.g., "read"
+  description String? // e.g., "Can view patient basic info"
+  createdAt   DateTime @default(now())
+
+  roles RolePermission[]
+}
+
+model UserRole {
+  userId String
+  roleId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+// ==========================================
+// AUTH MODELS
+// ==========================================
+
+model Session {
+  id                  String    @id @default(cuid())
+  userId              String
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  familyId            String // Groups refresh token rotations together
+  tokenHash           String    @unique // Active session token hash
+  refreshHash         String    @unique // Active refresh token hash
+  previousRefreshHash String? // For reuse detection
+  tokenExpiresAt      DateTime // 15 min sliding
+  refreshExpiresAt    DateTime // 7 days absolute
+  rotationCount       Int       @default(0)
+  revokedAt           DateTime?
+  permissionsJson     String    @default("[]") // Cached flat array of permission IDs
+  ipAddress           String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([familyId])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String // e.g., "CREATE", "UPDATE", "DELETE", "LOGIN"
+  resource   String // e.g., "Patient", "Appointment", "Session"
+  resourceId String? // ID of the affected resource
+  details    String? // JSON string with more details
+  ipAddress  String?
+  timestamp  DateTime @default(now())
 }

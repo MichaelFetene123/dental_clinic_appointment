@@ -126,7 +126,7 @@ exports.Prisma.UserScalarFieldEnum = {
   password: 'password',
   name: 'name',
   phone: 'phone',
-  role: 'role',
+  isSuperAdmin: 'isSuperAdmin',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -208,6 +208,61 @@ exports.Prisma.MedicalDocumentScalarFieldEnum = {
   uploadedAt: 'uploadedAt'
 };
 
+exports.Prisma.RoleScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  isSystem: 'isSystem',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PermissionScalarFieldEnum = {
+  id: 'id',
+  resource: 'resource',
+  action: 'action',
+  description: 'description',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.UserRoleScalarFieldEnum = {
+  userId: 'userId',
+  roleId: 'roleId'
+};
+
+exports.Prisma.RolePermissionScalarFieldEnum = {
+  roleId: 'roleId',
+  permissionId: 'permissionId'
+};
+
+exports.Prisma.SessionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  familyId: 'familyId',
+  tokenHash: 'tokenHash',
+  refreshHash: 'refreshHash',
+  previousRefreshHash: 'previousRefreshHash',
+  tokenExpiresAt: 'tokenExpiresAt',
+  refreshExpiresAt: 'refreshExpiresAt',
+  rotationCount: 'rotationCount',
+  revokedAt: 'revokedAt',
+  permissionsJson: 'permissionsJson',
+  ipAddress: 'ipAddress',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.AuditLogScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  action: 'action',
+  resource: 'resource',
+  resourceId: 'resourceId',
+  details: 'details',
+  ipAddress: 'ipAddress',
+  timestamp: 'timestamp'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -222,12 +277,6 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-exports.Role = exports.$Enums.Role = {
-  ADMIN: 'ADMIN',
-  DOCTOR: 'DOCTOR',
-  RECEPTIONIST: 'RECEPTIONIST'
-};
-
 exports.Gender = exports.$Enums.Gender = {
   MALE: 'MALE',
   FEMALE: 'FEMALE',
@@ -276,7 +325,13 @@ exports.Prisma.ModelName = {
   Patient: 'Patient',
   Appointment: 'Appointment',
   DentalHistory: 'DentalHistory',
-  MedicalDocument: 'MedicalDocument'
+  MedicalDocument: 'MedicalDocument',
+  Role: 'Role',
+  Permission: 'Permission',
+  UserRole: 'UserRole',
+  RolePermission: 'RolePermission',
+  Session: 'Session',
+  AuditLog: 'AuditLog'
 };
 
 /**

@@ -19,9 +19,9 @@ export const columns: ColumnDef<StaffRow>[] = [
         cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
     },
     {
-        accessorKey: "role",
+        accessorKey: "roles",
         header: "Role",
-        cell: ({ row }) => <div>{row.getValue("role")}</div>,
+        cell: ({ row }) => <div>{(row.getValue("roles") as string[]).join(", ")}</div>,
     },
     {
         accessorKey: "position",

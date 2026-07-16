@@ -2,7 +2,6 @@
 
 import { prisma } from "@/lib/prisma";
 import { updateTag } from "next/cache";
-import { Role } from "@/app/generated/prisma/client";
 import { hashPassword } from "@/lib/bcrypt";
 
 export type ActionResponse<T = void> =
@@ -16,11 +15,11 @@ export async function createStaff(
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const phone = formData.get("phone") as string;
-  const role = formData.get("role") as Role;
+  const roleId = formData.get("roleId") as string; // Dynamic role ID from the Role table
   const position = formData.get("position") as string;
   const department = formData.get("department") as string;
 
-  if (!name || !email || !role || !position || !department) {
+  if (!name || !email || !roleId || !position || !department) {
     return { success: false, error: "Missing required fields" };
   }
 
@@ -39,8 +38,15 @@ export async function createStaff(
           name,
           email,
           phone,
-          role,
           password: await hashPassword("ChangeMe@123"),
+        },
+      });
+
+      // Assign the dynamic role
+      await tx.userRole.create({
+        data: {
+          userId: user.id,
+          roleId,
         },
       });
 
@@ -55,7 +61,7 @@ export async function createStaff(
 
     updateTag("staff");
     return { success: true };
-  } catch (error: any) {
+  } catch {
     return { success: false, error: "Failed to create staff member" };
   }
 }

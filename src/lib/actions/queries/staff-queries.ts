@@ -8,7 +8,7 @@ export type StaffRow = {
   name: string;
   email: string;
   phone: string;
-  role: string;
+  roles: string[]; // Array of role names from dynamic RBAC
   position: string;
   department: string;
 };
@@ -25,11 +25,14 @@ export async function getStaff(): Promise<StaffListResult> {
 
   const [users, total] = await Promise.all([
     prisma.user.findMany({
-      where: { role: { in: ["ADMIN", "DOCTOR", "RECEPTIONIST"] } },
-      include: { employeeProfile: true },
+      where: { isSuperAdmin: false }, // Exclude super admins from staff list
+      include: {
+        employeeProfile: true,
+        userRoles: { include: { role: true } },
+      },
       orderBy: { createdAt: "desc" },
     }),
-    prisma.user.count({ where: { role: { in: ["ADMIN", "DOCTOR", "RECEPTIONIST"] } } }),
+    prisma.user.count({ where: { isSuperAdmin: false } }),
   ]);
 
   const data: StaffRow[] = users.map((user) => ({
@@ -37,7 +40,7 @@ export async function getStaff(): Promise<StaffListResult> {
     name: user.name,
     email: user.email,
     phone: user.phone ?? "N/A",
-    role: user.role,
+    roles: user.userRoles.map((ur) => ur.role.name),
     position: user.employeeProfile?.position ?? "N/A",
     department: user.employeeProfile?.department ?? "N/A",
   }));

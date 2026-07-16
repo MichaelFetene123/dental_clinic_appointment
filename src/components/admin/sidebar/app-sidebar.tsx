@@ -141,7 +141,46 @@ const data = {
     ]
 }
 
+import { usePermissions } from "@/components/providers/PermissionProvider"
+import { ShieldCheck } from "lucide-react"
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+    const { hasPermission } = usePermissions();
+
+    // Filter clinic navigation based on permissions
+    const clinicNav = [
+        {
+            title: "Dashboard",
+            url: "/admin",
+            icon: LayoutDashboardIcon,
+            show: true, // Always visible
+        },
+        {
+            title: "Appointments",
+            url: "/admin/appointment",
+            icon: CalendarIcon,
+            show: hasPermission("appointment.read"),
+        },
+        {
+            title: "Patients",
+            url: "/admin/patients",
+            icon: Stethoscope,
+            show: hasPermission("patient.read"),
+        },
+        {
+            title: "Staff list",
+            url: "/admin/staff",
+            icon: UserIcon,
+            show: hasPermission("staff.read"),
+        },
+        {
+            title: "Roles",
+            url: "/admin/roles",
+            icon: ShieldCheck,
+            show: hasPermission("staff.manage"), // specific perm for roles
+        }
+    ].filter(item => item.show);
+
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
@@ -149,9 +188,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarHeader>
             <SidebarContent>
 
-                <NavMain items={data.clinic} name="Clinic"/>
-                <NavMain items={data.physicalAssets} name="Physical Assets"/>
-                {/* <NavSecondary items={data.navSecondary} className="mt-auto" /> */}
+                <NavMain items={clinicNav} name="Clinic"/>
             </SidebarContent>
             <SidebarFooter>
                 <NavUser user={data.user} />

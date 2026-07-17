@@ -65,8 +65,8 @@ model User {
   password     String  // Hashed password
   name         String
   phone        String?
-  avatar       String? // ImageKit file path
-  avatarFileId String? // ImageKit fileId (required for deletion)
+  avatar       String? // Local file path under /public/avatars
+  avatarFileId String? // Legacy ImageKit fileId kept for cleanup during transition
   isSuperAdmin Boolean @default(false)
 
   createdAt DateTime @default(now())

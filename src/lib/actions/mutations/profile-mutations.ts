@@ -3,7 +3,11 @@
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth/guards";
 import { comparePassword, hashPassword } from "@/lib/bcrypt";
-import { uploadImageToImageKit, deleteImageFromImageKit } from "@/lib/imagekit";
+import {
+  deleteImageFromImageKit,
+  deleteLocalAvatar,
+  saveOptimizedAvatarFromImageKit,
+} from "@/lib/imagekit";
 import { updateTag } from "next/cache";
 
 export async function updateProfileInfo(name: string, email: string, phone: string | null) {
@@ -51,16 +55,27 @@ export async function saveAvatarRecord(filePath: string, fileId: string) {
   // Fetch current user to see if they have an existing avatar
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
-    select: { avatarFileId: true },
+    select: { avatar: true, avatarFileId: true },
   });
+
+  const { filePath: localAvatarPath } = await saveOptimizedAvatarFromImageKit(filePath, session.userId);
 
   // Update DB
   await prisma.user.update({
     where: { id: session.userId },
-    data: { avatar: filePath, avatarFileId: fileId },
+    data: { avatar: localAvatarPath, avatarFileId: null },
   });
 
-  // Delete old avatar from ImageKit if it exists
+  // Remove the temporary upload from ImageKit after the optimized local file is stored.
+  if (fileId) {
+    try {
+      await deleteImageFromImageKit(fileId);
+    } catch (e) {
+      console.warn("Failed to delete temporary avatar from ImageKit", e);
+    }
+  }
+
+  // Clean up the previous avatar from its original storage location.
   if (user?.avatarFileId && user.avatarFileId !== fileId) {
     try {
       await deleteImageFromImageKit(user.avatarFileId);
@@ -69,8 +84,16 @@ export async function saveAvatarRecord(filePath: string, fileId: string) {
     }
   }
 
+  if (user?.avatar && user.avatar.startsWith("/avatars/")) {
+    try {
+      await deleteLocalAvatar(user.avatar);
+    } catch (e) {
+      console.warn("Failed to delete old local avatar", e);
+    }
+  }
+
   updateTag(`profile-${session.userId}`);
-  return { success: true, avatar: filePath };
+  return { success: true, avatar: localAvatarPath };
 }
 
 export async function removeAvatar() {
@@ -78,7 +101,7 @@ export async function removeAvatar() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.userId },
-    select: { avatarFileId: true },
+    select: { avatar: true, avatarFileId: true },
   });
 
   if (user?.avatarFileId) {
@@ -86,6 +109,14 @@ export async function removeAvatar() {
       await deleteImageFromImageKit(user.avatarFileId);
     } catch (e) {
       console.warn("Failed to delete avatar from ImageKit", e);
+    }
+  }
+
+  if (user?.avatar && user.avatar.startsWith("/avatars/")) {
+    try {
+      await deleteLocalAvatar(user.avatar);
+    } catch (e) {
+      console.warn("Failed to delete local avatar", e);
     }
   }
 

@@ -80,7 +80,7 @@ export function useProfile() {
         formData.append("expire", auth.expire.toString());
         formData.append("token", auth.token);
         formData.append("fileName", file.name);
-        formData.append("folder", "/avatars");
+        formData.append("folder", "/temp/avatars");
         formData.append("useUniqueFileName", "true");
 
         const uploadRes = await fetch("https://upload.imagekit.io/api/v1/files/upload", {

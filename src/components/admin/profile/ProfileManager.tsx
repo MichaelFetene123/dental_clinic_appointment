@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Image } from "@imagekit/next";
+import Image from "next/image";
 import { useProfile } from "@/hooks/use-profile";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -103,6 +103,7 @@ export function ProfileManager({ profile }: ProfileProps) {
                       width={96}
                       height={96}
                       className="h-full w-full object-cover"
+                      unoptimized
                     />
                   ) : (
                     <AvatarFallback className="text-2xl">{initials}</AvatarFallback>

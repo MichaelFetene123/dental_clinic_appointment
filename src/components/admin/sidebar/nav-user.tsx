@@ -27,7 +27,7 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from "@/components/ui/sidebar"
-import { Image } from "@imagekit/next"
+import Image from "next/image"
 import Link from "next/link"
 import { logout } from "@/lib/actions/auth/auth-actions"
 
@@ -66,6 +66,7 @@ export function NavUser({
                                         width={32}
                                         height={32}
                                         className="h-full w-full object-cover"
+                                        unoptimized
                                     />
                                 ) : (
                                     <AvatarFallback className="rounded-lg bg-transparent">{initials}</AvatarFallback>
@@ -96,6 +97,7 @@ export function NavUser({
                                             width={32}
                                             height={32}
                                             className="h-full w-full object-cover"
+                                            unoptimized
                                         />
                                     ) : (
                                         <AvatarFallback className="rounded-lg bg-transparent">{initials}</AvatarFallback>

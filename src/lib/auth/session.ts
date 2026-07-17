@@ -70,6 +70,9 @@ export async function validateSession(rawToken: string): Promise<{
   sessionId: string;
   isSuperAdmin: boolean;
   permissions: string[];
+  userName: string;
+  userEmail: string;
+  userAvatar: string | null;
 } | null> {
   const tokenHash = hashToken(rawToken);
 
@@ -97,6 +100,9 @@ export async function validateSession(rawToken: string): Promise<{
     sessionId: session.id,
     isSuperAdmin: session.user.isSuperAdmin,
     permissions: JSON.parse(session.permissionsJson) as string[],
+    userName: session.user.name,
+    userEmail: session.user.email,
+    userAvatar: session.user.avatar,
   };
 }
 

@@ -2149,6 +2149,8 @@ export namespace Prisma {
     password: string | null
     name: string | null
     phone: string | null
+    avatar: string | null
+    avatarFileId: string | null
     isSuperAdmin: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -2160,6 +2162,8 @@ export namespace Prisma {
     password: string | null
     name: string | null
     phone: string | null
+    avatar: string | null
+    avatarFileId: string | null
     isSuperAdmin: boolean | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -2171,6 +2175,8 @@ export namespace Prisma {
     password: number
     name: number
     phone: number
+    avatar: number
+    avatarFileId: number
     isSuperAdmin: number
     createdAt: number
     updatedAt: number
@@ -2184,6 +2190,8 @@ export namespace Prisma {
     password?: true
     name?: true
     phone?: true
+    avatar?: true
+    avatarFileId?: true
     isSuperAdmin?: true
     createdAt?: true
     updatedAt?: true
@@ -2195,6 +2203,8 @@ export namespace Prisma {
     password?: true
     name?: true
     phone?: true
+    avatar?: true
+    avatarFileId?: true
     isSuperAdmin?: true
     createdAt?: true
     updatedAt?: true
@@ -2206,6 +2216,8 @@ export namespace Prisma {
     password?: true
     name?: true
     phone?: true
+    avatar?: true
+    avatarFileId?: true
     isSuperAdmin?: true
     createdAt?: true
     updatedAt?: true
@@ -2290,6 +2302,8 @@ export namespace Prisma {
     password: string
     name: string
     phone: string | null
+    avatar: string | null
+    avatarFileId: string | null
     isSuperAdmin: boolean
     createdAt: Date
     updatedAt: Date
@@ -2318,6 +2332,8 @@ export namespace Prisma {
     password?: boolean
     name?: boolean
     phone?: boolean
+    avatar?: boolean
+    avatarFileId?: boolean
     isSuperAdmin?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -2336,6 +2352,8 @@ export namespace Prisma {
     password?: boolean
     name?: boolean
     phone?: boolean
+    avatar?: boolean
+    avatarFileId?: boolean
     isSuperAdmin?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -2347,6 +2365,8 @@ export namespace Prisma {
     password?: boolean
     name?: boolean
     phone?: boolean
+    avatar?: boolean
+    avatarFileId?: boolean
     isSuperAdmin?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -2358,12 +2378,14 @@ export namespace Prisma {
     password?: boolean
     name?: boolean
     phone?: boolean
+    avatar?: boolean
+    avatarFileId?: boolean
     isSuperAdmin?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "name" | "phone" | "isSuperAdmin" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "password" | "name" | "phone" | "avatar" | "avatarFileId" | "isSuperAdmin" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     patient?: boolean | User$patientArgs<ExtArgs>
     employeeProfile?: boolean | User$employeeProfileArgs<ExtArgs>
@@ -2392,6 +2414,8 @@ export namespace Prisma {
       password: string
       name: string
       phone: string | null
+      avatar: string | null
+      avatarFileId: string | null
       isSuperAdmin: boolean
       createdAt: Date
       updatedAt: Date
@@ -2829,6 +2853,8 @@ export namespace Prisma {
     readonly password: FieldRef<"User", 'String'>
     readonly name: FieldRef<"User", 'String'>
     readonly phone: FieldRef<"User", 'String'>
+    readonly avatar: FieldRef<"User", 'String'>
+    readonly avatarFileId: FieldRef<"User", 'String'>
     readonly isSuperAdmin: FieldRef<"User", 'Boolean'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
@@ -15999,6 +16025,8 @@ export namespace Prisma {
     password: 'password',
     name: 'name',
     phone: 'phone',
+    avatar: 'avatar',
+    avatarFileId: 'avatarFileId',
     isSuperAdmin: 'isSuperAdmin',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -16360,6 +16388,8 @@ export namespace Prisma {
     password?: StringFilter<"User"> | string
     name?: StringFilter<"User"> | string
     phone?: StringNullableFilter<"User"> | string | null
+    avatar?: StringNullableFilter<"User"> | string | null
+    avatarFileId?: StringNullableFilter<"User"> | string | null
     isSuperAdmin?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
@@ -16377,6 +16407,8 @@ export namespace Prisma {
     password?: SortOrder
     name?: SortOrder
     phone?: SortOrderInput | SortOrder
+    avatar?: SortOrderInput | SortOrder
+    avatarFileId?: SortOrderInput | SortOrder
     isSuperAdmin?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -16397,6 +16429,8 @@ export namespace Prisma {
     password?: StringFilter<"User"> | string
     name?: StringFilter<"User"> | string
     phone?: StringNullableFilter<"User"> | string | null
+    avatar?: StringNullableFilter<"User"> | string | null
+    avatarFileId?: StringNullableFilter<"User"> | string | null
     isSuperAdmin?: BoolFilter<"User"> | boolean
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
@@ -16414,6 +16448,8 @@ export namespace Prisma {
     password?: SortOrder
     name?: SortOrder
     phone?: SortOrderInput | SortOrder
+    avatar?: SortOrderInput | SortOrder
+    avatarFileId?: SortOrderInput | SortOrder
     isSuperAdmin?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -16431,6 +16467,8 @@ export namespace Prisma {
     password?: StringWithAggregatesFilter<"User"> | string
     name?: StringWithAggregatesFilter<"User"> | string
     phone?: StringNullableWithAggregatesFilter<"User"> | string | null
+    avatar?: StringNullableWithAggregatesFilter<"User"> | string | null
+    avatarFileId?: StringNullableWithAggregatesFilter<"User"> | string | null
     isSuperAdmin?: BoolWithAggregatesFilter<"User"> | boolean
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -17300,6 +17338,8 @@ export namespace Prisma {
     password: string
     name: string
     phone?: string | null
+    avatar?: string | null
+    avatarFileId?: string | null
     isSuperAdmin?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -17317,6 +17357,8 @@ export namespace Prisma {
     password: string
     name: string
     phone?: string | null
+    avatar?: string | null
+    avatarFileId?: string | null
     isSuperAdmin?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -17334,6 +17376,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isSuperAdmin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17351,6 +17395,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isSuperAdmin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17368,6 +17414,8 @@ export namespace Prisma {
     password: string
     name: string
     phone?: string | null
+    avatar?: string | null
+    avatarFileId?: string | null
     isSuperAdmin?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -17379,6 +17427,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isSuperAdmin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17390,6 +17440,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isSuperAdmin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18443,6 +18495,8 @@ export namespace Prisma {
     password?: SortOrder
     name?: SortOrder
     phone?: SortOrder
+    avatar?: SortOrder
+    avatarFileId?: SortOrder
     isSuperAdmin?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -18454,6 +18508,8 @@ export namespace Prisma {
     password?: SortOrder
     name?: SortOrder
     phone?: SortOrder
+    avatar?: SortOrder
+    avatarFileId?: SortOrder
     isSuperAdmin?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -18465,6 +18521,8 @@ export namespace Prisma {
     password?: SortOrder
     name?: SortOrder
     phone?: SortOrder
+    avatar?: SortOrder
+    avatarFileId?: SortOrder
     isSuperAdmin?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -20657,6 +20715,8 @@ export namespace Prisma {
     password: string
     name: string
     phone?: string | null
+    avatar?: string | null
+    avatarFileId?: string | null
     isSuperAdmin?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -20673,6 +20733,8 @@ export namespace Prisma {
     password: string
     name: string
     phone?: string | null
+    avatar?: string | null
+    avatarFileId?: string | null
     isSuperAdmin?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -20705,6 +20767,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isSuperAdmin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20721,6 +20785,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isSuperAdmin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20737,6 +20803,8 @@ export namespace Prisma {
     password: string
     name: string
     phone?: string | null
+    avatar?: string | null
+    avatarFileId?: string | null
     isSuperAdmin?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -20753,6 +20821,8 @@ export namespace Prisma {
     password: string
     name: string
     phone?: string | null
+    avatar?: string | null
+    avatarFileId?: string | null
     isSuperAdmin?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -20883,6 +20953,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isSuperAdmin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -20899,6 +20971,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isSuperAdmin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21065,6 +21139,8 @@ export namespace Prisma {
     password: string
     name: string
     phone?: string | null
+    avatar?: string | null
+    avatarFileId?: string | null
     isSuperAdmin?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21081,6 +21157,8 @@ export namespace Prisma {
     password: string
     name: string
     phone?: string | null
+    avatar?: string | null
+    avatarFileId?: string | null
     isSuperAdmin?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21221,6 +21299,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isSuperAdmin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21237,6 +21317,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isSuperAdmin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21770,6 +21852,8 @@ export namespace Prisma {
     password: string
     name: string
     phone?: string | null
+    avatar?: string | null
+    avatarFileId?: string | null
     isSuperAdmin?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21786,6 +21870,8 @@ export namespace Prisma {
     password: string
     name: string
     phone?: string | null
+    avatar?: string | null
+    avatarFileId?: string | null
     isSuperAdmin?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -21843,6 +21929,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isSuperAdmin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -21859,6 +21947,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isSuperAdmin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -22010,6 +22100,8 @@ export namespace Prisma {
     password: string
     name: string
     phone?: string | null
+    avatar?: string | null
+    avatarFileId?: string | null
     isSuperAdmin?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -22026,6 +22118,8 @@ export namespace Prisma {
     password: string
     name: string
     phone?: string | null
+    avatar?: string | null
+    avatarFileId?: string | null
     isSuperAdmin?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -22058,6 +22152,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isSuperAdmin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -22074,6 +22170,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isSuperAdmin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -22090,6 +22188,8 @@ export namespace Prisma {
     password: string
     name: string
     phone?: string | null
+    avatar?: string | null
+    avatarFileId?: string | null
     isSuperAdmin?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -22106,6 +22206,8 @@ export namespace Prisma {
     password: string
     name: string
     phone?: string | null
+    avatar?: string | null
+    avatarFileId?: string | null
     isSuperAdmin?: boolean
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -22138,6 +22240,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isSuperAdmin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -22154,6 +22258,8 @@ export namespace Prisma {
     password?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
     isSuperAdmin?: BoolFieldUpdateOperationsInput | boolean
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

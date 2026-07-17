@@ -6,6 +6,9 @@ export type AuthSession = {
   sessionId: string;
   isSuperAdmin: boolean;
   permissions: string[];
+  userName: string;
+  userEmail: string;
+  userAvatar: string | null;
 };
 
 export class AuthError extends Error {
@@ -34,6 +37,7 @@ export async function requireAuth(): Promise<AuthSession> {
   const session = await validateSession(token);
   if (!session) throw new AuthError("Session is expired or revoked");
 
+  // Return the validated session (forces IDE type re-evaluation on save)
   return session;
 }
 

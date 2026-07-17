@@ -144,7 +144,7 @@ const data = {
 import { usePermissions } from "@/components/providers/PermissionProvider"
 import { ShieldCheck } from "lucide-react"
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sidebar> & { user: { name: string, email: string, avatar: string } }) {
     const { hasPermission } = usePermissions();
 
     // Filter clinic navigation based on permissions
@@ -191,7 +191,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <NavMain items={clinicNav} name="Clinic"/>
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={data.user} />
+                <NavUser user={user} />
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>

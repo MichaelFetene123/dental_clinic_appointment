@@ -43,18 +43,24 @@ export function useProfile() {
     });
   };
 
-  const handleChangePassword = (current: string, newPass: string, confirm: string) => {
+  const handleChangePassword = async (
+    current: string,
+    newPass: string,
+    confirm: string,
+  ): Promise<{ confirmError?: string; serverError?: string } | void> => {
     if (newPass !== confirm) {
-      toast.error("New passwords do not match");
-      return;
+      return { confirmError: "Passwords do not match" };
     }
-    startTransition(async () => {
-      try {
-        await changePassword(current, newPass);
-        toast.success("Password changed successfully");
-      } catch (error: any) {
-        toast.error(error.message || "Failed to change password");
-      }
+    return new Promise((resolve) => {
+      startTransition(async () => {
+        try {
+          await changePassword(current, newPass);
+          toast.success("Password changed successfully");
+          resolve();
+        } catch (error: any) {
+          resolve({ serverError: error.message || "Failed to change password" });
+        }
+      });
     });
   };
 

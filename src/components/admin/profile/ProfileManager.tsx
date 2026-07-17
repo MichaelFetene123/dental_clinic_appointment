@@ -46,6 +46,11 @@ export function ProfileManager({ profile }: ProfileProps) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordErrors, setPasswordErrors] = useState<{
+    currentPassword?: string;
+    newPassword?: string;
+    confirmPassword?: string;
+  }>({});
 
   const initials = profile.name
     .split(" ")
@@ -68,17 +73,31 @@ export function ProfileManager({ profile }: ProfileProps) {
     handleUpdateProfile(name, email, phone || null);
   };
 
-  const onPasswordSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    handleChangePassword(currentPassword, newPassword, confirmPassword);
-    // clear form on optimistic submit
+  const resetPasswordForm = () => {
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
+    setPasswordErrors({});
+  };
+
+  const onPasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordErrors({});
+    const result = await handleChangePassword(currentPassword, newPassword, confirmPassword);
+    if (!result) {
+      // success — clear the form
+      resetPasswordForm();
+      return;
+    }
+    if (result.confirmError) {
+      setPasswordErrors({ confirmPassword: result.confirmError });
+    } else if (result.serverError) {
+      setPasswordErrors({ currentPassword: result.serverError });
+    }
   };
 
   return (
-    <Tabs defaultValue="general" className="max-w-4xl">
+    <Tabs defaultValue="general" className="max-w-4xl" onValueChange={() => { resetPasswordForm(); }}>
       <TabsList className="mb-4">
         <TabsTrigger value="general">General</TabsTrigger>
         <TabsTrigger value="security">Security</TabsTrigger>
@@ -199,15 +218,54 @@ export function ProfileManager({ profile }: ProfileProps) {
               <form id="passwordForm" onSubmit={onPasswordSubmit} className="space-y-4 max-w-md">
                 <div className="space-y-2">
                   <Label htmlFor="currentPassword">Current Password</Label>
-                  <Input id="currentPassword" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} required />
+                  <Input
+                    id="currentPassword"
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => { setCurrentPassword(e.target.value); setPasswordErrors((prev) => ({ ...prev, currentPassword: undefined })); }}
+                    required
+                    aria-describedby={passwordErrors.currentPassword ? "currentPassword-error" : undefined}
+                    aria-invalid={!!passwordErrors.currentPassword}
+                  />
+                  {passwordErrors.currentPassword && (
+                    <p id="currentPassword-error" className="text-sm font-medium text-destructive">
+                      {passwordErrors.currentPassword}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="newPassword">New Password</Label>
-                  <Input id="newPassword" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+                  <Input
+                    id="newPassword"
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => { setNewPassword(e.target.value); setPasswordErrors((prev) => ({ ...prev, newPassword: undefined })); }}
+                    required
+                    aria-describedby={passwordErrors.newPassword ? "newPassword-error" : undefined}
+                    aria-invalid={!!passwordErrors.newPassword}
+                  />
+                  {passwordErrors.newPassword && (
+                    <p id="newPassword-error" className="text-sm font-medium text-destructive">
+                      {passwordErrors.newPassword}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                  <Input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+                  <Input
+                    id="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => { setConfirmPassword(e.target.value); setPasswordErrors((prev) => ({ ...prev, confirmPassword: undefined })); }}
+                    required
+                    aria-describedby={passwordErrors.confirmPassword ? "confirmPassword-error" : undefined}
+                    aria-invalid={!!passwordErrors.confirmPassword}
+                  />
+                  {passwordErrors.confirmPassword && (
+                    <p id="confirmPassword-error" className="text-sm font-medium text-destructive">
+                      {passwordErrors.confirmPassword}
+                    </p>
+                  )}
                 </div>
               </form>
             </CardContent>

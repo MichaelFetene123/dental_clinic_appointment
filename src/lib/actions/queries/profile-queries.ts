@@ -5,12 +5,16 @@ import { requireAuth } from "@/lib/auth/guards";
 import { cacheTag } from "next/cache";
 
 export async function getProfile() {
-  "use cache";
   const session = await requireAuth();
-  cacheTag(`profile-${session.userId}`);
+  return getCachedProfile(session.userId);
+}
+
+async function getCachedProfile(userId: string) {
+  "use cache";
+  cacheTag(`profile-${userId}`);
 
   const user = await prisma.user.findUnique({
-    where: { id: session.userId },
+    where: { id: userId },
     select: {
       id: true,
       name: true,

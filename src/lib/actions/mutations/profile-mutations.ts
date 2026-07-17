@@ -45,31 +45,8 @@ export async function changePassword(current: string, newPass: string) {
   return { success: true };
 }
 
-export async function updateAvatar(formData: FormData) {
+export async function saveAvatarRecord(filePath: string, fileId: string) {
   const session = await requireAuth();
-
-  const file = formData.get("avatar") as File | null;
-  if (!file) throw new Error("No file provided");
-
-  // Validate size (max 2MB)
-  if (file.size > 2 * 1024 * 1024) {
-    throw new Error("File exceeds 2MB limit.");
-  }
-
-  // Validate type
-  if (!file.type.startsWith("image/")) {
-    throw new Error("File must be an image.");
-  }
-
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-  
-  // Create a unique filename
-  const extension = file.name.split('.').pop() || 'jpg';
-  const fileName = `avatar_${session.userId}_${Date.now()}.${extension}`;
-
-  // Upload to ImageKit
-  const { filePath, fileId } = await uploadImageToImageKit(buffer, fileName);
 
   // Fetch current user to see if they have an existing avatar
   const user = await prisma.user.findUnique({
@@ -84,7 +61,7 @@ export async function updateAvatar(formData: FormData) {
   });
 
   // Delete old avatar from ImageKit if it exists
-  if (user?.avatarFileId) {
+  if (user?.avatarFileId && user.avatarFileId !== fileId) {
     try {
       await deleteImageFromImageKit(user.avatarFileId);
     } catch (e) {

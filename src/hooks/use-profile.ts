@@ -8,9 +8,10 @@ import { getProfile } from "@/lib/actions/queries/profile-queries";
 import {
   updateProfileInfo,
   changePassword,
-  updateAvatar,
+  saveAvatarRecord,
   removeAvatar,
 } from "@/lib/actions/mutations/profile-mutations";
+import { getImageKitAuth } from "@/lib/actions/auth/imagekit-auth";
 
 // ─── Profile Query ────────────────────────────────────────────────────────────
 export function useProfileQuery() {
@@ -58,12 +59,42 @@ export function useProfile() {
   };
 
   const handleUpdateAvatar = (file: File) => {
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File exceeds 5MB limit.");
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      toast.error("File must be an image.");
+      return;
+    }
+
     setIsAvatarUploading(true);
     startTransition(async () => {
       try {
+        const auth = await getImageKitAuth();
+
         const formData = new FormData();
-        formData.append("avatar", file);
-        await updateAvatar(formData);
+        formData.append("file", file);
+        formData.append("publicKey", auth.publicKey);
+        formData.append("signature", auth.signature);
+        formData.append("expire", auth.expire.toString());
+        formData.append("token", auth.token);
+        formData.append("fileName", file.name);
+        formData.append("folder", "/avatars");
+        formData.append("useUniqueFileName", "true");
+
+        const uploadRes = await fetch("https://upload.imagekit.io/api/v1/files/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!uploadRes.ok) {
+          throw new Error("Failed to upload image to ImageKit");
+        }
+
+        const uploadData = await uploadRes.json();
+        
+        await saveAvatarRecord(uploadData.filePath, uploadData.fileId);
         toast.success("Avatar updated successfully");
         invalidate();
       } catch (error: any) {

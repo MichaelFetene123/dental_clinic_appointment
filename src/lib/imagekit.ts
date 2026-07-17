@@ -4,7 +4,7 @@ if (!process.env.IMAGEKIT_PRIVATE_KEY) {
   console.warn("WARNING: ImageKit environment variable is missing");
 }
 
-const imagekit = new ImageKit({
+export const imagekit = new ImageKit({
   privateKey: process.env.IMAGEKIT_PRIVATE_KEY || "dummy",
   // In v7, you only need the privateKey for backend operations. 
   // URL endpoint and public key are typically used on the client-side via @imagekit/next

@@ -59,7 +59,7 @@ export async function createSession(userId: string, ipAddress?: string) {
 
   await setAuthCookies(sessionToken, refreshToken);
 }
-
+  
 /**
  * Validates an incoming session token against the database.
  * Returns the session and permissions if valid, or null if expired/revoked.

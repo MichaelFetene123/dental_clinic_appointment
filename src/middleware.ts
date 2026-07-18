@@ -4,18 +4,25 @@ import { NextRequest, NextResponse } from "next/server";
 const isProd = process.env.NODE_ENV === "production";
 const SESSION_COOKIE = isProd ? "__Host-session" : "session";
 
-// Public routes that do not require authentication
-const PUBLIC_ROUTES = ["/login", "/api/auth"];
+// Route prefixes that require authentication.
+const PROTECTED_ROUTES = ["/admin", "/portal", "/dashboard"];
+
+function isProtectedRoute(pathname: string) {
+  return PROTECTED_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
+}
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow public routes through
-  if (PUBLIC_ROUTES.some((route) => pathname.startsWith(route))) {
+  // Public pages stay accessible to everyone, including guests.
+  // Only the restricted app surfaces below require a valid session cookie.
+  if (!isProtectedRoute(pathname)) {
     return NextResponse.next();
   }
 
-  // Allow Next.js internals and static assets
+  // Allow Next.js internals and static assets.
   if (
     pathname.startsWith("/_next") ||
     pathname.startsWith("/favicon") ||

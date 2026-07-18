@@ -6,13 +6,16 @@ import Image from 'next/image'
 import React from 'react'
 import { usePatientDetail } from '@/hooks/use-patients'
 import { Skeleton } from '@/components/ui/skeleton'
-
+import { GrantAccessModal } from '@/components/admin/patient/GrantAccessModal'
+import { useState } from 'react'
+import { Badge } from '@/components/ui/badge'
 interface PatientDetailClientProps {
     id: string;
 }
 
 export default function PatientDetailClient({ id }: PatientDetailClientProps) {
     const { data: patient, isLoading } = usePatientDetail(id)
+    const [grantModalOpen, setGrantModalOpen] = useState(false);
 
     if (isLoading) {
         return (
@@ -56,7 +59,16 @@ export default function PatientDetailClient({ id }: PatientDetailClientProps) {
                         <p className="text-sm text-muted-foreground">Joined since {patient.createdAt.toString().split('T')[0]}</p>
                     </div>
                 </div>
-                <div className='flex gap-3'>
+                <div className='flex gap-3 items-center'>
+                    {patient.userId ? (
+                        <Badge variant="outline" className="text-green-600 border-green-600 bg-green-50 h-10 px-4 cursor-pointer" onClick={() => setGrantModalOpen(true)}>
+                            Portal Active
+                        </Badge>
+                    ) : (
+                        <Button variant="outline" onClick={() => setGrantModalOpen(true)}>
+                            Grant Online Access
+                        </Button>
+                    )}
                     <Button
                         size="lg"
                         className="font-semibold"
@@ -66,6 +78,14 @@ export default function PatientDetailClient({ id }: PatientDetailClientProps) {
                 </div>
             </div>
             <PatientDetail patient={patient} />
+            <GrantAccessModal 
+                patientId={patient.id} 
+                patientName={patient.name} 
+                defaultEmail={patient.email} 
+                hasAccess={!!patient.userId} 
+                open={grantModalOpen} 
+                onOpenChange={setGrantModalOpen} 
+            />
         </div>
     )
 }

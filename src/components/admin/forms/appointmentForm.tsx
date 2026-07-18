@@ -7,12 +7,22 @@ import { Input } from "@/components/ui/input";
 import * as React from "react";
 import { useState, useActionState, useEffect } from "react";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryKeys";
 import { toast } from "sonner";
 import { createAppointment } from "@/lib/actions/mutations/appointment-mutations";
+import { searchPatients } from "@/lib/actions/queries/patient-search-query";
+import { cn } from "@/lib/utils";
+import {
+    Command,
+    CommandEmpty,
+    CommandGroup,
+    CommandInput,
+    CommandItem,
+    CommandList,
+} from "@/components/ui/command";
 import {
     Popover,
     PopoverContent,
@@ -47,6 +57,31 @@ export function AppointmentForm({ show, setShow }: AppointmentFormProps) {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
     const [selectedReason, setSelectedReason] = useState("");
 
+    // Patient Search State
+    const [isNewPatient, setIsNewPatient] = useState(true);
+    const [patientSearchOpen, setPatientSearchOpen] = useState(false);
+    const [patientSearchQuery, setPatientSearchQuery] = useState("");
+    const [patientSearchResults, setPatientSearchResults] = useState<{ id: string; name: string; email: string | null; phone: string | null }[]>([]);
+    const [selectedPatientId, setSelectedPatientId] = useState<string>("");
+
+    // Prefilled data for existing patient
+    const [prefilledName, setPrefilledName] = useState("");
+    const [prefilledEmail, setPrefilledEmail] = useState("");
+    const [prefilledPhone, setPrefilledPhone] = useState("");
+
+    useEffect(() => {
+        if (patientSearchQuery.length >= 2) {
+            const delayDebounceFn = setTimeout(() => {
+                searchPatients(patientSearchQuery).then(results => {
+                    setPatientSearchResults(results);
+                });
+            }, 300);
+            return () => clearTimeout(delayDebounceFn);
+        } else {
+            setPatientSearchResults([]);
+        }
+    }, [patientSearchQuery]);
+
     const queryClient = useQueryClient();
 
     const [state, formAction, pending] = useActionState(createAppointment, { success: false, error: "" });
@@ -76,27 +111,130 @@ export function AppointmentForm({ show, setShow }: AppointmentFormProps) {
             <Separator />
             <CardContent>
                 <Form action={formAction} className="space-y-6 mt-3">
-                    <div className="flex justify-between gap-5">
-                        <Field data-invalid={!!actionErrors?.name} className="w-1/2">
-                            <FieldLabel htmlFor="name">Name</FieldLabel>
-                            <Input id="name" name="name" placeholder="John Doe" disabled={pending} />
-                            {actionErrors?.name && <FieldError>{actionErrors.name}</FieldError>}
-                        </Field>
+                    <div className="flex flex-col gap-3 mb-6 bg-muted/30 p-4 rounded-lg border">
+                        <div className="flex items-center justify-between">
+                            <FieldLabel className="text-base font-semibold">Patient Information</FieldLabel>
+                            <Button 
+                                type="button" 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => {
+                                    setIsNewPatient(!isNewPatient);
+                                    setSelectedPatientId("");
+                                    setPrefilledName("");
+                                    setPrefilledEmail("");
+                                    setPrefilledPhone("");
+                                    setPatientSearchQuery("");
+                                }}
+                            >
+                                {isNewPatient ? "Select Existing Patient" : "Add New Patient"}
+                            </Button>
+                        </div>
 
-                        <Field data-invalid={!!actionErrors?.email} className="w-1/2">
-                            <FieldLabel htmlFor="email">Email</FieldLabel>
-                            <Input id="email" name="email" type="email" placeholder="example@email.com" disabled={pending} />
-                            {actionErrors?.email && <FieldError>{actionErrors.email}</FieldError>}
-                        </Field>
+                        {!isNewPatient && (
+                            <div className="flex flex-col gap-2">
+                                <Popover open={patientSearchOpen} onOpenChange={setPatientSearchOpen}>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            role="combobox"
+                                            aria-expanded={patientSearchOpen}
+                                            className="w-full justify-between"
+                                        >
+                                            {selectedPatientId
+                                                ? patientSearchResults.find((p) => p.id === selectedPatientId)?.name || prefilledName
+                                                : "Search for a patient..."}
+                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-[450px] p-0" align="start">
+                                        <Command>
+                                            <CommandInput 
+                                                placeholder="Search by name, email, or phone..." 
+                                                value={patientSearchQuery}
+                                                onValueChange={setPatientSearchQuery}
+                                            />
+                                            <CommandList>
+                                                <CommandEmpty>No patients found.</CommandEmpty>
+                                                <CommandGroup>
+                                                    {patientSearchResults.map((patient) => (
+                                                        <CommandItem
+                                                            key={patient.id}
+                                                            value={patient.id}
+                                                            onSelect={(currentValue) => {
+                                                                setSelectedPatientId(currentValue);
+                                                                setPrefilledName(patient.name);
+                                                                setPrefilledEmail(patient.email || "");
+                                                                setPrefilledPhone(patient.phone || "");
+                                                                setPatientSearchOpen(false);
+                                                            }}
+                                                        >
+                                                            <Check
+                                                                className={cn(
+                                                                    "mr-2 h-4 w-4",
+                                                                    selectedPatientId === patient.id ? "opacity-100" : "opacity-0"
+                                                                )}
+                                                            />
+                                                            <div className="flex flex-col">
+                                                                <span>{patient.name}</span>
+                                                                <span className="text-xs text-muted-foreground">{patient.email} | {patient.phone}</span>
+                                                            </div>
+                                                        </CommandItem>
+                                                    ))}
+                                                </CommandGroup>
+                                            </CommandList>
+                                        </Command>
+                                    </PopoverContent>
+                                </Popover>
+                                <input type="hidden" name="patientId" value={selectedPatientId} />
+                            </div>
+                        )}
+
+                        <div className="flex justify-between gap-5 mt-2">
+                            <Field data-invalid={!!actionErrors?.name} className="w-1/2">
+                                <FieldLabel htmlFor="name">Name</FieldLabel>
+                                <Input 
+                                    id="name" 
+                                    name="name" 
+                                    placeholder="John Doe" 
+                                    disabled={pending || !isNewPatient} 
+                                    value={!isNewPatient ? prefilledName : undefined}
+                                />
+                                {actionErrors?.name && <FieldError>{actionErrors.name}</FieldError>}
+                            </Field>
+
+                            <Field data-invalid={!!actionErrors?.email} className="w-1/2">
+                                <FieldLabel htmlFor="email">Email</FieldLabel>
+                                <Input 
+                                    id="email" 
+                                    name="email" 
+                                    type="email" 
+                                    placeholder="example@email.com" 
+                                    disabled={pending || !isNewPatient} 
+                                    value={!isNewPatient ? prefilledEmail : undefined}
+                                />
+                                {actionErrors?.email && <FieldError>{actionErrors.email}</FieldError>}
+                            </Field>
+                        </div>
+
+                        <div className="flex justify-between gap-5">
+                            <Field data-invalid={!!actionErrors?.phone} className="w-full">
+                                <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
+                                <Input 
+                                    id="phone" 
+                                    name="phone" 
+                                    type="tel" 
+                                    placeholder="123-456-7890" 
+                                    disabled={pending || !isNewPatient} 
+                                    value={!isNewPatient ? prefilledPhone : undefined}
+                                />
+                                {actionErrors?.phone && <FieldError>{actionErrors.phone}</FieldError>}
+                            </Field>
+                        </div>
                     </div>
 
                     <div className="flex justify-between gap-5">
-                        <Field data-invalid={!!actionErrors?.phone} className="w-1/2">
-                            <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
-                            <Input id="phone" name="phone" type="tel" placeholder="123-456-7890" disabled={pending} />
-                            {actionErrors?.phone && <FieldError>{actionErrors.phone}</FieldError>}
-                        </Field>
-                        <Field data-invalid={!!actionErrors?.reason} className="w-1/2">
+                        <Field data-invalid={!!actionErrors?.reason} className="w-full">
                             <FieldLabel htmlFor="reason">Reason</FieldLabel>
                             <Select
                                 onValueChange={(value) => setSelectedReason(value)}

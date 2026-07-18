@@ -1,5 +1,6 @@
 import { getSessionToken } from "./cookies";
 import { validateSession } from "./session";
+import { prisma } from "@/lib/prisma";
 
 export type AuthSession = {
   userId: string;
@@ -39,6 +40,25 @@ export async function requireAuth(): Promise<AuthSession> {
 
   // Return the validated session (forces IDE type re-evaluation on save)
   return session;
+}
+
+/**
+ * Validates the current session and ensures the user is a linked patient.
+ * Throws ForbiddenError if the user is not a patient.
+ */
+export async function requirePatientAuth() {
+  const session = await requireAuth();
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.userId },
+    include: { patient: true },
+  });
+
+  if (!user || !user.patient) {
+    throw new ForbiddenError("Only patients can access the portal");
+  }
+
+  return { session, patient: user.patient };
 }
 
 /**

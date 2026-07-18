@@ -75,6 +75,62 @@ import Link from "next/link"
 import { usePatients } from "@/hooks/use-patients"
 import type { PatientRow } from "@/lib/actions/queries/patient-queries"
 import { Skeleton } from "@/components/ui/skeleton"
+import { GrantAccessModal } from "@/components/admin/patient/GrantAccessModal"
+
+function PatientRowActions({ patient }: { patient: PatientRow }) {
+    const [grantModalOpen, setGrantModalOpen] = React.useState(false);
+
+    return (
+        <div className="z-50">
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal />
+                    </Button>
+                </DropdownMenuTrigger>
+
+                <DropdownMenuContent
+                    align="end"
+                    side="bottom"
+                    className="z-[9999] p-3 rounded-lg shadow-lg space-y-1"
+                >
+                    <DropdownMenuItem
+                        className="flex gap-2 cursor-pointer"
+                        onClick={() => {
+                            if (typeof window !== 'undefined') {
+                                navigator.clipboard.writeText(String(patient.id))
+                            }
+                        }}
+                    >
+                        Copy patient ID <CopyIcon size={16} />
+                    </DropdownMenuItem>
+                    <Separator />
+                    <DropdownMenuItem className="flex gap-2 cursor-pointer" asChild>
+                        <Link href={`/admin/patients/${patient.id}`}>View patient details</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="flex gap-2 cursor-pointer">Edit patient details</DropdownMenuItem>
+                    <DropdownMenuItem 
+                        className="flex gap-2 cursor-pointer"
+                        onClick={() => setGrantModalOpen(true)}
+                    >
+                        {patient.userId ? "Manage Portal Access" : "Grant Portal Access"}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="flex gap-2 cursor-pointer text-destructive focus:text-destructive">Delete patient</DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+
+            <GrantAccessModal 
+                patientId={patient.id} 
+                patientName={patient.name} 
+                defaultEmail={patient.email !== "N/A" ? patient.email : ""} 
+                hasAccess={!!patient.userId} 
+                open={grantModalOpen} 
+                onOpenChange={setGrantModalOpen} 
+            />
+        </div>
+    )
+}
 
 export const columns: ColumnDef<PatientRow>[] = [
     {
@@ -173,44 +229,25 @@ export const columns: ColumnDef<PatientRow>[] = [
         }
     },
     {
-        id: "actions",
-        enableHiding: false,
+        accessorKey: "userId",
+        header: "Portal",
         cell: ({ row }) => {
-            const patient = row.original
+            const hasPortal = !!row.getValue("userId");
             return (
-                <div className="z-50">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal />
-                            </Button>
-                        </DropdownMenuTrigger>
-
-                        <DropdownMenuContent
-                            align="end"
-                            side="bottom"
-                            className="z-[9999] p-3 rounded-lg shadow-lg space-y-1"
-                        >
-                            <DropdownMenuItem
-                                className="flex gap-2 cursor-pointer"
-                                onClick={() => {
-                                    if (typeof window !== 'undefined') {
-                                        navigator.clipboard.writeText(String(patient.id))
-                                    }
-                                }}
-                            >
-                                Copy patient ID <CopyIcon size={16} />
-                            </DropdownMenuItem>
-                            <Separator />
-                            <DropdownMenuItem className="flex gap-2 cursor-pointer">View patient details</DropdownMenuItem>
-                            <DropdownMenuItem className="flex gap-2 cursor-pointer">Edit patient details</DropdownMenuItem>
-                            <DropdownMenuItem className="flex gap-2 cursor-pointer text-destructive focus:text-destructive">Delete patient</DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                <div className="text-center">
+                    {hasPortal ? (
+                        <span className="bg-green-500/10 text-green-600 dark:text-green-400 text-center py-1 px-2 rounded-lg text-xs font-medium">Active</span>
+                    ) : (
+                        <span className="bg-muted text-muted-foreground text-center py-1 px-2 rounded-lg text-xs font-medium">None</span>
+                    )}
                 </div>
             )
-        },
+        }
+    },
+    {
+        id: "actions",
+        enableHiding: false,
+        cell: ({ row }) => <PatientRowActions patient={row.original} />
     },
 
 ]

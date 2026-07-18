@@ -16,6 +16,7 @@ export async function createAppointment(
   formData: FormData
 ): Promise<ActionResponse> {
   const rawData = {
+    patientId: formData.get("patientId") as string,
     name: formData.get("name") as string,
     email: (formData.get("email") as string) || "",
     phone: formData.get("phone") as string,
@@ -47,22 +48,39 @@ export async function createAppointment(
     return { success: false, error: "Validation failed", errors };
   }
 
-  const { name, email, phone, date, time, reason, notes } = result.data;
+  const { patientId, name, email, phone, date, time, reason, notes } = result.data;
 
   try {
-    // Step 1: Create a Patient record for this person
-    const patient = await prisma.patient.create({
-      data: {
-        name,
-        email: email || null,
-        phone: phone || null,
-      },
-    });
+    let patientIdToUse = patientId;
+
+    if (!patientIdToUse) {
+      // De-duplication logic
+      let existingPatient = null;
+      if (email) {
+        existingPatient = await prisma.patient.findFirst({ where: { email } });
+      }
+      if (!existingPatient && phone) {
+        existingPatient = await prisma.patient.findFirst({ where: { phone } });
+      }
+
+      if (existingPatient) {
+        patientIdToUse = existingPatient.id;
+      } else {
+        const patient = await prisma.patient.create({
+          data: {
+            name,
+            email: email || null,
+            phone: phone || null,
+          },
+        });
+        patientIdToUse = patient.id;
+      }
+    }
 
     // Step 2: Create the Appointment linked to the Patient
     await prisma.appointment.create({
       data: {
-        patientId: patient.id,
+        patientId: patientIdToUse,
         date: new Date(date),
         time,
         reason,
@@ -171,19 +189,33 @@ export async function createGuestAppointment(
   const { firstName, lastName, phoneNumber, email, requestedDate, requestedTime } = result.data;
 
   try {
-    // Step 1: Create a Patient record for this visitor
-    const patient = await prisma.patient.create({
-      data: {
-        name: `${firstName} ${lastName}`.trim(),
-        email: email || null,
-        phone: phoneNumber || null,
-      },
-    });
+    let patientIdToUse: string;
+
+    let existingPatient = null;
+    if (email) {
+      existingPatient = await prisma.patient.findFirst({ where: { email } });
+    }
+    if (!existingPatient && phoneNumber) {
+      existingPatient = await prisma.patient.findFirst({ where: { phone: phoneNumber } });
+    }
+
+    if (existingPatient) {
+      patientIdToUse = existingPatient.id;
+    } else {
+      const patient = await prisma.patient.create({
+        data: {
+          name: `${firstName} ${lastName}`.trim(),
+          email: email || null,
+          phone: phoneNumber || null,
+        },
+      });
+      patientIdToUse = patient.id;
+    }
 
     // Step 2: Create the Appointment linked to the Patient
     await prisma.appointment.create({
       data: {
-        patientId: patient.id,
+        patientId: patientIdToUse,
         date: new Date(requestedDate),
         time: requestedTime,
         reason: "General Consultation",

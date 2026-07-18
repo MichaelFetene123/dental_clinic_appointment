@@ -38,7 +38,13 @@ export async function login(
   }
 
   // Fetch user — always perform lookup to prevent timing attacks on non-existent emails
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.user.findUnique({ 
+    where: { email },
+    include: {
+      employeeProfile: true,
+      patient: true
+    }
+  });
 
   const isValid =
     user !== null && (await comparePassword(password, user.password));
@@ -57,7 +63,13 @@ export async function login(
 
   await createSession(user.id, ip);
 
-  redirect("/admin");
+  if (user.employeeProfile) {
+    redirect("/admin");
+  } else if (user.patient) {
+    redirect("/portal");
+  } else {
+    redirect("/admin");
+  }
 }
 
 // ─── Logout ───────────────────────────────────────────────────────────────────

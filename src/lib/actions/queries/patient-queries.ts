@@ -14,6 +14,7 @@ export type PatientRow = {
   appointmentDate: string | null;
   dueDate: string | null;
   dueStatus: string;
+  userId: string | null;
 };
 
 export type PatientListResult = {
@@ -62,6 +63,7 @@ export async function getPatients(): Promise<PatientListResult> {
       appointmentDate: lastAppt ? lastAppt.date.toISOString().split("T")[0] : null,
       dueDate: null, // Replace with real billing logic when implemented
       dueStatus: "Paid", // Replace with real billing logic when implemented
+      userId: patient.userId,
     };
   });
 

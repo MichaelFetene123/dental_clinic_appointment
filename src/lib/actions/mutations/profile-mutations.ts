@@ -10,7 +10,11 @@ import {
 } from "@/lib/imagekit";
 import { updateTag } from "next/cache";
 
-export async function updateProfileInfo(name: string, email: string, phone: string | null) {
+export async function updateProfileInfo(
+  name: string,
+  email: string,
+  phone: string | null,
+) {
   const session = await requireAuth();
 
   // Validate email uniqueness if changed
@@ -27,6 +31,7 @@ export async function updateProfileInfo(name: string, email: string, phone: stri
   updateTag(`profile-${session.userId}`);
   return { success: true };
 }
+
 
 export async function changePassword(current: string, newPass: string) {
   const session = await requireAuth();
@@ -58,7 +63,10 @@ export async function saveAvatarRecord(filePath: string, fileId: string) {
     select: { avatar: true, avatarFileId: true },
   });
 
-  const { filePath: localAvatarPath } = await saveOptimizedAvatarFromImageKit(filePath, session.userId);
+  const { filePath: localAvatarPath } = await saveOptimizedAvatarFromImageKit(
+    filePath,
+    session.userId,
+  );
 
   // Update DB
   await prisma.user.update({

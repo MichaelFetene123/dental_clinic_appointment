@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/admin/sidebar/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { PermissionProvider } from "@/components/providers/PermissionProvider";
 import { requireAuth } from "@/lib/auth/guards";
+import { prisma } from "@/lib/prisma";
 
 async function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
     // Top-level layout guard: fetch current session. 

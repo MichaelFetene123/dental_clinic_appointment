@@ -3,7 +3,6 @@
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth/guards";
 import { cacheTag } from "next/cache";
-
 export async function getProfile() {
   const session = await requireAuth();
   return getCachedProfile(session.userId);

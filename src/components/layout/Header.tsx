@@ -5,6 +5,8 @@ import { Bars3Icon, PlusIcon, MinusIcon } from "@heroicons/react/24/outline"
 import Link from "next/link"
 import { Button } from "../ui/button"
 import { IoIosArrowDown } from "react-icons/io";
+import { useTheme } from "next-themes";
+import { Moon, Sun } from "lucide-react";
 
 
 const navigation = [
@@ -101,6 +103,13 @@ const Header = () => {
     const [openSections, setOpenSections] = React.useState<Record<string, boolean>>({});
     const [isScrolled, setIsScrolled] = React.useState(false);
     const pathname = usePathname();
+    const { theme, setTheme } = useTheme();
+    const [mounted, setMounted] = React.useState(false);
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
+
     const isSolidHeaderPage = pathname === '/contact' || pathname === '/appointment';
 
     const toggleSection = (section: string) => {
@@ -235,8 +244,20 @@ const Header = () => {
                                 </Link>
                             )
                         )}
-                        <div>
-                            <Button variant="default" size="lg" className="h-9 md:h-12 px-3 md:px-5 text-xs md:text-sm lg:text-base md:ml-20">
+                        <div className="flex items-center gap-4 md:ml-10">
+                            {mounted && (
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                                    className={`${isScrolled || isSolidHeaderPage ? "text-foreground" : "text-white hover:text-foreground"}`}
+                                >
+                                    <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                                    <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                                    <span className="sr-only">Toggle theme</span>
+                                </Button>
+                            )}
+                            <Button variant="default" size="lg" className="h-9 md:h-12 px-3 md:px-5 text-xs md:text-sm lg:text-base">
                                 <Link href="/appointment">
                                     Request Appointment
                                 </Link>

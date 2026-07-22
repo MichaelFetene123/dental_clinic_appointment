@@ -194,11 +194,12 @@ export function AppointmentForm({ show, setShow }: AppointmentFormProps) {
                             <Field data-invalid={!!actionErrors?.name} className="w-1/2">
                                 <FieldLabel htmlFor="name">Name</FieldLabel>
                                 <Input 
+                                    key={`name-${isNewPatient ? 'new' : selectedPatientId}`}
                                     id="name" 
                                     name="name" 
                                     placeholder="John Doe" 
                                     disabled={pending || !isNewPatient} 
-                                    value={!isNewPatient ? prefilledName : undefined}
+                                    defaultValue={!isNewPatient ? prefilledName : ""}
                                 />
                                 {actionErrors?.name && <FieldError>{actionErrors.name}</FieldError>}
                             </Field>
@@ -206,12 +207,13 @@ export function AppointmentForm({ show, setShow }: AppointmentFormProps) {
                             <Field data-invalid={!!actionErrors?.email} className="w-1/2">
                                 <FieldLabel htmlFor="email">Email</FieldLabel>
                                 <Input 
+                                    key={`email-${isNewPatient ? 'new' : selectedPatientId}`}
                                     id="email" 
                                     name="email" 
                                     type="email" 
                                     placeholder="example@email.com" 
                                     disabled={pending || !isNewPatient} 
-                                    value={!isNewPatient ? prefilledEmail : undefined}
+                                    defaultValue={!isNewPatient ? prefilledEmail : ""}
                                 />
                                 {actionErrors?.email && <FieldError>{actionErrors.email}</FieldError>}
                             </Field>
@@ -221,12 +223,13 @@ export function AppointmentForm({ show, setShow }: AppointmentFormProps) {
                             <Field data-invalid={!!actionErrors?.phone} className="w-full">
                                 <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
                                 <Input 
+                                    key={`phone-${isNewPatient ? 'new' : selectedPatientId}`}
                                     id="phone" 
                                     name="phone" 
                                     type="tel" 
                                     placeholder="123-456-7890" 
                                     disabled={pending || !isNewPatient} 
-                                    value={!isNewPatient ? prefilledPhone : undefined}
+                                    defaultValue={!isNewPatient ? prefilledPhone : ""}
                                 />
                                 {actionErrors?.phone && <FieldError>{actionErrors.phone}</FieldError>}
                             </Field>

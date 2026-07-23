@@ -76,7 +76,7 @@ export async function revokePortalAccess(patientId: string) {
   const session = await requireAuth();
 
   const patient = await prisma.patient.findUnique({
-    where: { id: patientId },
+    where: { id: patientId }, 
     select: { userId: true },
   });
 

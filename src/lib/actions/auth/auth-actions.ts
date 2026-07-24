@@ -42,7 +42,8 @@ export async function login(
     where: { email },
     include: {
       employeeProfile: true,
-      patient: true
+      patient: true,
+      userRoles: true
     }
   });
 
@@ -58,17 +59,22 @@ export async function login(
     return { error: "Invalid email or password." };
   }
 
+  const canAccessAdmin = user.isSuperAdmin || user.employeeProfile || user.userRoles.length > 0;
+  const canAccessPortal = !!user.patient;
+
+  if (!canAccessAdmin && !canAccessPortal) {
+    return { error: "Account has no assigned access permissions." };
+  }
+
   // Reset attempt counter on success
   loginAttempts.delete(key);
 
   await createSession(user.id, ip);
 
-  if (user.employeeProfile) {
+  if (canAccessAdmin) {
     redirect("/admin");
-  } else if (user.patient) {
-    redirect("/portal");
   } else {
-    redirect("/admin");
+    redirect("/portal");
   }
 }
 

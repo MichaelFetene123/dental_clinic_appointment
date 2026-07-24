@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
@@ -9,6 +10,7 @@ import { toast } from "sonner";
 import { createStaff } from "@/lib/actions/mutations/staff-mutations";
 import { RoleData } from "@/lib/actions/queries/role-queries";
 import { DialogFooter } from "@/components/ui/dialog";
+import { queryKeys } from "@/lib/queryKeys";
 
 interface StaffFormProps {
   roles: RoleData[];
@@ -16,16 +18,18 @@ interface StaffFormProps {
 }
 
 export function StaffForm({ roles, onSuccess }: StaffFormProps) {
+  const queryClient = useQueryClient();
   const [state, formAction, pending] = useActionState(createStaff, { success: false, error: "" });
 
   useEffect(() => {
     if (state.success) {
       toast.success("Staff member created successfully");
+      queryClient.invalidateQueries({ queryKey: queryKeys.staff.all });
       onSuccess();
     } else if (state.error) {
       toast.error(state.error);
     }
-  }, [state, onSuccess]);
+  }, [state, onSuccess, queryClient]);
 
   return (
     <form action={formAction} className="space-y-4">

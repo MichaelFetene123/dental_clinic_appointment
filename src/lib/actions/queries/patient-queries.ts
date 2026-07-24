@@ -90,5 +90,5 @@ export async function getPatientDetail(id: string) {
     },
   });
 
-  return patient;
+  return patient ? JSON.parse(JSON.stringify(patient)) : null;
 }

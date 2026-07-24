@@ -15,7 +15,7 @@ export type RecentAppointment = {
   id: string;
   patientName: string;
   reason: string;
-  date: Date;
+  date: string;
   time: string;
   status: AppointmentStatus;
 };
@@ -76,7 +76,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       id: appt.id,
       patientName: appt.patient.name,
       reason: appt.reason,
-      date: appt.date,
+      date: appt.date.toISOString(),
       time: appt.time,
       status: appt.status,
     })),

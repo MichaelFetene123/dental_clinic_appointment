@@ -79,7 +79,7 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
     const fields = stepFields[step] || [];
 
     for (const field of fields) {
-      const value = formData.get(field) as string;
+      const value = (formData.get(field) ?? "") as string;
       // Use zod shape to validate individual fields if possible
       const fieldSchema = formSchema.shape[field as keyof typeof formSchema.shape];
       if (fieldSchema) {
@@ -181,8 +181,7 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
             <input type="hidden" name="lastDentalVisit" value={lastVisitDate ? format(lastVisitDate, "yyyy-MM-dd") : ""} />
             <input type="hidden" name="gumCondition" value={gumCondition} />
 
-            {step === 0 && (
-              <div className="grid gap-4">
+            <div className={cn("grid gap-4", step !== 0 && "hidden")}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Field data-invalid={!!errors?.name}>
                     <FieldLabel htmlFor="name">Full Name</FieldLabel>
@@ -267,11 +266,9 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
                   </Select>
                   {errors?.bloodType && <FieldError>{errors.bloodType}</FieldError>}
                 </Field>
-              </div>
-            )}
+            </div>
 
-            {step === 1 && (
-              <div className="grid gap-4">
+            <div className={cn("grid gap-4", step !== 1 && "hidden")}>
                 <Field data-invalid={!!errors?.medicalHistory}>
                   <FieldLabel htmlFor="medicalHistory">Medical History</FieldLabel>
                   <Textarea id="medicalHistory" name="medicalHistory" placeholder="Medical History" disabled={pending} />
@@ -327,11 +324,9 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
                   <Textarea id="chronicDiseases" name="chronicDiseases" placeholder="Chronic Diseases" disabled={pending} />
                   {errors?.chronicDiseases && <FieldError>{errors.chronicDiseases}</FieldError>}
                 </Field>
-              </div>
-            )}
+            </div>
 
-            {step === 2 && (
-              <div className="grid gap-4">
+            <div className={cn("grid gap-4", step !== 2 && "hidden")}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Field data-invalid={!!errors?.emergencyContactName}>
                     <FieldLabel htmlFor="emergencyContactName">Emergency Contact Name</FieldLabel>
@@ -357,11 +352,9 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
                     {errors?.insuranceNumber && <FieldError>{errors.insuranceNumber}</FieldError>}
                   </Field>
                 </div>
-              </div>
-            )}
+            </div>
 
-            {step === 3 && (
-              <div className="grid gap-4">
+            <div className={cn("grid gap-4", step !== 3 && "hidden")}>
                 <Field data-invalid={!!errors?.lastDentalVisit}>
                   <FieldLabel htmlFor="lastDentalVisit">Last Dental Visit</FieldLabel>
                   <Popover>
@@ -428,8 +421,7 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
                   <Textarea id="prostheticsUsed" name="prostheticsUsed" placeholder="Prosthetics Used" disabled={pending} />
                   {errors?.prostheticsUsed && <FieldError>{errors.prostheticsUsed}</FieldError>}
                 </Field>
-              </div>
-            )}
+            </div>
           </Form>
         </CardContent>
         {/* Navigation Buttons */}

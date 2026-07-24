@@ -13,7 +13,7 @@ function isProtectedRoute(pathname: string) {
   );
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Public pages stay accessible to everyone, including guests.

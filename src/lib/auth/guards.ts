@@ -1,6 +1,7 @@
 import { getSessionToken } from "./cookies";
 import { validateSession } from "./session";
 import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
 
 export type AuthSession = {
   userId: string;
@@ -33,10 +34,10 @@ export class ForbiddenError extends Error {
  */
 export async function requireAuth(): Promise<AuthSession> {
   const token = await getSessionToken();
-  if (!token) throw new AuthError("No session token found");
+  if (!token) redirect("/login");
 
   const session = await validateSession(token);
-  if (!session) throw new AuthError("Session is expired or revoked");
+  if (!session) redirect("/login");
 
   // Return the validated session (forces IDE type re-evaluation on save)
   return session;

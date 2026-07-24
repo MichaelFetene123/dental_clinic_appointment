@@ -44,7 +44,14 @@ export async function getPermissions(): Promise<PermissionData[]> {
   cacheTag("permissions");
   cacheLife("hours");
 
-  return await prisma.permission.findMany({
+  const perms = await prisma.permission.findMany({
     orderBy: [{ resource: "asc" }, { action: "asc" }],
   });
+
+  return perms.map((p) => ({
+    id: p.id,
+    resource: p.resource,
+    action: p.action,
+    description: p.description,
+  }));
 }

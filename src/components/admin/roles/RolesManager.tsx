@@ -8,6 +8,7 @@ import {
   deleteRole,
 } from "@/lib/actions/mutations/role-mutations";
 import { Plus, Trash2, Edit2, Save, X } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -82,16 +83,26 @@ export function RolesManager({
   const handleSave = async () => {
     startTransition(async () => {
       if (isCreating) {
-        await createRole(name, description, Array.from(selectedPerms));
-        setIsCreating(false);
+        const result = await createRole(name, description, Array.from(selectedPerms));
+        if (result.success) {
+          toast.success(`Role "${name}" created successfully.`);
+          setIsCreating(false);
+        } else {
+          toast.error(result.error);
+        }
       } else if (editingRoleId) {
-        await updateRole(
+        const result = await updateRole(
           editingRoleId,
           name,
           description,
           Array.from(selectedPerms),
         );
-        setEditingRoleId(null);
+        if (result.success) {
+          toast.success(`Role "${name}" updated successfully.`);
+          setEditingRoleId(null);
+        } else {
+          toast.error(result.error);
+        }
       }
     });
   };

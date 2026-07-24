@@ -18,6 +18,9 @@ async function PortalLayoutContent({ children }: { children: React.ReactNode }) 
                         </Link>
                         <nav className="hidden md:flex items-center gap-4 text-sm font-medium">
                             <Link href="/portal" className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-2">
+                                <Activity className="h-4 w-4" /> Dashboard
+                            </Link>
+                            <Link href="/portal/appointments" className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-2">
                                 <Calendar className="h-4 w-4" /> Appointments
                             </Link>
                             <Link href="/portal/history" className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-2">

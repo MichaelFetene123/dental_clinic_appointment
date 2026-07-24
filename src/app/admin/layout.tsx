@@ -1,4 +1,5 @@
 // admin/layout.tsx
+import { redirect } from "next/navigation";
 
 import { Suspense } from "react";
 import { AppSidebar } from "@/components/admin/sidebar/app-sidebar";
@@ -12,6 +13,18 @@ async function AuthenticatedLayout({ children }: { children: React.ReactNode }) 
     // Top-level layout guard: fetch current session. 
     // This throws an error/redirect and blocks rendering if no valid session is found.
     const session = await requireAuth();
+
+    // Redirect pure patients to the portal
+    if (!session.isSuperAdmin && session.permissions.length === 0) {
+        const user = await prisma.user.findUnique({
+            where: { id: session.userId },
+            select: { patient: { select: { id: true } } },
+        });
+
+        if (user?.patient) {
+            redirect("/portal");
+        }
+    }
 
     return (
         <PermissionProvider permissions={session.permissions} isSuperAdmin={session.isSuperAdmin}>

@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useRouter } from "next/navigation"
 import {
     DndContext,
     KeyboardSensor,
@@ -255,21 +256,29 @@ function DraggableRow({ row }: { row: Row<PatientRow> }) {
     const { transform, transition, setNodeRef, isDragging } = useSortable({
         id: row.original.id,
     })
+    const router = useRouter();
 
     return (
         <TableRow
             data-state={row.getIsSelected() && "selected"}
             data-dragging={isDragging}
             ref={setNodeRef}
-            className="relative z-0 data-[dragging=true]:z-10 data-[dragging=true]:opacity-80"
+            className="relative z-0 data-[dragging=true]:z-10 data-[dragging=true]:opacity-80 cursor-pointer hover:bg-muted/50 transition-colors"
             style={{
                 transform: CSS.Transform.toString(transform),
                 transition: transition,
             }}
+            onClick={() => router.push(`/admin/patients/${row.original.id}`)}
         >
             {row.getVisibleCells().map((cell) => (
                 <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    {cell.column.id === "actions" ? (
+                        <div onClick={(e) => e.stopPropagation()}>
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </div>
+                    ) : (
+                        flexRender(cell.column.columnDef.cell, cell.getContext())
+                    )}
                 </TableCell>
             ))}
         </TableRow>

@@ -12,7 +12,7 @@ type RecentAppointment = {
     id: string;
     patientName: string;
     reason: string;
-    date: Date;
+    date: Date | string;
     time: string;
     status: AppointmentStatus;
 };

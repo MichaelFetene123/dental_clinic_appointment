@@ -47,11 +47,11 @@ export default function PatientDetailClient({ id }: PatientDetailClientProps) {
                 <div className="flex gap-2 items-center">
                     <div>
                         <Image
-                            src={"https://randomuser.me/api/portraits/women/2.jpg"} // Placeholder
+                            src={"/images/download.jpg"} // Local placeholder — replace with patient.avatar when available
                             alt="pp"
                             width={60}
                             height={60}
-                            className="rounded-full "
+                            className="rounded-full object-cover aspect-square"
                         />
                     </div>
                     <div>

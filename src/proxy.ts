@@ -51,8 +51,8 @@ export const config = {
      * Match all routes except:
      * - _next/static (static files)
      * - _next/image (image optimization)
-     * - favicon.ico
+     * - favicon.ico and other static assets with file extensions
      */
-    "/((?!_next/static|_next/image|favicon.ico).*)",
+    "/((?!_next/static|_next/image|favicon\\.ico|.*\\.(?:ico|png|jpg|jpeg|svg|gif|webp|woff|woff2|ttf|otf|eot|css|js|map)$).*)",
   ],
 };

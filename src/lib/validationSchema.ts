@@ -24,17 +24,26 @@ export const appointmentFormSchema = z.object({
 
 // ─── Patient form (no longer requires a User account) ────────────────────────
 export const patientFormSchema = z.object({
+    // ── Required: minimum fields for patient registration ──────────────────
     name: z.string().min(2, {
         message: "Full Name must be at least 2 characters.",
     }),
+    phone: z.string().min(10, {
+        message: "Phone number must be at least 10 digits.",
+    }),
+    gender: z.enum(["MALE", "FEMALE", "OTHER"], {
+        errorMap: () => ({ message: "Please select a gender." }),
+    }),
+    dateOfBirth: z.string().min(1, {
+        message: "Date of birth is required.",
+    }),
+
+    // ── Optional: can be completed later during treatment ──────────────────
     email: z.string().email({
         message: "Invalid email address.",
     }).optional().or(z.literal("")),
-    phone: z.string().optional().or(z.literal("")),
     address: z.string().optional().or(z.literal("")),
-    gender: z.enum(["MALE", "FEMALE", "OTHER"]).optional(),
-    dateOfBirth: z.string().optional().or(z.literal("")),
-    bloodType: z.enum(["A_PLUS", "A_MINUS", "B_PLUS", "B_MINUS", "O_PLUS", "O_MINUS", "AB_PLUS", "AB_MINUS", "UNKNOWN"]),
+    bloodType: z.enum(["A_PLUS", "A_MINUS", "B_PLUS", "B_MINUS", "O_PLUS", "O_MINUS", "AB_PLUS", "AB_MINUS", "UNKNOWN"]).optional().or(z.literal("")),
     medicalHistory: z.string().optional().or(z.literal("")),
     emergencyContactName: z.string().optional().or(z.literal("")),
     emergencyContactPhone: z.string().optional().or(z.literal("")),

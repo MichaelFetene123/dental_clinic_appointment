@@ -108,12 +108,12 @@ model Patient {
   // Core contact info stored directly on the Patient
   name  String
   email String?
-  phone String?
+  phone String
 
   // Basic Info
   address     String?
-  gender      Gender?
-  dateOfBirth DateTime?
+  gender      Gender
+  dateOfBirth DateTime
 
   // Emergency & Insurance
   emergencyContactName  String?

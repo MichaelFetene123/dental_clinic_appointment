@@ -36,12 +36,12 @@ const sections = [
 
 import { patientFormSchema as formSchema } from '@/lib/validationSchema';
 
-// Fields required per step for validation
+// Step 0 only validates the 4 required fields. All other steps are optional.
 const stepFields: Record<number, string[]> = {
-  0: ["name", "email", "phone", "address", "gender", "dateOfBirth", "bloodType"],
-  1: ["medicalHistory", "height", "weight", "bloodPressure", "heartRate", "bloodSugarLevel", "allergies", "medications", "chronicDiseases"],
-  2: ["emergencyContactName", "emergencyContactPhone", "insuranceProvider", "insuranceNumber"],
-  3: ["lastDentalVisit", "gumCondition", "toothDecay", "missingTeethCount", "prostheticsUsed"],
+  0: ["name", "phone", "gender", "dateOfBirth"],
+  1: [],
+  2: [],
+  3: [],
 };
 
 type FormState = {
@@ -51,9 +51,9 @@ type FormState = {
 
 const PatientForm = ({ show, setShow }: PatientFormProps) => {
   const [step, setStep] = useState(0);
-  const [date, setDate] = React.useState<Date | undefined>(new Date());
-  const [lastVisitDate, setLastVisitDate] = React.useState<Date | undefined>(new Date());
-  const [gender, setGender] = useState("MALE");
+  const [date, setDate] = React.useState<Date | undefined>(undefined);
+  const [lastVisitDate, setLastVisitDate] = React.useState<Date | undefined>(undefined);
+  const [gender, setGender] = useState("");
   const [bloodType, setBloodType] = useState("UNKNOWN");
   const [gumCondition, setGumCondition] = useState("HEALTHY");
   const [stepErrors, setStepErrors] = useState<Record<string, string>>({});
@@ -184,32 +184,32 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
             <div className={cn("grid gap-4", step !== 0 && "hidden")}>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Field data-invalid={!!errors?.name}>
-                    <FieldLabel htmlFor="name">Full Name</FieldLabel>
+                    <FieldLabel htmlFor="name">Full Name <span className="text-destructive">*</span></FieldLabel>
                     <Input id="name" name="name" placeholder="Full Name" disabled={pending} />
                     {errors?.name && <FieldError>{errors.name}</FieldError>}
                   </Field>
                   <Field data-invalid={!!errors?.email}>
-                    <FieldLabel htmlFor="email">Email</FieldLabel>
+                    <FieldLabel htmlFor="email">Email <span className="text-muted-foreground text-xs">(optional)</span></FieldLabel>
                     <Input id="email" name="email" placeholder="Email" disabled={pending} />
                     {errors?.email && <FieldError>{errors.email}</FieldError>}
                   </Field>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Field data-invalid={!!errors?.phone}>
-                    <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
+                    <FieldLabel htmlFor="phone">Phone Number <span className="text-destructive">*</span></FieldLabel>
                     <Input id="phone" name="phone" placeholder="Phone Number" disabled={pending} />
                     {errors?.phone && <FieldError>{errors.phone}</FieldError>}
                   </Field>
                   <Field data-invalid={!!errors?.address}>
-                    <FieldLabel htmlFor="address">Address</FieldLabel>
+                    <FieldLabel htmlFor="address">Address <span className="text-muted-foreground text-xs">(optional)</span></FieldLabel>
                     <Input id="address" name="address" placeholder="Address" disabled={pending} />
                     {errors?.address && <FieldError>{errors.address}</FieldError>}
                   </Field>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Field data-invalid={!!errors?.gender}>
-                    <FieldLabel htmlFor="gender">Gender</FieldLabel>
-                    <Select onValueChange={(value) => setGender(value)} defaultValue={gender}>
+                    <FieldLabel htmlFor="gender">Gender <span className="text-destructive">*</span></FieldLabel>
+                    <Select onValueChange={(value) => setGender(value)} value={gender}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select Gender" />
                       </SelectTrigger>
@@ -222,7 +222,7 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
                     {errors?.gender && <FieldError>{errors.gender}</FieldError>}
                   </Field>
                   <Field data-invalid={!!errors?.dateOfBirth}>
-                    <FieldLabel htmlFor="dateOfBirth">Date of Birth</FieldLabel>
+                    <FieldLabel htmlFor="dateOfBirth">Date of Birth <span className="text-destructive">*</span></FieldLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button

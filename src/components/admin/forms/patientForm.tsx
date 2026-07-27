@@ -13,7 +13,6 @@ import { ClipboardIcon, PhoneCall, User } from "lucide-react";
 import React, { useState, useRef, useActionState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { IoClose } from "react-icons/io5";
-import Form from "next/form";
 import { format } from "date-fns";
 import { z } from "zod";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
@@ -229,7 +228,7 @@ const PatientForm = ({ show, setShow, patient }: PatientFormProps) => {
 
         {/* Form Sections */}
         <CardContent className={" overflow-y-auto"}>
-          <Form ref={formRef} action={formAction}>
+          <form ref={formRef} action={formAction}>
             {/* Hidden inputs for controlled components */}
             <input type="hidden" name="gender" value={gender} />
             <input type="hidden" name="dateOfBirth" value={date ? format(date, "yyyy-MM-dd") : ""} />
@@ -479,7 +478,7 @@ const PatientForm = ({ show, setShow, patient }: PatientFormProps) => {
                   {errors?.prostheticsUsed && <FieldError>{errors.prostheticsUsed}</FieldError>}
                 </Field>
             </div>
-          </Form>
+          </form>
         </CardContent>
         {/* Navigation Buttons */}
         <CardFooter className="flex justify-between">

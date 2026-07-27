@@ -9,6 +9,8 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { GrantAccessModal } from '@/components/admin/patient/GrantAccessModal'
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
+import { AppointmentForm } from "@/components/admin/forms/appointmentForm"
+
 interface PatientDetailClientProps {
     id: string;
 }
@@ -16,6 +18,7 @@ interface PatientDetailClientProps {
 export default function PatientDetailClient({ id }: PatientDetailClientProps) {
     const { data: patient, isLoading } = usePatientDetail(id)
     const [grantModalOpen, setGrantModalOpen] = useState(false);
+    const [showApptForm, setShowApptForm] = useState(false);
 
     if (isLoading) {
         return (
@@ -72,6 +75,7 @@ export default function PatientDetailClient({ id }: PatientDetailClientProps) {
                     <Button
                         size="lg"
                         className="font-semibold"
+                        onClick={() => setShowApptForm(true)}
                     >
                         Add Appointment
                     </Button>
@@ -86,6 +90,18 @@ export default function PatientDetailClient({ id }: PatientDetailClientProps) {
                 open={grantModalOpen} 
                 onOpenChange={setGrantModalOpen} 
             />
+            {showApptForm && (
+                <AppointmentForm
+                    show={showApptForm}
+                    setShow={setShowApptForm}
+                    patient={{
+                        id: patient.id,
+                        name: patient.name,
+                        email: patient.email,
+                        phone: patient.phone
+                    }}
+                />
+            )}
         </div>
     )
 }

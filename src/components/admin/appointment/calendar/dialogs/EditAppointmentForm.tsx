@@ -4,7 +4,6 @@ import { useActionState, useEffect, useRef, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast }   from "sonner";
 import { format }  from "date-fns";
-import Form from "next/form";
 import { updateAppointmentAdmin, type ActionResponse } from "@/lib/actions/mutations/appointment-mutations";
 import { queryKeys } from "@/lib/queryKeys";
 import { Button }    from "@/components/ui/button";
@@ -78,7 +77,7 @@ export function EditAppointmentForm({
     }, [editState.success, queryClient, onSuccess]);
 
     return (
-        <Form action={handleSubmit} className="space-y-4 py-4">
+        <form action={handleSubmit} className="space-y-4 py-4">
             <input type="hidden" name="id" value={selectedAppointment.id} />
 
             {/* Patient name */}
@@ -182,6 +181,6 @@ export function EditAppointmentForm({
                     Cancel
                 </Button>
             </div>
-        </Form>
+        </form>
     );
 }

@@ -6,6 +6,7 @@ import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import * as React from "react";
 import { useState, useActionState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { format } from "date-fns";
 import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -39,7 +40,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { IoClose } from "react-icons/io5";
 import { Separator } from "@/components/ui/separator";
-import Form from "next/form";
 
 import { appointmentFormSchema as appointmentSchema } from '@/lib/validationSchema';
 
@@ -51,23 +51,34 @@ type FormState = {
 interface AppointmentFormProps {
     show: boolean;
     setShow: React.Dispatch<React.SetStateAction<boolean>>;
+    patient?: {
+        id: string;
+        name: string;
+        email: string | null;
+        phone: string | null;
+    };
 }
 
-export function AppointmentForm({ show, setShow }: AppointmentFormProps) {
+export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps) {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
     const [selectedReason, setSelectedReason] = useState("");
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // Patient Search State
-    const [isNewPatient, setIsNewPatient] = useState(true);
+    const [isNewPatient, setIsNewPatient] = useState(patient ? false : true);
     const [patientSearchOpen, setPatientSearchOpen] = useState(false);
     const [patientSearchQuery, setPatientSearchQuery] = useState("");
     const [patientSearchResults, setPatientSearchResults] = useState<{ id: string; name: string; email: string | null; phone: string | null }[]>([]);
-    const [selectedPatientId, setSelectedPatientId] = useState<string>("");
+    const [selectedPatientId, setSelectedPatientId] = useState<string>(patient ? patient.id : "");
 
     // Prefilled data for existing patient
-    const [prefilledName, setPrefilledName] = useState("");
-    const [prefilledEmail, setPrefilledEmail] = useState("");
-    const [prefilledPhone, setPrefilledPhone] = useState("");
+    const [prefilledName, setPrefilledName] = useState(patient ? patient.name : "");
+    const [prefilledEmail, setPrefilledEmail] = useState(patient && patient.email !== "N/A" ? patient.email || "" : "");
+    const [prefilledPhone, setPrefilledPhone] = useState(patient && patient.phone !== "N/A" ? patient.phone || "" : "");
 
     useEffect(() => {
         if (patientSearchQuery.length >= 2) {
@@ -92,14 +103,20 @@ export function AppointmentForm({ show, setShow }: AppointmentFormProps) {
             toast.success("Appointment booked successfully!");
             queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
             queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+            queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
+            if (selectedPatientId) {
+                queryClient.invalidateQueries({ queryKey: queryKeys.patients.detail(selectedPatientId) });
+            }
             setShow(false);
         }
-    }, [state?.success]);
+    }, [state?.success, queryClient, setShow, selectedPatientId]);
 
-    if (!show) return null;
+    if (!show || !mounted) return null;
 
-    return (
-        <Card className="w-full max-w-lg mx-auto px-3 pt-6 fixed top-0 right-0 mt-8 mr-3 ">
+    return createPortal(
+        <div className="relative z-[9999]">
+            <div className="fixed inset-0 bg-black/50 z-[9998]" onClick={() => setShow(false)}></div>
+            <Card className="w-full max-w-lg mx-auto px-3 pt-6 fixed top-0 right-0 mt-8 mr-3 z-[9999] shadow-lg max-h-[90vh] overflow-y-auto">
             <CardHeader >
                 <div className="flex justify-between">
                     <CardTitle>Book an Appointment</CardTitle>
@@ -110,43 +127,55 @@ export function AppointmentForm({ show, setShow }: AppointmentFormProps) {
             </CardHeader>
             <Separator />
             <CardContent>
-                <Form action={formAction} className="space-y-6 mt-3">
+                <form action={formAction} className="space-y-6 mt-3">
                     <div className="flex flex-col gap-3 mb-6 bg-muted/30 p-4 rounded-lg border">
                         <div className="flex items-center justify-between">
                             <FieldLabel className="text-base font-semibold">Patient Information</FieldLabel>
-                            <Button 
-                                type="button" 
-                                variant="outline" 
-                                size="sm" 
-                                onClick={() => {
-                                    setIsNewPatient(!isNewPatient);
-                                    setSelectedPatientId("");
-                                    setPrefilledName("");
-                                    setPrefilledEmail("");
-                                    setPrefilledPhone("");
-                                    setPatientSearchQuery("");
-                                }}
-                            >
-                                {isNewPatient ? "Select Existing Patient" : "Add New Patient"}
-                            </Button>
+                            {patient ? (
+                                <div className="text-sm bg-primary/10 text-primary px-2 py-1 rounded-md font-medium">
+                                    Existing Patient
+                                </div>
+                            ) : (
+                                <Button 
+                                    type="button" 
+                                    variant="outline" 
+                                    size="sm" 
+                                    onClick={() => {
+                                        setIsNewPatient(!isNewPatient);
+                                        setSelectedPatientId("");
+                                        setPrefilledName("");
+                                        setPrefilledEmail("");
+                                        setPrefilledPhone("");
+                                        setPatientSearchQuery("");
+                                    }}
+                                >
+                                    {isNewPatient ? "Select Existing Patient" : "Add New Patient"}
+                                </Button>
+                            )}
                         </div>
 
                         {!isNewPatient && (
                             <div className="flex flex-col gap-2">
-                                <Popover open={patientSearchOpen} onOpenChange={setPatientSearchOpen}>
-                                    <PopoverTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            role="combobox"
-                                            aria-expanded={patientSearchOpen}
-                                            className="w-full justify-between"
-                                        >
-                                            {selectedPatientId
-                                                ? patientSearchResults.find((p) => p.id === selectedPatientId)?.name || prefilledName
-                                                : "Search for a patient..."}
-                                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                        </Button>
-                                    </PopoverTrigger>
+                                {patient ? (
+                                    <div className="w-full px-3 py-2 border rounded-md bg-muted/30 text-sm font-medium flex items-center justify-between">
+                                        <span>{patient.name}</span>
+                                        <span className="text-muted-foreground font-normal">{patient.phone}</span>
+                                    </div>
+                                ) : (
+                                    <Popover open={patientSearchOpen} onOpenChange={setPatientSearchOpen}>
+                                        <PopoverTrigger asChild>
+                                            <Button
+                                                variant="outline"
+                                                role="combobox"
+                                                aria-expanded={patientSearchOpen}
+                                                className="w-full justify-between"
+                                            >
+                                                {selectedPatientId
+                                                    ? patientSearchResults.find((p) => p.id === selectedPatientId)?.name || prefilledName
+                                                    : "Search for a patient..."}
+                                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                                            </Button>
+                                        </PopoverTrigger>
                                     <PopoverContent className="w-[450px] p-0" align="start">
                                         <Command>
                                             <CommandInput 
@@ -186,6 +215,7 @@ export function AppointmentForm({ show, setShow }: AppointmentFormProps) {
                                         </Command>
                                     </PopoverContent>
                                 </Popover>
+                                )}
                                 <input type="hidden" name="patientId" value={selectedPatientId} />
                             </div>
                         )}
@@ -301,9 +331,11 @@ export function AppointmentForm({ show, setShow }: AppointmentFormProps) {
                     <Button type="submit" variant="default" className="w-full" disabled={pending}>
                         {pending ? "Booking..." : "Book Appointment"}
                     </Button>
-                </Form>
+                </form>
             </CardContent>
         </Card>
+        </div>,
+        document.body
     );
 }
 

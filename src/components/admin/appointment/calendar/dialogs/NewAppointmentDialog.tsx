@@ -1,7 +1,6 @@
 "use client";
 
 import { format } from "date-fns";
-import Form from "next/form";
 import { CalendarCheck2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button }   from "@/components/ui/button";
@@ -47,7 +46,7 @@ export function NewAppointmentDialog({
                 </DialogHeader>
 
                 {selectedSlot && (
-                    <Form
+                    <form
                         action={(formData) => {
                             onSubmit();
                             formAction(formData);
@@ -132,7 +131,7 @@ export function NewAppointmentDialog({
                         <Button type="submit" disabled={isPending || isPast} className="w-full">
                             {isPending ? "Scheduling..." : "Schedule Appointment"}
                         </Button>
-                    </Form>
+                    </form>
                 )}
             </DialogContent>
         </Dialog>

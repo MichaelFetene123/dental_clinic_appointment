@@ -8,6 +8,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { PermissionProvider } from "@/components/providers/PermissionProvider";
 import { requireAuth } from "@/lib/auth/guards";
 import { prisma } from "@/lib/prisma";
+import { SessionRefresher } from "@/components/providers/SessionRefresher";
 
 async function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
     // Top-level layout guard: fetch current session. 
@@ -36,6 +37,7 @@ async function AuthenticatedLayout({ children }: { children: React.ReactNode }) 
                     </Suspense>
                     <div className="flex flex-1 flex-col min-h-0">
                         <div className="@container/main flex flex-1 flex-col gap-2 min-h-0">
+                            <SessionRefresher />
                             {children}
                         </div>
                     </div>

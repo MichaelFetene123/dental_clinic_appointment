@@ -89,11 +89,15 @@ export async function validateSession(rawToken: string): Promise<{
     return null;
   }
 
-  // Slide the session expiry
-  await prisma.session.update({
-    where: { id: session.id },
-    data: { tokenExpiresAt: new Date(Date.now() + SESSION_TTL_MS) },
-  });
+  // Slide the session expiry only if more than half the TTL has elapsed
+  // This prevents blocking DB writes on every single page render/navigation
+  const timeRemaining = session.tokenExpiresAt.getTime() - Date.now();
+  if (timeRemaining < SESSION_TTL_MS / 2) {
+    await prisma.session.update({
+      where: { id: session.id },
+      data: { tokenExpiresAt: new Date(Date.now() + SESSION_TTL_MS) },
+    });
+  }
 
   return {
     userId: session.userId,

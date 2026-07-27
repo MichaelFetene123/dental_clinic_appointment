@@ -15,6 +15,28 @@ export type PatientRow = {
   dueDate: string | null;
   dueStatus: string;
   userId: string | null;
+  // Extended fields for edit form
+  address: string | null;
+  dateOfBirth: string | null;
+  bloodType: string | null;
+  medicalHistory: string | null;
+  emergencyContactName: string | null;
+  emergencyContactPhone: string | null;
+  insuranceProvider: string | null;
+  insuranceNumber: string | null;
+  height: string | null;
+  weight: string | null;
+  bloodPressure: string | null;
+  heartRate: string | null;
+  bloodSugarLevel: string | null;
+  allergies: string | null;
+  medications: string | null;
+  chronicDiseases: string | null;
+  lastDentalVisit: string | null;
+  gumCondition: string | null;
+  toothDecay: string | null;
+  missingTeethCount: string | null;
+  prostheticsUsed: string | null;
 };
 
 export type PatientListResult = {
@@ -64,6 +86,28 @@ export async function getPatients(): Promise<PatientListResult> {
       dueDate: null, // Replace with real billing logic when implemented
       dueStatus: "Paid", // Replace with real billing logic when implemented
       userId: patient.userId,
+      // Extended fields for edit form
+      address: patient.address ?? null,
+      dateOfBirth: patient.dateOfBirth ? patient.dateOfBirth.toISOString().split("T")[0] : null,
+      bloodType: patient.bloodType ?? null,
+      medicalHistory: patient.medicalHistory ?? null,
+      emergencyContactName: patient.emergencyContactName ?? null,
+      emergencyContactPhone: patient.emergencyContactPhone ?? null,
+      insuranceProvider: patient.insuranceProvider ?? null,
+      insuranceNumber: patient.insuranceNumber ?? null,
+      height: patient.height ?? null,
+      weight: patient.weight ?? null,
+      bloodPressure: patient.bloodPressure ?? null,
+      heartRate: patient.heartRate ?? null,
+      bloodSugarLevel: patient.bloodSugarLevel ?? null,
+      allergies: patient.allergies ?? null,
+      medications: patient.medications ?? null,
+      chronicDiseases: patient.chronicDiseases ?? null,
+      lastDentalVisit: patient.lastDentalVisit ? patient.lastDentalVisit.toISOString().split("T")[0] : null,
+      gumCondition: patient.gumCondition ?? null,
+      toothDecay: patient.toothDecay ?? null,
+      missingTeethCount: patient.missingTeethCount ?? null,
+      prostheticsUsed: patient.prostheticsUsed ?? null,
     };
   });
 

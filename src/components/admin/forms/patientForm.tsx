@@ -10,7 +10,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { ClipboardIcon, PhoneCall, User } from "lucide-react";
-import React, { useState, useRef, useActionState } from "react";
+import React, { useState, useRef, useActionState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { IoClose } from "react-icons/io5";
 import Form from "next/form";
 import { format } from "date-fns";
@@ -20,11 +21,36 @@ import { toast } from "sonner"
 import { FaTooth } from "react-icons/fa";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryKeys";
-import { createPatient } from "@/lib/actions/mutations/patient-mutations";
+import { createPatient, updatePatient, type ActionResponse } from "@/lib/actions/mutations/patient-mutations";
+import { parseISO, isValid } from "date-fns";
+import type { PatientRow } from "@/lib/actions/queries/patient-queries";
 
 interface PatientFormProps {
   show: boolean;
   setShow: React.Dispatch<React.SetStateAction<boolean>>;
+  patient?: PatientRow & {
+    address?: string | null;
+    dateOfBirth?: string | null;
+    bloodType?: string | null;
+    medicalHistory?: string | null;
+    emergencyContactName?: string | null;
+    emergencyContactPhone?: string | null;
+    insuranceProvider?: string | null;
+    insuranceNumber?: string | null;
+    height?: string | null;
+    weight?: string | null;
+    bloodPressure?: string | null;
+    heartRate?: string | null;
+    bloodSugarLevel?: string | null;
+    allergies?: string | null;
+    medications?: string | null;
+    chronicDiseases?: string | null;
+    lastDentalVisit?: string | null;
+    gumCondition?: string | null;
+    toothDecay?: string | null;
+    missingTeethCount?: string | null;
+    prostheticsUsed?: string | null;
+  };
 }
 
 const sections = [
@@ -49,27 +75,57 @@ type FormState = {
   success?: boolean;
 };
 
-const PatientForm = ({ show, setShow }: PatientFormProps) => {
+function parseDateSafe(val?: string | null): Date | undefined {
+  if (!val) return undefined;
+  try {
+    const d = parseISO(val);
+    return isValid(d) ? d : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+const PatientForm = ({ show, setShow, patient }: PatientFormProps) => {
   const [step, setStep] = useState(0);
-  const [date, setDate] = React.useState<Date | undefined>(undefined);
-  const [lastVisitDate, setLastVisitDate] = React.useState<Date | undefined>(undefined);
-  const [gender, setGender] = useState("");
-  const [bloodType, setBloodType] = useState("UNKNOWN");
-  const [gumCondition, setGumCondition] = useState("HEALTHY");
+  const [date, setDate] = React.useState<Date | undefined>(patient ? parseDateSafe(patient.dateOfBirth) : undefined);
+  const [lastVisitDate, setLastVisitDate] = React.useState<Date | undefined>(patient ? parseDateSafe(patient.lastDentalVisit) : undefined);
+  const [gender, setGender] = useState(patient?.gender ?? "");
+  const [bloodType, setBloodType] = useState(patient?.bloodType ?? "UNKNOWN");
+  const [gumCondition, setGumCondition] = useState(patient?.gumCondition ?? "HEALTHY");
   const [stepErrors, setStepErrors] = useState<Record<string, string>>({});
+  const [mounted, setMounted] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const queryClient = useQueryClient();
-  const [state, formAction, pending] = useActionState(createPatient, { success: false, error: "" });
+
+  const boundAction = React.useCallback(
+    (prevState: ActionResponse, formData: FormData) => {
+      if (patient) {
+        return updatePatient(patient.id, prevState, formData);
+      }
+      return createPatient(prevState, formData);
+    },
+    [patient]
+  );
+
+  const [state, formAction, pending] = useActionState(boundAction, { success: false, error: "" });
 
   React.useEffect(() => {
     if (state?.success) {
-      toast.success("Patient created successfully!");
+      toast.success(patient ? "Patient updated successfully!" : "Patient created successfully!");
       queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+      if (patient) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.patients.detail(patient.id) });
+      } else {
+        queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+      }
       setShow(false);
     }
-  }, [state?.success, queryClient, setShow]);
+  }, [state?.success, queryClient, setShow, patient]);
 
   const validateCurrentStep = (): boolean => {
     if (!formRef.current) return false;
@@ -113,15 +169,15 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
   const actionErrors = !state?.success ? state?.errors : undefined;
   const errors = { ...actionErrors, ...stepErrors };
 
-  if (!show) return null;
+  if (!show || !mounted) return null;
 
-  return (
-    <div className="relative z-50">
-      <div className="fixed inset-0 bg-black/50 z-40"></div>
-      <Card className="mx-auto px-3 fixed top-0 right-0 mt-2 mr-3  z-50 shadow-lg bg-background w-full max-w-3xl max-h-screen overflow-y-scroll">
+  return createPortal(
+    <div className="relative z-[9999]">
+      <div className="fixed inset-0 bg-black/50 z-[9998]" onClick={() => setShow(false)}></div>
+      <Card className="mx-auto px-3 fixed top-0 right-0 mt-2 mr-3 z-[9999] shadow-lg bg-background w-full max-w-3xl max-h-screen overflow-y-scroll">
         <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle>Add New Patient</CardTitle>
+            <CardTitle>{patient ? "Edit Patient" : "Add New Patient"}</CardTitle>
             <button
               className="text-muted-foreground hover:text-destructive transition "
               aria-label="Close form"
@@ -185,24 +241,24 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Field data-invalid={!!errors?.name}>
                     <FieldLabel htmlFor="name">Full Name <span className="text-destructive">*</span></FieldLabel>
-                    <Input id="name" name="name" placeholder="Full Name" disabled={pending} />
+                    <Input id="name" name="name" placeholder="Full Name" disabled={pending} defaultValue={patient?.name ?? ""} />
                     {errors?.name && <FieldError>{errors.name}</FieldError>}
                   </Field>
                   <Field data-invalid={!!errors?.email}>
                     <FieldLabel htmlFor="email">Email <span className="text-muted-foreground text-xs">(optional)</span></FieldLabel>
-                    <Input id="email" name="email" placeholder="Email" disabled={pending} />
+                    <Input id="email" name="email" placeholder="Email" disabled={pending} defaultValue={patient?.email !== "N/A" ? patient?.email : ""} />
                     {errors?.email && <FieldError>{errors.email}</FieldError>}
                   </Field>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Field data-invalid={!!errors?.phone}>
                     <FieldLabel htmlFor="phone">Phone Number <span className="text-destructive">*</span></FieldLabel>
-                    <Input id="phone" name="phone" placeholder="Phone Number" disabled={pending} />
+                    <Input id="phone" name="phone" placeholder="Phone Number" disabled={pending} defaultValue={patient?.phone !== "N/A" ? patient?.phone : ""} />
                     {errors?.phone && <FieldError>{errors.phone}</FieldError>}
                   </Field>
                   <Field data-invalid={!!errors?.address}>
                     <FieldLabel htmlFor="address">Address <span className="text-muted-foreground text-xs">(optional)</span></FieldLabel>
-                    <Input id="address" name="address" placeholder="Address" disabled={pending} />
+                    <Input id="address" name="address" placeholder="Address" disabled={pending} defaultValue={patient?.address ?? ""} />
                     {errors?.address && <FieldError>{errors.address}</FieldError>}
                   </Field>
                 </div>
@@ -271,19 +327,19 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
             <div className={cn("grid gap-4", step !== 1 && "hidden")}>
                 <Field data-invalid={!!errors?.medicalHistory}>
                   <FieldLabel htmlFor="medicalHistory">Medical History</FieldLabel>
-                  <Textarea id="medicalHistory" name="medicalHistory" placeholder="Medical History" disabled={pending} />
+                  <Textarea id="medicalHistory" name="medicalHistory" placeholder="Medical History" disabled={pending} defaultValue={patient?.medicalHistory ?? ""} />
                   {errors?.medicalHistory && <FieldError>{errors.medicalHistory}</FieldError>}
                 </Field>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Field data-invalid={!!errors?.height}>
                     <FieldLabel htmlFor="height">Height (cm)</FieldLabel>
-                    <Input id="height" name="height" type="number" placeholder="Height (cm)" disabled={pending} />
+                    <Input id="height" name="height" type="number" placeholder="Height (cm)" disabled={pending} defaultValue={patient?.height ?? ""} />
                     {errors?.height && <FieldError>{errors.height}</FieldError>}
                   </Field>
                   <Field data-invalid={!!errors?.weight}>
                     <FieldLabel htmlFor="weight">Weight (kg)</FieldLabel>
-                    <Input id="weight" name="weight" type="number" placeholder="Weight (kg)" disabled={pending} />
+                    <Input id="weight" name="weight" type="number" placeholder="Weight (kg)" disabled={pending} defaultValue={patient?.weight ?? ""} />
                     {errors?.weight && <FieldError>{errors.weight}</FieldError>}
                   </Field>
                 </div>
@@ -291,37 +347,37 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Field data-invalid={!!errors?.bloodPressure}>
                     <FieldLabel htmlFor="bloodPressure">Blood Pressure</FieldLabel>
-                    <Input id="bloodPressure" name="bloodPressure" placeholder="e.g. 120/80" disabled={pending} />
+                    <Input id="bloodPressure" name="bloodPressure" placeholder="e.g. 120/80" disabled={pending} defaultValue={patient?.bloodPressure ?? ""} />
                     {errors?.bloodPressure && <FieldError>{errors.bloodPressure}</FieldError>}
                   </Field>
                   <Field data-invalid={!!errors?.heartRate}>
                     <FieldLabel htmlFor="heartRate">Heart Rate (bpm)</FieldLabel>
-                    <Input id="heartRate" name="heartRate" type="number" placeholder="Heart Rate (bpm)" disabled={pending} />
+                    <Input id="heartRate" name="heartRate" type="number" placeholder="Heart Rate (bpm)" disabled={pending} defaultValue={patient?.heartRate ?? ""} />
                     {errors?.heartRate && <FieldError>{errors.heartRate}</FieldError>}
                   </Field>
                 </div>
 
                 <Field data-invalid={!!errors?.bloodSugarLevel}>
                   <FieldLabel htmlFor="bloodSugarLevel">Blood Sugar Level</FieldLabel>
-                  <Input id="bloodSugarLevel" name="bloodSugarLevel" type="number" placeholder="Blood Sugar Level" disabled={pending} />
+                  <Input id="bloodSugarLevel" name="bloodSugarLevel" type="number" placeholder="Blood Sugar Level" disabled={pending} defaultValue={patient?.bloodSugarLevel ?? ""} />
                   {errors?.bloodSugarLevel && <FieldError>{errors.bloodSugarLevel}</FieldError>}
                 </Field>
 
                 <Field data-invalid={!!errors?.allergies}>
                   <FieldLabel htmlFor="allergies">Allergies</FieldLabel>
-                  <Textarea id="allergies" name="allergies" placeholder="Allergies" disabled={pending} />
+                  <Textarea id="allergies" name="allergies" placeholder="Allergies" disabled={pending} defaultValue={patient?.allergies ?? ""} />
                   {errors?.allergies && <FieldError>{errors.allergies}</FieldError>}
                 </Field>
 
                 <Field data-invalid={!!errors?.medications}>
                   <FieldLabel htmlFor="medications">Medications</FieldLabel>
-                  <Textarea id="medications" name="medications" placeholder="Medications" disabled={pending} />
+                  <Textarea id="medications" name="medications" placeholder="Medications" disabled={pending} defaultValue={patient?.medications ?? ""} />
                   {errors?.medications && <FieldError>{errors.medications}</FieldError>}
                 </Field>
 
                 <Field data-invalid={!!errors?.chronicDiseases}>
                   <FieldLabel htmlFor="chronicDiseases">Chronic Diseases</FieldLabel>
-                  <Textarea id="chronicDiseases" name="chronicDiseases" placeholder="Chronic Diseases" disabled={pending} />
+                  <Textarea id="chronicDiseases" name="chronicDiseases" placeholder="Chronic Diseases" disabled={pending} defaultValue={patient?.chronicDiseases ?? ""} />
                   {errors?.chronicDiseases && <FieldError>{errors.chronicDiseases}</FieldError>}
                 </Field>
             </div>
@@ -330,12 +386,12 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Field data-invalid={!!errors?.emergencyContactName}>
                     <FieldLabel htmlFor="emergencyContactName">Emergency Contact Name</FieldLabel>
-                    <Input id="emergencyContactName" name="emergencyContactName" placeholder="Emergency Contact Name" disabled={pending} />
+                    <Input id="emergencyContactName" name="emergencyContactName" placeholder="Emergency Contact Name" disabled={pending} defaultValue={patient?.emergencyContactName ?? ""} />
                     {errors?.emergencyContactName && <FieldError>{errors.emergencyContactName}</FieldError>}
                   </Field>
                   <Field data-invalid={!!errors?.emergencyContactPhone}>
                     <FieldLabel htmlFor="emergencyContactPhone">Emergency Contact Phone</FieldLabel>
-                    <Input id="emergencyContactPhone" name="emergencyContactPhone" type="tel" placeholder="Emergency Contact Phone" disabled={pending} />
+                    <Input id="emergencyContactPhone" name="emergencyContactPhone" type="tel" placeholder="Emergency Contact Phone" disabled={pending} defaultValue={patient?.emergencyContactPhone ?? ""} />
                     {errors?.emergencyContactPhone && <FieldError>{errors.emergencyContactPhone}</FieldError>}
                   </Field>
                 </div>
@@ -343,12 +399,12 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Field data-invalid={!!errors?.insuranceProvider}>
                     <FieldLabel htmlFor="insuranceProvider">Insurance Provider</FieldLabel>
-                    <Input id="insuranceProvider" name="insuranceProvider" placeholder="Insurance Provider" disabled={pending} />
+                    <Input id="insuranceProvider" name="insuranceProvider" placeholder="Insurance Provider" disabled={pending} defaultValue={patient?.insuranceProvider ?? ""} />
                     {errors?.insuranceProvider && <FieldError>{errors.insuranceProvider}</FieldError>}
                   </Field>
                   <Field data-invalid={!!errors?.insuranceNumber}>
                     <FieldLabel htmlFor="insuranceNumber">Insurance Number</FieldLabel>
-                    <Input id="insuranceNumber" name="insuranceNumber" placeholder="Insurance Number" disabled={pending} />
+                    <Input id="insuranceNumber" name="insuranceNumber" placeholder="Insurance Number" disabled={pending} defaultValue={patient?.insuranceNumber ?? ""} />
                     {errors?.insuranceNumber && <FieldError>{errors.insuranceNumber}</FieldError>}
                   </Field>
                 </div>
@@ -406,19 +462,20 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
                       min="0"
                       max="10"
                       disabled={pending}
+                      defaultValue={patient?.toothDecay ?? ""}
                     />
                     {errors?.toothDecay && <FieldError>{errors.toothDecay}</FieldError>}
                   </Field>
                   <Field data-invalid={!!errors?.missingTeethCount}>
                     <FieldLabel htmlFor="missingTeethCount">Missing Teeth Count</FieldLabel>
-                    <Input id="missingTeethCount" name="missingTeethCount" type="number" placeholder="Missing Teeth Count" disabled={pending} />
+                    <Input id="missingTeethCount" name="missingTeethCount" type="number" placeholder="Missing Teeth Count" disabled={pending} defaultValue={patient?.missingTeethCount ?? ""} />
                     {errors?.missingTeethCount && <FieldError>{errors.missingTeethCount}</FieldError>}
                   </Field>
                 </div>
 
                 <Field data-invalid={!!errors?.prostheticsUsed}>
                   <FieldLabel htmlFor="prostheticsUsed">Prosthetics Used</FieldLabel>
-                  <Textarea id="prostheticsUsed" name="prostheticsUsed" placeholder="Prosthetics Used" disabled={pending} />
+                  <Textarea id="prostheticsUsed" name="prostheticsUsed" placeholder="Prosthetics Used" disabled={pending} defaultValue={patient?.prostheticsUsed ?? ""} />
                   {errors?.prostheticsUsed && <FieldError>{errors.prostheticsUsed}</FieldError>}
                 </Field>
             </div>
@@ -434,7 +491,8 @@ const PatientForm = ({ show, setShow }: PatientFormProps) => {
           </Button>
         </CardFooter>
       </Card>
-    </div>
+    </div>,
+    document.body
   );
 };
 

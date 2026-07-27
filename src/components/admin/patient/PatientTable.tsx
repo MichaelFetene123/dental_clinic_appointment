@@ -77,9 +77,11 @@ import { usePatients } from "@/hooks/use-patients"
 import type { PatientRow } from "@/lib/actions/queries/patient-queries"
 import { Skeleton } from "@/components/ui/skeleton"
 import { GrantAccessModal } from "@/components/admin/patient/GrantAccessModal"
+import PatientForm from "@/components/admin/forms/patientForm"
 
 function PatientRowActions({ patient }: { patient: PatientRow }) {
     const [grantModalOpen, setGrantModalOpen] = React.useState(false);
+    const [editOpen, setEditOpen] = React.useState(false);
 
     return (
         <div className="z-50">
@@ -110,7 +112,12 @@ function PatientRowActions({ patient }: { patient: PatientRow }) {
                     <DropdownMenuItem className="flex gap-2 cursor-pointer" asChild>
                         <Link href={`/admin/patients/${patient.id}`}>View patient details</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="flex gap-2 cursor-pointer">Edit patient details</DropdownMenuItem>
+                    <DropdownMenuItem
+                        className="flex gap-2 cursor-pointer"
+                        onClick={() => setEditOpen(true)}
+                    >
+                        Edit patient details
+                    </DropdownMenuItem>
                     <DropdownMenuItem 
                         className="flex gap-2 cursor-pointer"
                         onClick={() => setGrantModalOpen(true)}
@@ -129,6 +136,13 @@ function PatientRowActions({ patient }: { patient: PatientRow }) {
                 open={grantModalOpen} 
                 onOpenChange={setGrantModalOpen} 
             />
+            {editOpen && (
+                <PatientForm
+                    patient={patient}
+                    show={editOpen}
+                    setShow={setEditOpen}
+                />
+            )}
         </div>
     )
 }

@@ -14,6 +14,7 @@ import {
     BoxIcon,
     Stethoscope,
     UserIcon,
+    KeyRound,
 } from "lucide-react"
 
 import { NavMain } from "./nav-main"
@@ -172,6 +173,12 @@ export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sideb
             url: "/admin/staff",
             icon: UserIcon,
             show: hasPermission("staff.read"),
+        },
+        {
+            title: "Portal Users",
+            url: "/admin/portal-users",
+            icon: KeyRound,
+            show: hasPermission("patient.edit"),
         },
         {
             title: "Roles",

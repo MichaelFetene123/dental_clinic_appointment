@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/dialog";
 import { grantPortalAccess, revokePortalAccess } from "@/lib/actions/mutations/portal-mutations";
 import { CopyIcon, CheckIcon } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/queryKeys";
 
 interface GrantAccessModalProps {
   patientId: string;
@@ -37,6 +39,7 @@ export function GrantAccessModal({
   const [loading, setLoading] = useState(false);
   const [tempPassword, setTempPassword] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const queryClient = useQueryClient();
 
   const handleGrant = async () => {
     if (!email) {
@@ -49,6 +52,9 @@ export function GrantAccessModal({
       const res = await grantPortalAccess(patientId, email);
       if (res.success) {
         toast.success("Portal access granted successfully");
+        queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
+        queryClient.invalidateQueries({ queryKey: queryKeys.patients.detail(patientId) });
+        queryClient.invalidateQueries({ queryKey: queryKeys.portalUsers.all });
         if (res.tempPassword) {
           setTempPassword(res.tempPassword);
         } else {
@@ -70,6 +76,9 @@ export function GrantAccessModal({
       const res = await revokePortalAccess(patientId);
       if (res.success) {
         toast.success("Portal access revoked successfully");
+        queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
+        queryClient.invalidateQueries({ queryKey: queryKeys.patients.detail(patientId) });
+        queryClient.invalidateQueries({ queryKey: queryKeys.portalUsers.all });
         onOpenChange(false);
       } else {
         toast.error(res.error || "Failed to revoke access");
@@ -96,24 +105,17 @@ export function GrantAccessModal({
     }}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{hasAccess ? "Manage Portal Access" : "Grant Portal Access"}</DialogTitle>
+          <DialogTitle>{tempPassword ? "Access Granted" : hasAccess ? "Manage Portal Access" : "Grant Portal Access"}</DialogTitle>
           <DialogDescription>
-            {hasAccess
+            {tempPassword
+              ? `A portal account has been created for ${patientName}.`
+              : hasAccess
               ? `Manage online portal access for ${patientName}.`
               : `Create an online portal account for ${patientName}. They will use this to log in.`}
           </DialogDescription>
         </DialogHeader>
 
-        {hasAccess ? (
-          <div className="py-4">
-            <p className="text-sm text-muted-foreground mb-4">
-              This patient currently has active portal access. If you revoke it, they will no longer be able to log in.
-            </p>
-            <Button variant="destructive" className="w-full" onClick={handleRevoke} disabled={loading}>
-              {loading ? "Revoking..." : "Revoke Access"}
-            </Button>
-          </div>
-        ) : tempPassword ? (
+        {tempPassword ? (
           <div className="py-4 flex flex-col gap-4">
             <div className="bg-green-50 text-green-900 border border-green-200 p-3 rounded-md text-sm">
               Account created successfully! Please securely share this temporary password with the patient.
@@ -129,6 +131,15 @@ export function GrantAccessModal({
             </div>
             <Button onClick={() => onOpenChange(false)} className="mt-2">
               Done
+            </Button>
+          </div>
+        ) : hasAccess ? (
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground mb-4">
+              This patient currently has active portal access. If you revoke it, they will no longer be able to log in.
+            </p>
+            <Button variant="destructive" className="w-full" onClick={handleRevoke} disabled={loading}>
+              {loading ? "Revoking..." : "Revoke Access"}
             </Button>
           </div>
         ) : (

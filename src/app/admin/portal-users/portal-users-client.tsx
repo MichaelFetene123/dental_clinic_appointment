@@ -235,28 +235,16 @@ function PortalUserRowActions({ user }: { user: PortalUserRow }) {
   const canEdit = isSuperAdmin || hasPermission("patient.edit");
   const canDelete = isSuperAdmin || hasPermission("patient.delete");
 
-  const { mutate: unlink, isPending: isUnlinking } = useMutation({
-    mutationFn: () => unlinkPortalUser(user.id),
-    onSuccess: (res) => {
-      if (!res.success) { toast.error(res.error); return; }
-      toast.success("Portal account unlinked. Patient record preserved.");
-      queryClient.invalidateQueries({ queryKey: queryKeys.portalUsers.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
-      setAction(null);
-    },
-    onError: () => toast.error("Failed to unlink portal account"),
-  });
-
-  const { mutate: remove, isPending: isDeleting } = useMutation({
+  const { mutate: remove, isPending: isUnlinking } = useMutation({
     mutationFn: () => deletePortalUser(user.id),
     onSuccess: (res) => {
       if (!res.success) { toast.error(res.error); return; }
-      toast.success("Portal account deleted. Patient record preserved.");
+      toast.success("Portal account unlinked and removed.");
       queryClient.invalidateQueries({ queryKey: queryKeys.portalUsers.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
       setAction(null);
     },
-    onError: () => toast.error("Failed to delete portal account"),
+    onError: () => toast.error("Failed to remove portal account"),
   });
 
   return (
@@ -280,17 +268,11 @@ function PortalUserRowActions({ user }: { user: PortalUserRow }) {
                 Reset Password
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setAction({ type: "unlink", user })} className="gap-2 text-orange-600 focus:text-orange-600">
+              <DropdownMenuItem onClick={() => setAction({ type: "unlink", user })} className="gap-2 text-destructive focus:text-destructive">
                 <Unlink className="h-4 w-4" />
                 Unlink Account
               </DropdownMenuItem>
             </>
-          )}
-          {canDelete && (
-            <DropdownMenuItem onClick={() => setAction({ type: "delete", user })} className="gap-2 text-destructive focus:text-destructive">
-              <Trash2 className="h-4 w-4" />
-              Delete Account
-            </DropdownMenuItem>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
@@ -313,50 +295,25 @@ function PortalUserRowActions({ user }: { user: PortalUserRow }) {
         />
       )}
 
-      {/* Unlink Confirm */}
+      {/* Unlink/Remove Confirm */}
       {action?.type === "unlink" && (
         <AlertDialog open onOpenChange={(v) => !v && setAction(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Unlink Portal Account?</AlertDialogTitle>
               <AlertDialogDescription>
-                This will remove <span className="font-semibold">{user.name}</span>'s ability to log into the patient portal.
-                Their <strong>patient record will remain intact</strong>. This action cannot be undone without re-granting access.
+                This will remove <span className="font-semibold">{user.name}</span>'s ability to log into the patient portal and permanently delete their login credentials. 
+                Their <strong>patient record will remain intact</strong>. This action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel disabled={isUnlinking}>Cancel</AlertDialogCancel>
               <AlertDialogAction
-                onClick={() => unlink()}
-                disabled={isUnlinking}
-                className="bg-orange-600 hover:bg-orange-700 text-white"
-              >
-                {isUnlinking ? "Unlinking…" : "Unlink Account"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      )}
-
-      {/* Delete Confirm */}
-      {action?.type === "delete" && (
-        <AlertDialog open onOpenChange={(v) => !v && setAction(null)}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete Portal Account?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This will permanently delete <span className="font-semibold">{user.name}</span>'s portal account.
-                Their <strong>patient record will remain intact</strong>. This cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-              <AlertDialogAction
                 onClick={() => remove()}
-                disabled={isDeleting}
+                disabled={isUnlinking}
                 className="bg-destructive hover:bg-destructive/90 text-white"
               >
-                {isDeleting ? "Deleting…" : "Delete Account"}
+                {isUnlinking ? "Unlinking…" : "Unlink Account"}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -379,7 +336,7 @@ export default function PortalUsersClient() {
       u.patient?.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const activeCount = (data?.data ?? []).filter((u) => u.hasActiveSession).length;
+  const activeCount = (data?.data ?? []).filter((u) => u.isActive).length;
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-6">
@@ -398,7 +355,7 @@ export default function PortalUsersClient() {
           </Badge>
           <Badge variant="secondary" className="gap-1.5 h-9 px-3 text-sm text-green-700 bg-green-50 border border-green-200">
             <span className="h-2 w-2 rounded-full bg-green-500" />
-            {activeCount} Active Sessions
+            {activeCount} Active Accounts
           </Badge>
         </div>
       </div>
@@ -471,12 +428,7 @@ export default function PortalUsersClient() {
 
                   {/* Status */}
                   <TableCell>
-                    {!user.patient ? (
-                      <Badge variant="outline" className="gap-1.5 text-orange-700 border-orange-300 bg-orange-50">
-                        <Unlink className="h-3 w-3" />
-                        Unlinked
-                      </Badge>
-                    ) : user.hasActiveSession ? (
+                    {user.isActive ? (
                       <Badge variant="outline" className="gap-1.5 text-green-700 border-green-300 bg-green-50">
                         <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
                         Active

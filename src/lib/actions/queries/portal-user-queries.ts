@@ -8,7 +8,7 @@ export type PortalUserRow = {
   name: string;
   email: string;
   createdAt: string;
-  hasActiveSession: boolean;
+  isActive: boolean;
   patient: {
     id: string;
     name: string;
@@ -45,14 +45,6 @@ export async function getPortalUsers(): Promise<PortalUserListResult> {
       patient: {
         select: { id: true, name: true, phone: true },
       },
-      sessions: {
-        where: {
-          revokedAt: null,
-          tokenExpiresAt: { gt: new Date() },
-        },
-        select: { id: true },
-        take: 1,
-      },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -70,7 +62,7 @@ export async function getPortalUsers(): Promise<PortalUserListResult> {
     name: u.name,
     email: u.email,
     createdAt: u.createdAt.toISOString(),
-    hasActiveSession: u.sessions.length > 0,
+    isActive: !!u.patient,
     patient: u.patient
       ? { id: u.patient.id, name: u.patient.name, phone: u.patient.phone }
       : null,

@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { requirePatientAuth } from "@/lib/auth/guards";
 import Link from "next/link";
+import Image from "next/image";
 import { Calendar, FileText, Activity, User, LogOut } from "lucide-react";
 import { logout } from "@/lib/actions/auth/auth-actions";
 import { Button } from "@/components/ui/button";
@@ -13,8 +14,15 @@ async function PortalLayoutContent({ children }: { children: React.ReactNode }) 
             <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                 <div className="container mx-auto flex h-14 items-center justify-between px-4">
                     <div className="flex items-center gap-6">
-                        <Link href="/portal" className="font-bold text-xl text-primary">
-                            Patient Portal
+                        <Link href="/" className="flex items-center">
+                            <Image 
+                                src="/images/logo/logo-1.png" 
+                                alt="Clinic Logo" 
+                                width={120} 
+                                height={40} 
+                                className="h-10 w-auto object-contain"
+                                priority
+                            />
                         </Link>
                         <nav className="hidden md:flex items-center gap-4 text-sm font-medium">
                             <Link href="/portal" className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-2">

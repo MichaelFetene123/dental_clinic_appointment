@@ -16,7 +16,7 @@ import { GrantAccessModal } from '@/components/admin/patient/GrantAccessModal'
 import { AppointmentForm } from "@/components/admin/forms/appointmentForm"
 import PatientForm from "@/components/admin/forms/patientForm"
 
-import { 
+import {
     Calendar, Mail, MapPin, Phone, VenusAndMars, User,
     CalendarCheck, Clock, FileText, Activity, Key, Edit, Plus
 } from 'lucide-react'
@@ -27,7 +27,7 @@ interface PatientDetailClientProps {
 
 export default function PatientDetailClient({ id }: PatientDetailClientProps) {
     const { data: patient, isLoading } = usePatientDetail(id)
-    
+
     // Dialog States
     const [grantModalOpen, setGrantModalOpen] = useState(false);
     const [showApptForm, setShowApptForm] = useState(false);
@@ -72,7 +72,7 @@ export default function PatientDetailClient({ id }: PatientDetailClientProps) {
             <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card p-6 rounded-xl border shadow-sm'>
                 <div className="flex gap-4 items-center">
                     <Image
-                        src={"/images/download.jpg"} 
+                        src={"/images/download.jpg"}
                         alt={patient.name}
                         width={64}
                         height={64}
@@ -157,6 +157,20 @@ export default function PatientDetailClient({ id }: PatientDetailClientProps) {
                                 <div>
                                     <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Address</p>
                                     <p className="text-sm font-medium">{patient.address || 'N/A'}</p>
+                                </div>
+                            </div>
+                            <Separator />
+                            <div className="flex gap-3 items-start">
+                                <Key className="w-4 h-4 mt-0.5 text-muted-foreground shrink-0" />
+                                <div>
+                                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Portal Access</p>
+                                    <p className="text-sm font-medium">
+                                        {patient.userId && patient.user?.email ? (
+                                            <span className="text-green-600 font-semibold">Granted Email: {patient.user.email}</span>
+                                        ) : (
+                                            <span className="text-muted-foreground">No portal account granted yet.</span>
+                                        )}
+                                    </p>
                                 </div>
                             </div>
                         </CardContent>
@@ -277,16 +291,16 @@ export default function PatientDetailClient({ id }: PatientDetailClientProps) {
 
             {/* Conditionally rendered modals to avoid React 19 focus-trap issues */}
             {grantModalOpen && (
-                <GrantAccessModal 
-                    patientId={patient.id} 
-                    patientName={patient.name} 
-                    defaultEmail={patient.email} 
-                    hasAccess={!!patient.userId} 
-                    open={grantModalOpen} 
-                    onOpenChange={setGrantModalOpen} 
+                <GrantAccessModal
+                    patientId={patient.id}
+                    patientName={patient.name}
+                    defaultEmail={patient.email}
+                    hasAccess={!!patient.userId}
+                    open={grantModalOpen}
+                    onOpenChange={setGrantModalOpen}
                 />
             )}
-            
+
             {showApptForm && (
                 <AppointmentForm
                     show={showApptForm}

@@ -200,6 +200,16 @@ export async function createGuestAppointment(
     if (!existingPatient && phoneNumber) {
       existingPatient = await prisma.patient.findFirst({ where: { phone: phoneNumber } });
     }
+    
+    // Fallback 3: Check by full name (case-insensitive) if email and phone missed
+    if (!existingPatient && firstName && lastName) {
+      const fullName = `${firstName} ${lastName}`.trim();
+      existingPatient = await prisma.patient.findFirst({ 
+        where: { 
+          name: { equals: fullName, mode: "insensitive" } 
+        } 
+      });
+    }
 
     if (existingPatient) {
       patientIdToUse = existingPatient.id;

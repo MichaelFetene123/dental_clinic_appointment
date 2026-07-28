@@ -11,10 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 import { ClipboardIcon, PhoneCall, User } from "lucide-react";
 import React, { useState, useRef, useActionState, useEffect } from "react";
-import { createPortal } from "react-dom";
-import { IoClose } from "react-icons/io5";
 import { format } from "date-fns";
-import { z } from "zod";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { toast } from "sonner"
 import { FaTooth } from "react-icons/fa";
@@ -23,6 +20,13 @@ import { queryKeys } from "@/lib/queryKeys";
 import { createPatient, updatePatient, type ActionResponse } from "@/lib/actions/mutations/patient-mutations";
 import { parseISO, isValid } from "date-fns";
 import type { PatientRow } from "@/lib/actions/queries/patient-queries";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 interface PatientFormProps {
   show: boolean;
@@ -92,12 +96,7 @@ const PatientForm = ({ show, setShow, patient }: PatientFormProps) => {
   const [bloodType, setBloodType] = useState(patient?.bloodType ?? "UNKNOWN");
   const [gumCondition, setGumCondition] = useState(patient?.gumCondition ?? "HEALTHY");
   const [stepErrors, setStepErrors] = useState<Record<string, string>>({});
-  const [mounted, setMounted] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const queryClient = useQueryClient();
 
@@ -168,330 +167,330 @@ const PatientForm = ({ show, setShow, patient }: PatientFormProps) => {
   const actionErrors = !state?.success ? state?.errors : undefined;
   const errors = { ...actionErrors, ...stepErrors };
 
-  if (!show || !mounted) return null;
+  return (
+    <Dialog open={show} onOpenChange={setShow} modal={false}>
+      <DialogContent
+        className="w-full max-w-3xl max-h-[95vh] overflow-y-auto p-0"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
+        <DialogHeader className="sr-only">
+          <DialogTitle>{patient ? "Edit Patient" : "Add New Patient"}</DialogTitle>
+          <DialogDescription>
+            {patient ? "Update patient information." : "Fill out the form to add a new patient."}
+          </DialogDescription>
+        </DialogHeader>
 
-  return createPortal(
-    <div className="relative z-[9999]">
-      <div className="fixed inset-0 bg-black/50 z-[9998]" onClick={() => setShow(false)}></div>
-      <Card className="mx-auto px-3 fixed top-0 right-0 mt-2 mr-3 z-[9999] shadow-lg bg-background w-full max-w-3xl max-h-screen overflow-y-scroll">
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>{patient ? "Edit Patient" : "Add New Patient"}</CardTitle>
-            <button
-              className="text-muted-foreground hover:text-destructive transition "
-              aria-label="Close form"
-              onClick={() => setShow(false)}
-            >
-              <IoClose size={30} />
-            </button>
-          </div>
-        </CardHeader>
-        <Separator />
-
-        {/* Section Navigation */}
-        <CardContent>
-          <div className="relative flex justify-between mt-4  m-auto">
-            {/* Line connecting all steps */}
-            <div className="absolute top-4 left-20 w-[75%] mx-auto h-1 ">
-              {/* Active Progress Line */}
-              <div
-                className="h-1 bg-primary transition-all duration-300"
-                style={{ width: `${(step / (sections.length - 1)) * 100}%` }}
-              ></div>
+        <Card className="border-0 shadow-none">
+          <CardHeader>
+            <div className="flex justify-between items-center">
+              <CardTitle>{patient ? "Edit Patient" : "Add New Patient"}</CardTitle>
             </div>
+          </CardHeader>
+          <Separator />
 
-            {/* Steps */}
-            {sections.map((section, index) => (
-              <div key={index} className="relative flex flex-col items-center gap-2 w-full">
-                {/* Step Circle */}
-                <div className="h-10 w-10 rounded-full bg-background flex justify-center items-center">
-                  <div
-                    className={`h-8 w-8  flex items-center justify-center rounded-full p-2 z-10 ${index <= step ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+          {/* Section Navigation */}
+          <CardContent>
+            <div className="relative flex justify-between mt-4 m-auto">
+              {/* Line connecting all steps */}
+              <div className="absolute top-4 left-20 w-[75%] mx-auto h-1 ">
+                {/* Active Progress Line */}
+                <div
+                  className="h-1 bg-primary transition-all duration-300"
+                  style={{ width: `${(step / (sections.length - 1)) * 100}%` }}
+                ></div>
+              </div>
+
+              {/* Steps */}
+              {sections.map((section, index) => (
+                <div key={index} className="relative flex flex-col items-center gap-2 w-full">
+                  {/* Step Circle */}
+                  <div className="h-10 w-10 rounded-full bg-background flex justify-center items-center">
+                    <div
+                      className={`h-8 w-8 flex items-center justify-center rounded-full p-2 z-10 ${index <= step ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                        }`}
+                    >
+                      {section.icon}
+                    </div>
+                  </div>
+
+                  {/* Step Title */}
+                  <span
+                    className={`text-sm ${index <= step ? "font-bold text-primary" : "text-muted-foreground"
                       }`}
                   >
-                    {section.icon}
+                    {section.title}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+
+          {/* Form Sections */}
+          <CardContent className={" overflow-y-auto"}>
+            <form ref={formRef} action={formAction}>
+              {/* Hidden inputs for controlled components */}
+              <input type="hidden" name="gender" value={gender} />
+              <input type="hidden" name="dateOfBirth" value={date ? format(date, "yyyy-MM-dd") : ""} />
+              <input type="hidden" name="bloodType" value={bloodType} />
+              <input type="hidden" name="lastDentalVisit" value={lastVisitDate ? format(lastVisitDate, "yyyy-MM-dd") : ""} />
+              <input type="hidden" name="gumCondition" value={gumCondition} />
+
+              <div className={cn("grid gap-4", step !== 0 && "hidden")}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Field data-invalid={!!errors?.name}>
+                      <FieldLabel htmlFor="name">Full Name <span className="text-destructive">*</span></FieldLabel>
+                      <Input id="name" name="name" placeholder="Full Name" disabled={pending} defaultValue={patient?.name ?? ""} />
+                      {errors?.name && <FieldError>{errors.name}</FieldError>}
+                    </Field>
+                    <Field data-invalid={!!errors?.email}>
+                      <FieldLabel htmlFor="email">Email <span className="text-muted-foreground text-xs">(optional)</span></FieldLabel>
+                      <Input id="email" name="email" placeholder="Email" disabled={pending} defaultValue={patient?.email !== "N/A" ? patient?.email : ""} />
+                      {errors?.email && <FieldError>{errors.email}</FieldError>}
+                    </Field>
                   </div>
-                </div>
-
-                {/* Step Title */}
-                <span
-                  className={`text-sm ${index <= step ? "font-bold text-primary" : "text-muted-foreground"
-                    }`}
-                >
-                  {section.title}
-                </span>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-
-
-        {/* Form Sections */}
-        <CardContent className={" overflow-y-auto"}>
-          <form ref={formRef} action={formAction}>
-            {/* Hidden inputs for controlled components */}
-            <input type="hidden" name="gender" value={gender} />
-            <input type="hidden" name="dateOfBirth" value={date ? format(date, "yyyy-MM-dd") : ""} />
-            <input type="hidden" name="bloodType" value={bloodType} />
-            <input type="hidden" name="lastDentalVisit" value={lastVisitDate ? format(lastVisitDate, "yyyy-MM-dd") : ""} />
-            <input type="hidden" name="gumCondition" value={gumCondition} />
-
-            <div className={cn("grid gap-4", step !== 0 && "hidden")}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Field data-invalid={!!errors?.name}>
-                    <FieldLabel htmlFor="name">Full Name <span className="text-destructive">*</span></FieldLabel>
-                    <Input id="name" name="name" placeholder="Full Name" disabled={pending} defaultValue={patient?.name ?? ""} />
-                    {errors?.name && <FieldError>{errors.name}</FieldError>}
-                  </Field>
-                  <Field data-invalid={!!errors?.email}>
-                    <FieldLabel htmlFor="email">Email <span className="text-muted-foreground text-xs">(optional)</span></FieldLabel>
-                    <Input id="email" name="email" placeholder="Email" disabled={pending} defaultValue={patient?.email !== "N/A" ? patient?.email : ""} />
-                    {errors?.email && <FieldError>{errors.email}</FieldError>}
-                  </Field>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Field data-invalid={!!errors?.phone}>
-                    <FieldLabel htmlFor="phone">Phone Number <span className="text-destructive">*</span></FieldLabel>
-                    <Input id="phone" name="phone" placeholder="Phone Number" disabled={pending} defaultValue={patient?.phone !== "N/A" ? patient?.phone : ""} />
-                    {errors?.phone && <FieldError>{errors.phone}</FieldError>}
-                  </Field>
-                  <Field data-invalid={!!errors?.address}>
-                    <FieldLabel htmlFor="address">Address <span className="text-muted-foreground text-xs">(optional)</span></FieldLabel>
-                    <Input id="address" name="address" placeholder="Address" disabled={pending} defaultValue={patient?.address ?? ""} />
-                    {errors?.address && <FieldError>{errors.address}</FieldError>}
-                  </Field>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Field data-invalid={!!errors?.gender}>
-                    <FieldLabel htmlFor="gender">Gender <span className="text-destructive">*</span></FieldLabel>
-                    <Select onValueChange={(value) => setGender(value)} value={gender}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Field data-invalid={!!errors?.phone}>
+                      <FieldLabel htmlFor="phone">Phone Number <span className="text-destructive">*</span></FieldLabel>
+                      <Input id="phone" name="phone" placeholder="Phone Number" disabled={pending} defaultValue={patient?.phone !== "N/A" ? patient?.phone : ""} />
+                      {errors?.phone && <FieldError>{errors.phone}</FieldError>}
+                    </Field>
+                    <Field data-invalid={!!errors?.address}>
+                      <FieldLabel htmlFor="address">Address <span className="text-muted-foreground text-xs">(optional)</span></FieldLabel>
+                      <Input id="address" name="address" placeholder="Address" disabled={pending} defaultValue={patient?.address ?? ""} />
+                      {errors?.address && <FieldError>{errors.address}</FieldError>}
+                    </Field>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Field data-invalid={!!errors?.gender}>
+                      <FieldLabel htmlFor="gender">Gender <span className="text-destructive">*</span></FieldLabel>
+                      <Select onValueChange={(value) => setGender(value)} value={gender}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select Gender" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="MALE">Male</SelectItem>
+                          <SelectItem value="FEMALE">Female</SelectItem>
+                          <SelectItem value="OTHER">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {errors?.gender && <FieldError>{errors.gender}</FieldError>}
+                    </Field>
+                    <Field data-invalid={!!errors?.dateOfBirth}>
+                      <FieldLabel htmlFor="dateOfBirth">Date of Birth <span className="text-destructive">*</span></FieldLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !date && "text-muted-foreground"
+                            )}
+                          >
+                            {date ? format(date, "PPP") : <span>Pick a date</span>}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={date}
+                            onSelect={setDate}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      {errors?.dateOfBirth && <FieldError>{errors.dateOfBirth}</FieldError>}
+                    </Field>
+                  </div>
+                  <Field data-invalid={!!errors?.bloodType}>
+                    <FieldLabel htmlFor="bloodType">Blood Type</FieldLabel>
+                    <Select onValueChange={(value) => setBloodType(value)} defaultValue={bloodType}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select Gender" />
+                        <SelectValue placeholder="Select Blood Type" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="MALE">Male</SelectItem>
-                        <SelectItem value="FEMALE">Female</SelectItem>
-                        <SelectItem value="OTHER">Other</SelectItem>
+                        <SelectItem value="A_PLUS">A+</SelectItem>
+                        <SelectItem value="A_MINUS">A-</SelectItem>
+                        <SelectItem value="B_PLUS">B+</SelectItem>
+                        <SelectItem value="B_MINUS">B-</SelectItem>
+                        <SelectItem value="O_PLUS">O+</SelectItem>
+                        <SelectItem value="O_MINUS">O-</SelectItem>
+                        <SelectItem value="AB_PLUS">AB+</SelectItem>
+                        <SelectItem value="AB_MINUS">AB-</SelectItem>
+                        <SelectItem value="UNKNOWN">Unknown</SelectItem>
                       </SelectContent>
                     </Select>
-                    {errors?.gender && <FieldError>{errors.gender}</FieldError>}
+                    {errors?.bloodType && <FieldError>{errors.bloodType}</FieldError>}
                   </Field>
-                  <Field data-invalid={!!errors?.dateOfBirth}>
-                    <FieldLabel htmlFor="dateOfBirth">Date of Birth <span className="text-destructive">*</span></FieldLabel>
+              </div>
+
+              <div className={cn("grid gap-4", step !== 1 && "hidden")}>
+                  <Field data-invalid={!!errors?.medicalHistory}>
+                    <FieldLabel htmlFor="medicalHistory">Medical History</FieldLabel>
+                    <Textarea id="medicalHistory" name="medicalHistory" placeholder="Medical History" disabled={pending} defaultValue={patient?.medicalHistory ?? ""} />
+                    {errors?.medicalHistory && <FieldError>{errors.medicalHistory}</FieldError>}
+                  </Field>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Field data-invalid={!!errors?.height}>
+                      <FieldLabel htmlFor="height">Height (cm)</FieldLabel>
+                      <Input id="height" name="height" type="number" placeholder="Height (cm)" disabled={pending} defaultValue={patient?.height ?? ""} />
+                      {errors?.height && <FieldError>{errors.height}</FieldError>}
+                    </Field>
+                    <Field data-invalid={!!errors?.weight}>
+                      <FieldLabel htmlFor="weight">Weight (kg)</FieldLabel>
+                      <Input id="weight" name="weight" type="number" placeholder="Weight (kg)" disabled={pending} defaultValue={patient?.weight ?? ""} />
+                      {errors?.weight && <FieldError>{errors.weight}</FieldError>}
+                    </Field>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Field data-invalid={!!errors?.bloodPressure}>
+                      <FieldLabel htmlFor="bloodPressure">Blood Pressure</FieldLabel>
+                      <Input id="bloodPressure" name="bloodPressure" placeholder="e.g. 120/80" disabled={pending} defaultValue={patient?.bloodPressure ?? ""} />
+                      {errors?.bloodPressure && <FieldError>{errors.bloodPressure}</FieldError>}
+                    </Field>
+                    <Field data-invalid={!!errors?.heartRate}>
+                      <FieldLabel htmlFor="heartRate">Heart Rate (bpm)</FieldLabel>
+                      <Input id="heartRate" name="heartRate" type="number" placeholder="Heart Rate (bpm)" disabled={pending} defaultValue={patient?.heartRate ?? ""} />
+                      {errors?.heartRate && <FieldError>{errors.heartRate}</FieldError>}
+                    </Field>
+                  </div>
+
+                  <Field data-invalid={!!errors?.bloodSugarLevel}>
+                    <FieldLabel htmlFor="bloodSugarLevel">Blood Sugar Level</FieldLabel>
+                    <Input id="bloodSugarLevel" name="bloodSugarLevel" type="number" placeholder="Blood Sugar Level" disabled={pending} defaultValue={patient?.bloodSugarLevel ?? ""} />
+                    {errors?.bloodSugarLevel && <FieldError>{errors.bloodSugarLevel}</FieldError>}
+                  </Field>
+
+                  <Field data-invalid={!!errors?.allergies}>
+                    <FieldLabel htmlFor="allergies">Allergies</FieldLabel>
+                    <Textarea id="allergies" name="allergies" placeholder="Allergies" disabled={pending} defaultValue={patient?.allergies ?? ""} />
+                    {errors?.allergies && <FieldError>{errors.allergies}</FieldError>}
+                  </Field>
+
+                  <Field data-invalid={!!errors?.medications}>
+                    <FieldLabel htmlFor="medications">Medications</FieldLabel>
+                    <Textarea id="medications" name="medications" placeholder="Medications" disabled={pending} defaultValue={patient?.medications ?? ""} />
+                    {errors?.medications && <FieldError>{errors.medications}</FieldError>}
+                  </Field>
+
+                  <Field data-invalid={!!errors?.chronicDiseases}>
+                    <FieldLabel htmlFor="chronicDiseases">Chronic Diseases</FieldLabel>
+                    <Textarea id="chronicDiseases" name="chronicDiseases" placeholder="Chronic Diseases" disabled={pending} defaultValue={patient?.chronicDiseases ?? ""} />
+                    {errors?.chronicDiseases && <FieldError>{errors.chronicDiseases}</FieldError>}
+                  </Field>
+              </div>
+
+              <div className={cn("grid gap-4", step !== 2 && "hidden")}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Field data-invalid={!!errors?.emergencyContactName}>
+                      <FieldLabel htmlFor="emergencyContactName">Emergency Contact Name</FieldLabel>
+                      <Input id="emergencyContactName" name="emergencyContactName" placeholder="Emergency Contact Name" disabled={pending} defaultValue={patient?.emergencyContactName ?? ""} />
+                      {errors?.emergencyContactName && <FieldError>{errors.emergencyContactName}</FieldError>}
+                    </Field>
+                    <Field data-invalid={!!errors?.emergencyContactPhone}>
+                      <FieldLabel htmlFor="emergencyContactPhone">Emergency Contact Phone</FieldLabel>
+                      <Input id="emergencyContactPhone" name="emergencyContactPhone" type="tel" placeholder="Emergency Contact Phone" disabled={pending} defaultValue={patient?.emergencyContactPhone ?? ""} />
+                      {errors?.emergencyContactPhone && <FieldError>{errors.emergencyContactPhone}</FieldError>}
+                    </Field>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Field data-invalid={!!errors?.insuranceProvider}>
+                      <FieldLabel htmlFor="insuranceProvider">Insurance Provider</FieldLabel>
+                      <Input id="insuranceProvider" name="insuranceProvider" placeholder="Insurance Provider" disabled={pending} defaultValue={patient?.insuranceProvider ?? ""} />
+                      {errors?.insuranceProvider && <FieldError>{errors.insuranceProvider}</FieldError>}
+                    </Field>
+                    <Field data-invalid={!!errors?.insuranceNumber}>
+                      <FieldLabel htmlFor="insuranceNumber">Insurance Number</FieldLabel>
+                      <Input id="insuranceNumber" name="insuranceNumber" placeholder="Insurance Number" disabled={pending} defaultValue={patient?.insuranceNumber ?? ""} />
+                      {errors?.insuranceNumber && <FieldError>{errors.insuranceNumber}</FieldError>}
+                    </Field>
+                  </div>
+              </div>
+
+              <div className={cn("grid gap-4", step !== 3 && "hidden")}>
+                  <Field data-invalid={!!errors?.lastDentalVisit}>
+                    <FieldLabel htmlFor="lastDentalVisit">Last Dental Visit</FieldLabel>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
                           variant={"outline"}
                           className={cn(
                             "w-full justify-start text-left font-normal",
-                            !date && "text-muted-foreground"
+                            !lastVisitDate && "text-muted-foreground"
                           )}
                         >
-                          {date ? format(date, "PPP") : <span>Pick a date</span>}
+                          {lastVisitDate ? format(lastVisitDate, "PPP") : <span>Pick a date</span>}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
-                          selected={date}
-                          onSelect={setDate}
+                          selected={lastVisitDate}
+                          onSelect={setLastVisitDate}
                         />
                       </PopoverContent>
                     </Popover>
-                    {errors?.dateOfBirth && <FieldError>{errors.dateOfBirth}</FieldError>}
+                    {errors?.lastDentalVisit && <FieldError>{errors.lastDentalVisit}</FieldError>}
                   </Field>
-                </div>
-                <Field data-invalid={!!errors?.bloodType}>
-                  <FieldLabel htmlFor="bloodType">Blood Type</FieldLabel>
-                  <Select onValueChange={(value) => setBloodType(value)} defaultValue={bloodType}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Blood Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="A_PLUS">A+</SelectItem>
-                      <SelectItem value="A_MINUS">A-</SelectItem>
-                      <SelectItem value="B_PLUS">B+</SelectItem>
-                      <SelectItem value="B_MINUS">B-</SelectItem>
-                      <SelectItem value="O_PLUS">O+</SelectItem>
-                      <SelectItem value="O_MINUS">O-</SelectItem>
-                      <SelectItem value="AB_PLUS">AB+</SelectItem>
-                      <SelectItem value="AB_MINUS">AB-</SelectItem>
-                      <SelectItem value="UNKNOWN">Unknown</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {errors?.bloodType && <FieldError>{errors.bloodType}</FieldError>}
-                </Field>
-            </div>
 
-            <div className={cn("grid gap-4", step !== 1 && "hidden")}>
-                <Field data-invalid={!!errors?.medicalHistory}>
-                  <FieldLabel htmlFor="medicalHistory">Medical History</FieldLabel>
-                  <Textarea id="medicalHistory" name="medicalHistory" placeholder="Medical History" disabled={pending} defaultValue={patient?.medicalHistory ?? ""} />
-                  {errors?.medicalHistory && <FieldError>{errors.medicalHistory}</FieldError>}
-                </Field>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Field data-invalid={!!errors?.height}>
-                    <FieldLabel htmlFor="height">Height (cm)</FieldLabel>
-                    <Input id="height" name="height" type="number" placeholder="Height (cm)" disabled={pending} defaultValue={patient?.height ?? ""} />
-                    {errors?.height && <FieldError>{errors.height}</FieldError>}
+                  <Field data-invalid={!!errors?.gumCondition}>
+                    <FieldLabel htmlFor="gumCondition">Gum Condition</FieldLabel>
+                    <Select onValueChange={(value) => setGumCondition(value)} defaultValue={gumCondition}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Gum Condition" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="HEALTHY">Healthy</SelectItem>
+                        <SelectItem value="GINGIVITIS">Gingivitis</SelectItem>
+                        <SelectItem value="PERIODONTITIS">Periodontitis</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors?.gumCondition && <FieldError>{errors.gumCondition}</FieldError>}
                   </Field>
-                  <Field data-invalid={!!errors?.weight}>
-                    <FieldLabel htmlFor="weight">Weight (kg)</FieldLabel>
-                    <Input id="weight" name="weight" type="number" placeholder="Weight (kg)" disabled={pending} defaultValue={patient?.weight ?? ""} />
-                    {errors?.weight && <FieldError>{errors.weight}</FieldError>}
-                  </Field>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Field data-invalid={!!errors?.bloodPressure}>
-                    <FieldLabel htmlFor="bloodPressure">Blood Pressure</FieldLabel>
-                    <Input id="bloodPressure" name="bloodPressure" placeholder="e.g. 120/80" disabled={pending} defaultValue={patient?.bloodPressure ?? ""} />
-                    {errors?.bloodPressure && <FieldError>{errors.bloodPressure}</FieldError>}
-                  </Field>
-                  <Field data-invalid={!!errors?.heartRate}>
-                    <FieldLabel htmlFor="heartRate">Heart Rate (bpm)</FieldLabel>
-                    <Input id="heartRate" name="heartRate" type="number" placeholder="Heart Rate (bpm)" disabled={pending} defaultValue={patient?.heartRate ?? ""} />
-                    {errors?.heartRate && <FieldError>{errors.heartRate}</FieldError>}
-                  </Field>
-                </div>
-
-                <Field data-invalid={!!errors?.bloodSugarLevel}>
-                  <FieldLabel htmlFor="bloodSugarLevel">Blood Sugar Level</FieldLabel>
-                  <Input id="bloodSugarLevel" name="bloodSugarLevel" type="number" placeholder="Blood Sugar Level" disabled={pending} defaultValue={patient?.bloodSugarLevel ?? ""} />
-                  {errors?.bloodSugarLevel && <FieldError>{errors.bloodSugarLevel}</FieldError>}
-                </Field>
-
-                <Field data-invalid={!!errors?.allergies}>
-                  <FieldLabel htmlFor="allergies">Allergies</FieldLabel>
-                  <Textarea id="allergies" name="allergies" placeholder="Allergies" disabled={pending} defaultValue={patient?.allergies ?? ""} />
-                  {errors?.allergies && <FieldError>{errors.allergies}</FieldError>}
-                </Field>
-
-                <Field data-invalid={!!errors?.medications}>
-                  <FieldLabel htmlFor="medications">Medications</FieldLabel>
-                  <Textarea id="medications" name="medications" placeholder="Medications" disabled={pending} defaultValue={patient?.medications ?? ""} />
-                  {errors?.medications && <FieldError>{errors.medications}</FieldError>}
-                </Field>
-
-                <Field data-invalid={!!errors?.chronicDiseases}>
-                  <FieldLabel htmlFor="chronicDiseases">Chronic Diseases</FieldLabel>
-                  <Textarea id="chronicDiseases" name="chronicDiseases" placeholder="Chronic Diseases" disabled={pending} defaultValue={patient?.chronicDiseases ?? ""} />
-                  {errors?.chronicDiseases && <FieldError>{errors.chronicDiseases}</FieldError>}
-                </Field>
-            </div>
-
-            <div className={cn("grid gap-4", step !== 2 && "hidden")}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Field data-invalid={!!errors?.emergencyContactName}>
-                    <FieldLabel htmlFor="emergencyContactName">Emergency Contact Name</FieldLabel>
-                    <Input id="emergencyContactName" name="emergencyContactName" placeholder="Emergency Contact Name" disabled={pending} defaultValue={patient?.emergencyContactName ?? ""} />
-                    {errors?.emergencyContactName && <FieldError>{errors.emergencyContactName}</FieldError>}
-                  </Field>
-                  <Field data-invalid={!!errors?.emergencyContactPhone}>
-                    <FieldLabel htmlFor="emergencyContactPhone">Emergency Contact Phone</FieldLabel>
-                    <Input id="emergencyContactPhone" name="emergencyContactPhone" type="tel" placeholder="Emergency Contact Phone" disabled={pending} defaultValue={patient?.emergencyContactPhone ?? ""} />
-                    {errors?.emergencyContactPhone && <FieldError>{errors.emergencyContactPhone}</FieldError>}
-                  </Field>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Field data-invalid={!!errors?.insuranceProvider}>
-                    <FieldLabel htmlFor="insuranceProvider">Insurance Provider</FieldLabel>
-                    <Input id="insuranceProvider" name="insuranceProvider" placeholder="Insurance Provider" disabled={pending} defaultValue={patient?.insuranceProvider ?? ""} />
-                    {errors?.insuranceProvider && <FieldError>{errors.insuranceProvider}</FieldError>}
-                  </Field>
-                  <Field data-invalid={!!errors?.insuranceNumber}>
-                    <FieldLabel htmlFor="insuranceNumber">Insurance Number</FieldLabel>
-                    <Input id="insuranceNumber" name="insuranceNumber" placeholder="Insurance Number" disabled={pending} defaultValue={patient?.insuranceNumber ?? ""} />
-                    {errors?.insuranceNumber && <FieldError>{errors.insuranceNumber}</FieldError>}
-                  </Field>
-                </div>
-            </div>
-
-            <div className={cn("grid gap-4", step !== 3 && "hidden")}>
-                <Field data-invalid={!!errors?.lastDentalVisit}>
-                  <FieldLabel htmlFor="lastDentalVisit">Last Dental Visit</FieldLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !lastVisitDate && "text-muted-foreground"
-                        )}
-                      >
-                        {lastVisitDate ? format(lastVisitDate, "PPP") : <span>Pick a date</span>}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={lastVisitDate}
-                        onSelect={setLastVisitDate}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Field data-invalid={!!errors?.toothDecay}>
+                      <FieldLabel htmlFor="toothDecay">Tooth Decay (0-10)</FieldLabel>
+                      <Input
+                        id="toothDecay"
+                        name="toothDecay"
+                        type="number"
+                        placeholder="Tooth Decay (0-10)"
+                        min="0"
+                        max="10"
+                        disabled={pending}
+                        defaultValue={patient?.toothDecay ?? ""}
                       />
-                    </PopoverContent>
-                  </Popover>
-                  {errors?.lastDentalVisit && <FieldError>{errors.lastDentalVisit}</FieldError>}
-                </Field>
+                      {errors?.toothDecay && <FieldError>{errors.toothDecay}</FieldError>}
+                    </Field>
+                    <Field data-invalid={!!errors?.missingTeethCount}>
+                      <FieldLabel htmlFor="missingTeethCount">Missing Teeth Count</FieldLabel>
+                      <Input id="missingTeethCount" name="missingTeethCount" type="number" placeholder="Missing Teeth Count" disabled={pending} defaultValue={patient?.missingTeethCount ?? ""} />
+                      {errors?.missingTeethCount && <FieldError>{errors.missingTeethCount}</FieldError>}
+                    </Field>
+                  </div>
 
-                <Field data-invalid={!!errors?.gumCondition}>
-                  <FieldLabel htmlFor="gumCondition">Gum Condition</FieldLabel>
-                  <Select onValueChange={(value) => setGumCondition(value)} defaultValue={gumCondition}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Gum Condition" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="HEALTHY">Healthy</SelectItem>
-                      <SelectItem value="GINGIVITIS">Gingivitis</SelectItem>
-                      <SelectItem value="PERIODONTITIS">Periodontitis</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {errors?.gumCondition && <FieldError>{errors.gumCondition}</FieldError>}
-                </Field>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Field data-invalid={!!errors?.toothDecay}>
-                    <FieldLabel htmlFor="toothDecay">Tooth Decay (0-10)</FieldLabel>
-                    <Input
-                      id="toothDecay"
-                      name="toothDecay"
-                      type="number"
-                      placeholder="Tooth Decay (0-10)"
-                      min="0"
-                      max="10"
-                      disabled={pending}
-                      defaultValue={patient?.toothDecay ?? ""}
-                    />
-                    {errors?.toothDecay && <FieldError>{errors.toothDecay}</FieldError>}
+                  <Field data-invalid={!!errors?.prostheticsUsed}>
+                    <FieldLabel htmlFor="prostheticsUsed">Prosthetics Used</FieldLabel>
+                    <Textarea id="prostheticsUsed" name="prostheticsUsed" placeholder="Prosthetics Used" disabled={pending} defaultValue={patient?.prostheticsUsed ?? ""} />
+                    {errors?.prostheticsUsed && <FieldError>{errors.prostheticsUsed}</FieldError>}
                   </Field>
-                  <Field data-invalid={!!errors?.missingTeethCount}>
-                    <FieldLabel htmlFor="missingTeethCount">Missing Teeth Count</FieldLabel>
-                    <Input id="missingTeethCount" name="missingTeethCount" type="number" placeholder="Missing Teeth Count" disabled={pending} defaultValue={patient?.missingTeethCount ?? ""} />
-                    {errors?.missingTeethCount && <FieldError>{errors.missingTeethCount}</FieldError>}
-                  </Field>
-                </div>
-
-                <Field data-invalid={!!errors?.prostheticsUsed}>
-                  <FieldLabel htmlFor="prostheticsUsed">Prosthetics Used</FieldLabel>
-                  <Textarea id="prostheticsUsed" name="prostheticsUsed" placeholder="Prosthetics Used" disabled={pending} defaultValue={patient?.prostheticsUsed ?? ""} />
-                  {errors?.prostheticsUsed && <FieldError>{errors.prostheticsUsed}</FieldError>}
-                </Field>
-            </div>
-          </form>
-        </CardContent>
-        {/* Navigation Buttons */}
-        <CardFooter className="flex justify-between">
-          <Button variant="outline" onClick={handlePrev} disabled={step === 0}>
-            Previous
-          </Button>
-          <Button onClick={handleNext} disabled={pending}>
-            {step === sections.length - 1 ? (pending ? "Submitting..." : "Submit") : "Next"}
-          </Button>
-        </CardFooter>
-      </Card>
-    </div>,
-    document.body
+              </div>
+            </form>
+          </CardContent>
+          {/* Navigation Buttons */}
+          <CardFooter className="flex justify-between">
+            <Button variant="outline" onClick={handlePrev} disabled={step === 0}>
+              Previous
+            </Button>
+            <Button onClick={handleNext} disabled={pending}>
+              {step === sections.length - 1 ? (pending ? "Submitting..." : "Submit") : "Next"}
+            </Button>
+          </CardFooter>
+        </Card>
+      </DialogContent>
+    </Dialog>
   );
 };
 

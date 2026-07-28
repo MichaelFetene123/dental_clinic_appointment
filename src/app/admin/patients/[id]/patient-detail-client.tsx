@@ -75,7 +75,11 @@ export default function PatientDetailClient({ id }: PatientDetailClientProps) {
                     <Button
                         size="lg"
                         className="font-semibold"
-                        onClick={() => setShowApptForm(true)}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            setShowApptForm(true);
+                        }}
                     >
                         Add Appointment
                     </Button>
@@ -90,18 +94,16 @@ export default function PatientDetailClient({ id }: PatientDetailClientProps) {
                 open={grantModalOpen} 
                 onOpenChange={setGrantModalOpen} 
             />
-            {showApptForm && (
-                <AppointmentForm
-                    show={showApptForm}
-                    setShow={setShowApptForm}
-                    patient={{
-                        id: patient.id,
-                        name: patient.name,
-                        email: patient.email,
-                        phone: patient.phone
-                    }}
-                />
-            )}
+            <AppointmentForm
+                show={showApptForm}
+                setShow={setShowApptForm}
+                patient={{
+                    id: patient.id,
+                    name: patient.name,
+                    email: patient.email,
+                    phone: patient.phone
+                }}
+            />
         </div>
     )
 }

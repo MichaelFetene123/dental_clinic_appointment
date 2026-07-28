@@ -1,12 +1,10 @@
 "use client"
 
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import * as React from "react";
 import { useState, useActionState, useEffect } from "react";
-import { createPortal } from "react-dom";
 import { format } from "date-fns";
 import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -36,17 +34,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { IoClose } from "react-icons/io5";
 import { Separator } from "@/components/ui/separator";
-
-import { appointmentFormSchema as appointmentSchema } from '@/lib/validationSchema';
-
-type FormState = {
-    errors?: Record<string, string>;
-    success?: boolean;
-};
 
 interface AppointmentFormProps {
     show: boolean;
@@ -61,12 +51,7 @@ interface AppointmentFormProps {
 
 export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps) {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-    const [selectedReason, setSelectedReason] = useState("");
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    const [selectedReason, setSelectedReason] = useState("checkup");
 
     // Patient Search State
     const [isNewPatient, setIsNewPatient] = useState(patient ? false : true);
@@ -111,22 +96,19 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
         }
     }, [state?.success, queryClient, setShow, selectedPatientId]);
 
-    if (!show || !mounted) return null;
-
-    return createPortal(
-        <div className="relative z-[9999]">
-            <div className="fixed inset-0 bg-black/50 z-[9998]" onClick={() => setShow(false)}></div>
-            <Card className="w-full max-w-lg mx-auto px-3 pt-6 fixed top-0 right-0 mt-8 mr-3 z-[9999] shadow-lg max-h-[90vh] overflow-y-auto">
-            <CardHeader >
-                <div className="flex justify-between">
-                    <CardTitle>Book an Appointment</CardTitle>
-                    <button className="flex justify-end">
-                        <IoClose size={30} onClick={() => setShow(false)} />
-                    </button>
-                </div>
-            </CardHeader>
-            <Separator />
-            <CardContent>
+    return (
+        <Dialog open={show} onOpenChange={setShow} modal={false}>
+            <DialogContent
+                className="sm:max-w-lg max-h-[90vh] overflow-y-auto"
+                onOpenAutoFocus={(e) => e.preventDefault()}
+            >
+                <DialogHeader>
+                    <DialogTitle>Book an Appointment</DialogTitle>
+                    <DialogDescription className="sr-only">
+                        Fill out the form below to book an appointment.
+                    </DialogDescription>
+                </DialogHeader>
+                <Separator />
                 <form action={formAction} className="space-y-6 mt-3">
                     <div className="flex flex-col gap-3 mb-6 bg-muted/30 p-4 rounded-lg border">
                         <div className="flex items-center justify-between">
@@ -136,10 +118,10 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
                                     Existing Patient
                                 </div>
                             ) : (
-                                <Button 
-                                    type="button" 
-                                    variant="outline" 
-                                    size="sm" 
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
                                     onClick={() => {
                                         setIsNewPatient(!isNewPatient);
                                         setSelectedPatientId("");
@@ -176,45 +158,45 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
                                                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                             </Button>
                                         </PopoverTrigger>
-                                    <PopoverContent className="w-[450px] p-0" align="start">
-                                        <Command>
-                                            <CommandInput 
-                                                placeholder="Search by name, email, or phone..." 
-                                                value={patientSearchQuery}
-                                                onValueChange={setPatientSearchQuery}
-                                            />
-                                            <CommandList>
-                                                <CommandEmpty>No patients found.</CommandEmpty>
-                                                <CommandGroup>
-                                                    {patientSearchResults.map((patient) => (
-                                                        <CommandItem
-                                                            key={patient.id}
-                                                            value={patient.id}
-                                                            onSelect={(currentValue) => {
-                                                                setSelectedPatientId(currentValue);
-                                                                setPrefilledName(patient.name);
-                                                                setPrefilledEmail(patient.email || "");
-                                                                setPrefilledPhone(patient.phone || "");
-                                                                setPatientSearchOpen(false);
-                                                            }}
-                                                        >
-                                                            <Check
-                                                                className={cn(
-                                                                    "mr-2 h-4 w-4",
-                                                                    selectedPatientId === patient.id ? "opacity-100" : "opacity-0"
-                                                                )}
-                                                            />
-                                                            <div className="flex flex-col">
-                                                                <span>{patient.name}</span>
-                                                                <span className="text-xs text-muted-foreground">{patient.email} | {patient.phone}</span>
-                                                            </div>
-                                                        </CommandItem>
-                                                    ))}
-                                                </CommandGroup>
-                                            </CommandList>
-                                        </Command>
-                                    </PopoverContent>
-                                </Popover>
+                                        <PopoverContent className="w-[450px] p-0" align="start">
+                                            <Command>
+                                                <CommandInput
+                                                    placeholder="Search by name, email, or phone..."
+                                                    value={patientSearchQuery}
+                                                    onValueChange={setPatientSearchQuery}
+                                                />
+                                                <CommandList>
+                                                    <CommandEmpty>No patients found.</CommandEmpty>
+                                                    <CommandGroup>
+                                                        {patientSearchResults.map((patient) => (
+                                                            <CommandItem
+                                                                key={patient.id}
+                                                                value={patient.id}
+                                                                onSelect={(currentValue) => {
+                                                                    setSelectedPatientId(currentValue);
+                                                                    setPrefilledName(patient.name);
+                                                                    setPrefilledEmail(patient.email || "");
+                                                                    setPrefilledPhone(patient.phone || "");
+                                                                    setPatientSearchOpen(false);
+                                                                }}
+                                                            >
+                                                                <Check
+                                                                    className={cn(
+                                                                        "mr-2 h-4 w-4",
+                                                                        selectedPatientId === patient.id ? "opacity-100" : "opacity-0"
+                                                                    )}
+                                                                />
+                                                                <div className="flex flex-col">
+                                                                    <span>{patient.name}</span>
+                                                                    <span className="text-xs text-muted-foreground">{patient.email} | {patient.phone}</span>
+                                                                </div>
+                                                            </CommandItem>
+                                                        ))}
+                                                    </CommandGroup>
+                                                </CommandList>
+                                            </Command>
+                                        </PopoverContent>
+                                    </Popover>
                                 )}
                                 <input type="hidden" name="patientId" value={selectedPatientId} />
                             </div>
@@ -223,12 +205,12 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
                         <div className="flex justify-between gap-5 mt-2">
                             <Field data-invalid={!!actionErrors?.name} className="w-1/2">
                                 <FieldLabel htmlFor="name">Name</FieldLabel>
-                                <Input 
+                                <Input
                                     key={`name-${isNewPatient ? 'new' : selectedPatientId}`}
-                                    id="name" 
-                                    name="name" 
-                                    placeholder="John Doe" 
-                                    disabled={pending || !isNewPatient} 
+                                    id="name"
+                                    name="name"
+                                    placeholder="John Doe"
+                                    disabled={pending || !isNewPatient}
                                     defaultValue={!isNewPatient ? prefilledName : ""}
                                 />
                                 {actionErrors?.name && <FieldError>{actionErrors.name}</FieldError>}
@@ -236,13 +218,13 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
 
                             <Field data-invalid={!!actionErrors?.email} className="w-1/2">
                                 <FieldLabel htmlFor="email">Email</FieldLabel>
-                                <Input 
+                                <Input
                                     key={`email-${isNewPatient ? 'new' : selectedPatientId}`}
-                                    id="email" 
-                                    name="email" 
-                                    type="email" 
-                                    placeholder="example@email.com" 
-                                    disabled={pending || !isNewPatient} 
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    placeholder="example@email.com"
+                                    disabled={pending || !isNewPatient}
                                     defaultValue={!isNewPatient ? prefilledEmail : ""}
                                 />
                                 {actionErrors?.email && <FieldError>{actionErrors.email}</FieldError>}
@@ -252,13 +234,13 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
                         <div className="flex justify-between gap-5">
                             <Field data-invalid={!!actionErrors?.phone} className="w-full">
                                 <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
-                                <Input 
+                                <Input
                                     key={`phone-${isNewPatient ? 'new' : selectedPatientId}`}
-                                    id="phone" 
-                                    name="phone" 
-                                    type="tel" 
-                                    placeholder="123-456-7890" 
-                                    disabled={pending || !isNewPatient} 
+                                    id="phone"
+                                    name="phone"
+                                    type="tel"
+                                    placeholder="123-456-7890"
+                                    disabled={pending || !isNewPatient}
                                     defaultValue={!isNewPatient ? prefilledPhone : ""}
                                 />
                                 {actionErrors?.phone && <FieldError>{actionErrors.phone}</FieldError>}
@@ -271,7 +253,7 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
                             <FieldLabel htmlFor="reason">Reason</FieldLabel>
                             <Select
                                 onValueChange={(value) => setSelectedReason(value)}
-                                defaultValue={selectedReason}
+                                value={selectedReason}
                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select a reason" />
@@ -332,10 +314,8 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
                         {pending ? "Booking..." : "Book Appointment"}
                     </Button>
                 </form>
-            </CardContent>
-        </Card>
-        </div>,
-        document.body
+            </DialogContent>
+        </Dialog>
     );
 }
 

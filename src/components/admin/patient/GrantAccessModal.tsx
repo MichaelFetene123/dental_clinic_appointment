@@ -94,7 +94,10 @@ export function GrantAccessModal({
         if (!val) setTempPassword(null);
         onOpenChange(val);
     }}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent
+        className="sm:max-w-[425px]"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>{hasAccess ? "Manage Portal Access" : "Grant Portal Access"}</DialogTitle>
           <DialogDescription>

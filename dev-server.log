@@ -1,0 +1,54 @@
+
+> classic_dental_clinic@0.1.0 dev C:\Users\micha\Projects\Clinic\dental_clinic_appointment
+> next dev
+
+▲ Next.js 16.2.10 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.100.93:3000
+- Environments: .env
+✓ Ready in 1681ms
+Creating turbopack project {
+  dir: 'C:\\Users\\micha\\Projects\\Clinic\\dental_clinic_appointment',
+  testMode: true
+}
+- Cache Components enabled
+- Experiments (use with caution):
+  · optimizePackageImports
+
+ GET /login?callbackUrl=%2Fadmin%2Fpatients%2Fcms09ycaf0003ckbb6ivhuxzt 200 in 1719ms (next.js: 570ms, proxy.ts: 14ms, application-code: 1135ms)
+ GET /admin 200 in 817ms (next.js: 152ms, proxy.ts: 7ms, application-code: 658ms)
+ POST /login?callbackUrl=%2Fadmin%2Fpatients%2Fcms09ycaf0003ckbb6ivhuxzt 303 in 5.1s (next.js: 9ms, proxy.ts: 10ms, application-code: 5.1s)
+  └─ ƒ login(undefined, {}) in 3963ms src/lib/actions/auth/auth-actions.ts
+ POST /api/auth/refresh 200 in 2.6s (next.js: 411ms, proxy.ts: 17ms, application-code: 2.1s)
+ POST /api/auth/refresh 200 in 2.6s (next.js: 451ms, proxy.ts: 17ms, application-code: 2.1s)
+ POST /admin 200 in 2.1s (next.js: 12ms, proxy.ts: 27ms, application-code: 2.1s)
+ POST /admin 200 in 570ms (next.js: 9ms, proxy.ts: 13ms, application-code: 548ms)
+ POST /admin 200 in 787ms (next.js: 9ms, proxy.ts: 9ms, application-code: 769ms)
+ GET /admin/patients/cms09ycaf0003ckbb6ivhuxzt 200 in 1675ms (next.js: 1530ms, proxy.ts: 8ms, generate-params: 1447ms, application-code: 137ms)
+ GET /admin/patients/favicon.ico 200 in 3.6s (next.js: 65ms, generate-params: 24ms, application-code: 3.6s)
+ POST /admin/patients/cms09ycaf0003ckbb6ivhuxzt 200 in 6.0s (next.js: 26ms, proxy.ts: 38ms, generate-params: 71µs, application-code: 5.9s)
+✓ Compiled in 10.7s
+✓ Compiled in 2.4s
+✓ Compiled in 208ms
+ GET /admin/patients/cms09ycaf0003ckbb6ivhuxzt 200 in 8.0s (next.js: 1682ms, proxy.ts: 1371ms, generate-params: 16ms, application-code: 4.9s)
+ GET / 200 in 2.5s (next.js: 536ms, proxy.ts: 95ms, application-code: 1883ms)
+ GET /login?callbackUrl=%2Fadmin 200 in 1089ms (next.js: 211ms, proxy.ts: 22ms, application-code: 856ms)
+ GET /admin 200 in 2.5s (next.js: 1484ms, proxy.ts: 14ms, application-code: 1019ms)
+ POST /login?callbackUrl=%2Fadmin 303 in 7.5s (next.js: 16ms, proxy.ts: 17ms, application-code: 7.5s)
+  └─ ƒ login(undefined, {}) in 4871ms src/lib/actions/auth/auth-actions.ts
+ POST /admin 200 in 1117ms (next.js: 14ms, proxy.ts: 40ms, application-code: 1063ms)
+ POST /admin 200 in 202ms (next.js: 28ms, proxy.ts: 33ms, application-code: 141ms)
+ POST /admin 200 in 91ms (next.js: 17ms, proxy.ts: 25ms, application-code: 48ms)
+ POST /api/auth/refresh 200 in 4.1s (next.js: 964ms, proxy.ts: 19ms, application-code: 3.1s)
+ POST /api/auth/refresh 200 in 4.1s (next.js: 916ms, proxy.ts: 18ms, application-code: 3.2s)
+ GET /admin/patients/cms09ycaf0003ckbb6ivhuxzt 200 in 351ms (next.js: 55ms, proxy.ts: 15ms, generate-params: 23ms, application-code: 281ms)
+ GET /admin/patients/cms09ycaf0003ckbb6ivhuxzt 200 in 151ms (next.js: 27ms, proxy.ts: 13ms, generate-params: 63µs, application-code: 110ms)
+ POST /admin/patients/cms09ycaf0003ckbb6ivhuxzt 200 in 3.1s (next.js: 29ms, proxy.ts: 28ms, generate-params: 74µs, application-code: 3.0s)
+ GET /admin/patients/favicon.ico 200 in 4.1s (next.js: 20ms, generate-params: 77µs, application-code: 4.1s)
+ GET /admin/appointment 200 in 691ms (next.js: 532ms, proxy.ts: 11ms, application-code: 148ms)
+ POST /admin/appointment 200 in 2.8s (next.js: 23ms, proxy.ts: 17ms, application-code: 2.7s)
+ POST /admin/appointment 200 in 1363ms (next.js: 18ms, proxy.ts: 20ms, application-code: 1324ms)
+ GET /admin/staff 200 in 1591ms (next.js: 496ms, proxy.ts: 16ms, application-code: 1080ms)
+ GET /admin/patients 200 in 584ms (next.js: 355ms, proxy.ts: 18ms, application-code: 211ms)
+ GET /admin/patients/cms09ycaf0003ckbb6ivhuxzt 200 in 210ms (next.js: 43ms, proxy.ts: 12ms, generate-params: 20ms, application-code: 155ms)
+ GET /admin/patients/favicon.ico 200 in 3.1s (next.js: 26ms, generate-params: 151µs, application-code: 3.1s)

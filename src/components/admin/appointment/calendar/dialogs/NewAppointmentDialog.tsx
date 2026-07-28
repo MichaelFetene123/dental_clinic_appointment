@@ -39,8 +39,11 @@ export function NewAppointmentDialog({
     })() : false;
 
     return (
-        <Dialog open={!!selectedSlot} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[550px]">
+        <Dialog open={!!selectedSlot} onOpenChange={onClose} modal={false}>
+            <DialogContent
+                className="sm:max-w-[550px]"
+                onOpenAutoFocus={(e) => e.preventDefault()}
+            >
                 <DialogHeader>
                     <DialogTitle>New Appointment</DialogTitle>
                 </DialogHeader>

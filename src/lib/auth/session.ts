@@ -169,6 +169,17 @@ export async function rotateSession(rawRefreshToken: string, ipAddress?: string)
   });
 
   if (compromisedSession) {
+    // Check for a grace period (e.g., 15 seconds) to allow for concurrent requests
+    // from the same client (like multiple tabs) without revoking the token family.
+    const GRACE_PERIOD_MS = 15000;
+    const timeSinceRotation = Date.now() - compromisedSession.updatedAt.getTime();
+
+    if (timeSinceRotation < GRACE_PERIOD_MS) {
+      // It's a concurrent request. Don't revoke, and return true to satisfy the client's fetch.
+      // We don't generate new tokens or cookies; we rely on the first request's cookies.
+      return true;
+    }
+
     // Revoke the ENTIRE token family
     await prisma.session.updateMany({
       where: {

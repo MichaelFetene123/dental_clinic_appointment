@@ -32,12 +32,8 @@ export function ViewAppointmentDialog({
         <Dialog
             open={!!selectedAppointment}
             onOpenChange={(open) => { if (!open) onClose(); }}
-            modal={false}
         >
-            <DialogContent
-                className="sm:max-w-[550px] overflow-y-auto max-h-[90vh]"
-                onOpenAutoFocus={(e) => e.preventDefault()}
-            >
+            <DialogContent className="sm:max-w-[550px] overflow-y-auto max-h-[90vh]">
                 <DialogHeader>
                     <DialogTitle>
                         {isEditing ? "Edit Appointment" : "Appointment Details"}

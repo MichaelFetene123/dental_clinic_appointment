@@ -75,11 +75,7 @@ export default function PatientDetailClient({ id }: PatientDetailClientProps) {
                     <Button
                         size="lg"
                         className="font-semibold"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            setShowApptForm(true);
-                        }}
+                        onClick={() => setShowApptForm(true)}
                     >
                         Add Appointment
                     </Button>

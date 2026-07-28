@@ -52,3 +52,13 @@ Creating turbopack project {
  GET /admin/patients 200 in 584ms (next.js: 355ms, proxy.ts: 18ms, application-code: 211ms)
  GET /admin/patients/cms09ycaf0003ckbb6ivhuxzt 200 in 210ms (next.js: 43ms, proxy.ts: 12ms, generate-params: 20ms, application-code: 155ms)
  GET /admin/patients/favicon.ico 200 in 3.1s (next.js: 26ms, generate-params: 151µs, application-code: 3.1s)
+✓ Compiled in 29.8s
+✓ Finished filesystem cache database compaction in 16.0s
+ GET / 200 in 19.8s (next.js: 6.0s, proxy.ts: 65ms, application-code: 13.7s)
+ GET / 200 in 4.0s (next.js: 664ms, proxy.ts: 2.7s, application-code: 688ms)
+✓ Finished filesystem cache database compaction in 24.5s
+✓ Finished filesystem cache database compaction in 27.7s
+✓ Finished filesystem cache database compaction in 26.6s
+✓ Finished filesystem cache database compaction in 30.9s
+[?25h
+ ELIFECYCLE  Command failed with exit code 4294967295.

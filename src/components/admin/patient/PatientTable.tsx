@@ -136,13 +136,11 @@ function PatientRowActions({ patient }: { patient: PatientRow }) {
                 open={grantModalOpen} 
                 onOpenChange={setGrantModalOpen} 
             />
-            {editOpen && (
-                <PatientForm
-                    patient={patient}
-                    show={editOpen}
-                    setShow={setEditOpen}
-                />
-            )}
+            <PatientForm
+                patient={patient}
+                show={editOpen}
+                setShow={setEditOpen}
+            />
         </div>
     )
 }

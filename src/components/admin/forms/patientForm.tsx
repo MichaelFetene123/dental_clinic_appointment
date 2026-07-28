@@ -168,11 +168,8 @@ const PatientForm = ({ show, setShow, patient }: PatientFormProps) => {
   const errors = { ...actionErrors, ...stepErrors };
 
   return (
-    <Dialog open={show} onOpenChange={setShow} modal={false}>
-      <DialogContent
-        className="w-full max-w-3xl max-h-[95vh] overflow-y-auto p-0"
-        onOpenAutoFocus={(e) => e.preventDefault()}
-      >
+    <Dialog open={show} onOpenChange={setShow}>
+      <DialogContent className="w-full max-w-3xl max-h-[95vh] overflow-y-auto p-0">
         <DialogHeader className="sr-only">
           <DialogTitle>{patient ? "Edit Patient" : "Add New Patient"}</DialogTitle>
           <DialogDescription>

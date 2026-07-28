@@ -70,7 +70,9 @@ export async function createAppointment(
           data: {
             name,
             email: email || null,
-            phone: phone || null,
+            phone: phone || "",
+            gender: "OTHER",
+            dateOfBirth: new Date("1900-01-01T00:00:00Z"),
           },
         });
         patientIdToUse = patient.id;
@@ -206,7 +208,9 @@ export async function createGuestAppointment(
         data: {
           name: `${firstName} ${lastName}`.trim(),
           email: email || null,
-          phone: phoneNumber || null,
+          phone: phoneNumber || "",
+          gender: "OTHER",
+          dateOfBirth: new Date("1900-01-01T00:00:00Z"),
         },
       });
       patientIdToUse = patient.id;
@@ -288,7 +292,7 @@ export async function updateAppointmentAdmin(
         data: {
           name,
           email: email || null,
-          phone: phone || null,
+          phone: phone || "",
         },
       }),
       prisma.appointment.update({

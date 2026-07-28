@@ -97,11 +97,8 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
     }, [state?.success, queryClient, setShow, selectedPatientId]);
 
     return (
-        <Dialog open={show} onOpenChange={setShow} modal={false}>
-            <DialogContent
-                className="sm:max-w-lg max-h-[90vh] overflow-y-auto"
-                onOpenAutoFocus={(e) => e.preventDefault()}
-            >
+        <Dialog open={show} onOpenChange={setShow}>
+            <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>Book an Appointment</DialogTitle>
                     <DialogDescription className="sr-only">

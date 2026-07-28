@@ -471,7 +471,12 @@ export default function PortalUsersClient() {
 
                   {/* Status */}
                   <TableCell>
-                    {user.hasActiveSession ? (
+                    {!user.patient ? (
+                      <Badge variant="outline" className="gap-1.5 text-orange-700 border-orange-300 bg-orange-50">
+                        <Unlink className="h-3 w-3" />
+                        Unlinked
+                      </Badge>
+                    ) : user.hasActiveSession ? (
                       <Badge variant="outline" className="gap-1.5 text-green-700 border-green-300 bg-green-50">
                         <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
                         Active

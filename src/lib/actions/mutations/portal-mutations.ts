@@ -68,6 +68,7 @@ export async function grantPortalAccess(patientId: string, email: string) {
 
   updateTag("patients");
   updateTag(`patient-${patientId}`);
+  updateTag("portal-users"); // Sync Portal Users list
 
   return { success: true, tempPassword: existingUser ? null : tempPasswordRaw };
 }
@@ -105,6 +106,7 @@ export async function revokePortalAccess(patientId: string) {
 
   updateTag("patients");
   updateTag(`patient-${patientId}`);
+  updateTag("portal-users"); // Sync Portal Users list
 
   return { success: true };
 }

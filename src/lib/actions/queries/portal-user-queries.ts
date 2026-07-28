@@ -30,12 +30,12 @@ export async function getPortalUsers(): Promise<PortalUserListResult> {
   cacheTag("portal-users");
   cacheLife("hours");
 
-  // Fetch portal users: users who have a patient linked and no employee profile
+  // Fetch portal users: users who have no employee profile and no roles (i.e. pure patient accounts)
   const users = await prisma.user.findMany({
     where: {
       isSuperAdmin: false,
       employeeProfile: null,
-      patient: { isNot: null },
+      userRoles: { none: {} },
     },
     select: {
       id: true,
@@ -61,7 +61,7 @@ export async function getPortalUsers(): Promise<PortalUserListResult> {
     where: {
       isSuperAdmin: false,
       employeeProfile: null,
-      patient: { isNot: null },
+      userRoles: { none: {} },
     },
   });
 

@@ -99,16 +99,17 @@ export async function unlinkPortalUser(userId: string): Promise<ActionResponse> 
 
     const patientId = user.patient.id;
 
-    // Unlink the patient
+    // Unlink the patient (keep the user account intact)
     await prisma.patient.update({
       where: { id: patientId },
       data: { userId: null },
     });
 
-    // If user has no staff roles/profile, delete the orphaned user account
-    if (!user.employeeProfile && user.userRoles.length === 0) {
-      await prisma.user.delete({ where: { id: userId } });
-    }
+    // Revoke any active sessions so they can't continue using the portal
+    await prisma.session.updateMany({
+      where: { userId, revokedAt: null },
+      data: { revokedAt: new Date() },
+    });
 
     updateTag("portal-users");
     updateTag("patients");
@@ -144,15 +145,16 @@ export async function deletePortalUser(userId: string): Promise<ActionResponse> 
 
     const patientId = user.patient?.id;
 
-    // Unlink patient before deletion (so onDelete: SetNull can cascade cleanly)
-    if (patientId) {
-      await prisma.patient.update({
-        where: { id: patientId },
-        data: { userId: null },
-      });
-    }
-
-    await prisma.user.delete({ where: { id: userId } });
+    // Unlink and delete in a single transaction
+    await prisma.$transaction(async (tx) => {
+      if (patientId) {
+        await tx.patient.update({
+          where: { id: patientId },
+          data: { userId: null },
+        });
+      }
+      await tx.user.delete({ where: { id: userId } });
+    });
 
     updateTag("portal-users");
     updateTag("patients");

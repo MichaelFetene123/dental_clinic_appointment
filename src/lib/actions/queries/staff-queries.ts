@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { cacheTag, cacheLife } from "next/cache";
+import type { Prisma } from "@/app/generated/prisma/client";
 
 export type StaffRow = {
   id: string;
@@ -18,6 +19,16 @@ export type StaffListResult = {
   total: number;
 };
 
+// Staff = users with an employee profile OR at least one assigned role.
+// This explicitly excludes pure portal patient accounts (no profile, no roles).
+const staffFilter: Prisma.UserWhereInput = {
+  isSuperAdmin: false,
+  OR: [
+    { employeeProfile: { isNot: null } },
+    { userRoles: { some: {} } },
+  ],
+};
+
 export async function getStaff(): Promise<StaffListResult> {
   "use cache";
   cacheTag("staff");
@@ -25,14 +36,22 @@ export async function getStaff(): Promise<StaffListResult> {
 
   const [users, total] = await Promise.all([
     prisma.user.findMany({
-      where: { isSuperAdmin: false }, // Exclude super admins from staff list
-      include: {
-        employeeProfile: true,
-        userRoles: { include: { role: true } },
+      where: staffFilter,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        employeeProfile: {
+          select: { position: true, department: true },
+        },
+        userRoles: {
+          select: { role: { select: { name: true } } },
+        },
       },
       orderBy: { createdAt: "desc" },
     }),
-    prisma.user.count({ where: { isSuperAdmin: false } }),
+    prisma.user.count({ where: staffFilter }),
   ]);
 
   const data: StaffRow[] = users.map((user) => ({

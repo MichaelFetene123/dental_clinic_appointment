@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { updateTag } from "next/cache";
 import { AppointmentStatus } from "@/app/generated/prisma/client";
 import { appointmentFormSchema, appointmentPageSchema } from "@/lib/validationSchema";
+import { requirePatientAuth } from "@/lib/auth/guards";
 
 export type ActionResponse<T = void> =
   | { success: true; data?: T }
@@ -326,5 +327,68 @@ export async function updateAppointmentAdmin(
   } catch (error) {
     console.error("Error updating appointment:", error);
     return { success: false, error: "Failed to update appointment." };
+  }
+}
+
+// ─── Create Portal Appointment (Authenticated Patients) ─────────────────────────
+// Creates an appointment directly linked to the verified portal user's patient ID.
+export async function createPortalAppointment(
+  _prevState: ActionResponse,
+  formData: FormData
+): Promise<ActionResponse> {
+  const rawData = {
+    date: formData.get("date") as string,
+    time: formData.get("time") as string,
+    reason: formData.get("reason") as string,
+    notes: (formData.get("notes") as string) || undefined,
+  };
+
+  // Using a simplified schema since we don't collect name/email/phone here.
+  // We can validate the date and time manually or reuse a subset of the schema.
+  const [year, month, day] = rawData.date.split("-").map(Number);
+  const [hours, minutes] = rawData.time.split(":").map(Number);
+  const selectedDateTime = new Date(year, month - 1, day, hours, minutes);
+  
+  if (selectedDateTime < new Date()) {
+    return {
+      success: false,
+      error: "Validation failed",
+      errors: { time: "Appointments cannot be scheduled in the past." }
+    };
+  }
+
+  if (!rawData.date || !rawData.time || !rawData.reason) {
+     return {
+      success: false,
+      error: "Validation failed",
+      errors: { reason: "Please fill out all required fields." }
+    };
+  }
+
+  try {
+    const { patient } = await requirePatientAuth();
+
+    await prisma.appointment.create({
+      data: {
+        patientId: patient.id,
+        date: new Date(rawData.date),
+        time: rawData.time,
+        reason: rawData.reason,
+        notes: rawData.notes ?? null,
+        status: AppointmentStatus.PENDING,
+      },
+    });
+
+    updateTag("appointments");
+    updateTag("appointments-calendar");
+    updateTag("dashboard");
+    updateTag("patients");
+    updateTag(`patient-${patient.id}`);
+    updateTag("portal-appointments");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error creating portal appointment:", error);
+    return { success: false, error: "Failed to book your appointment. Please try again." };
   }
 }

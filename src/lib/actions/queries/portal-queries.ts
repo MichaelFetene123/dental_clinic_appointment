@@ -2,8 +2,13 @@
 
 import { prisma } from "@/lib/prisma";
 import { requirePatientAuth } from "@/lib/auth/guards";
+import { cacheTag, cacheLife } from "next/cache";
 
 export async function getPortalAppointments() {
+  "use cache";
+  cacheTag("portal-appointments");
+  cacheLife("minutes");
+
   const { patient } = await requirePatientAuth();
 
   return await prisma.appointment.findMany({

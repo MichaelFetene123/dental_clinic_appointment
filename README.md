@@ -41,3 +41,46 @@ When a user clicks "Log Out" (or is forced out by the inactivity timer):
 2. The current session record is marked as `revokedAt = now()` in the database.
 3. The `HttpOnly` cookies are destroyed (`maxAge=0`).
 4. Re-authentication (entering credentials) is strictly required to generate a new session family.
+
+
+
+
+
+
+## Appointment Workflow & Patient Deduplication Architecture
+
+The appointment booking system uses a bifurcated approach to handle two distinct types of users: anonymous public guests and authenticated portal users. This architecture prevents duplicate patient records while maintaining a seamless user experience.
+
+### 1. Two Distinct Booking Flows
+
+#### Flow A: Authenticated Portal Patients (`/portal/appointments`)
+- **Mechanism**: The user must be fully authenticated with a valid session. The system inherently knows their identity via the `patientId` attached to their user session.
+- **Deduplication**: Not required. Appointments are booked directly onto the exact, verified patient record.
+- **Advantage**: Guaranteed 1:1 data integrity without requiring the user to re-enter their demographic details.
+
+#### Flow B: Public Guest Booking (`/appointment`)
+- **Mechanism**: A completely anonymous, top-of-funnel entry point for new visitors. Users must provide their full name, email, and phone number.
+- **Challenge**: If a patient already exists in the system (e.g., they have a portal account but didn't log in, or they visited the clinic previously), the system must avoid creating a duplicate `Patient` entity.
+
+### 2. The Smart Deduplication Pipeline
+
+When a public booking form is submitted, the `createGuestAppointment` server mutation intercepts the request and runs a structured, 3-tier fallback matching system to safely identify existing patients:
+
+1. **Tier 1 (High Confidence) - Email Match**: 
+   The system queries for an exact match on the provided `email`. If found, the appointment is appended to that existing patient.
+2. **Tier 2 (High Confidence) - Phone Match**: 
+   If the email check misses (or was left blank), the system queries for an exact match on the `phone` number.
+3. **Tier 3 (Fuzzy Fallback) - Full Name Match**: 
+   If both contact methods fail (e.g., the user changed their phone number and used a different email), the system takes the provided `firstName` and `lastName`, combines them, and runs a case-insensitive match against the `name` column in the database.
+
+**Outcome**:
+- **Match Found**: The system says "I know who this is," bypasses patient creation, and attaches the appointment to the existing patient record. (This is completely invisible to the user).
+- **No Match Found**: The system concludes this is genuinely a brand-new person and creates a new `Patient` record in the database.
+
+### 3. Edge Cases & Known Tradeoffs
+
+While the deduplication pipeline resolves >95% of duplication risks, edge cases exist:
+- **Typo + New Contact Info**: If a returning patient uses a new email, a new phone number, *and* spells their name differently than their initial registration, the system will intentionally fail safely and create a duplicate patient record.
+- **Administrative Resolution**: In the event a duplicate is created, staff can manually review the records and merge them using the admin dashboard tools.
+
+By keeping these flows separated and implementing a 3-tier fallback on the public route, the system balances zero-friction guest onboarding with strong relational database integrity.

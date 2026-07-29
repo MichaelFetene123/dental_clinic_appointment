@@ -33,4 +33,8 @@ export const queryKeys = {
     all: ['portal-users'] as const,
     lists: () => [...queryKeys.portalUsers.all, 'list'] as const,
   },
+  portal: {
+    all: ['portal'] as const,
+    appointments: () => [...queryKeys.portal.all, 'appointments'] as const,
+  },
 };

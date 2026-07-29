@@ -81,7 +81,7 @@ export namespace $Enums {
   export const Gender: {
   MALE: 'MALE',
   FEMALE: 'FEMALE',
-  OTHER: 'OTHER'
+  UNKNOWN: 'UNKNOWN'
 };
 
 export type Gender = (typeof Gender)[keyof typeof Gender]

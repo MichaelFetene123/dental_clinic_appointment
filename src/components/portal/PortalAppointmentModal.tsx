@@ -10,7 +10,8 @@ import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
 import { createPortalAppointment } from "@/lib/actions/mutations/appointment-mutations";
-import { useInvalidatePortalAppointments } from "@/hooks/use-portal-appointments";
+import { useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "@/lib/queryKeys";
 import {
     Popover,
     PopoverContent,
@@ -35,18 +36,18 @@ export function PortalAppointmentModal() {
 
     const [state, formAction, pending] = useActionState(createPortalAppointment, { success: false, error: "" });
     const actionErrors = !state?.success ? state?.errors : undefined;
-    const invalidatePortalAppointments = useInvalidatePortalAppointments();
+    const queryClient = useQueryClient();
 
     useEffect(() => {
         if (state?.success) {
             toast.success("Appointment booked successfully!");
-            invalidatePortalAppointments(); // Instantly refresh the appointments list
+            queryClient.invalidateQueries({ queryKey: queryKeys.portal.appointments() }); // Instantly refresh the appointments list
             setShow(false);
             // Reset form state for next time
             setSelectedDate(undefined);
             setSelectedReason("checkup");
         }
-    }, [state?.success, invalidatePortalAppointments]);
+    }, [state, queryClient]);
 
     // Added a small helper effect to show the root error if there is one and no specific field errors
     useEffect(() => {

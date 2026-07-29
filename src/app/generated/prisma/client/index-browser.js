@@ -282,7 +282,7 @@ exports.Prisma.NullsOrder = {
 exports.Gender = exports.$Enums.Gender = {
   MALE: 'MALE',
   FEMALE: 'FEMALE',
-  OTHER: 'OTHER'
+  UNKNOWN: 'UNKNOWN'
 };
 
 exports.BloodType = exports.$Enums.BloodType = {

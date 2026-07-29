@@ -72,7 +72,7 @@ export async function createAppointment(
             name,
             email: email || null,
             phone: phone || "",
-            gender: "OTHER",
+            gender: "UNKNOWN",
             dateOfBirth: new Date("1900-01-01T00:00:00Z"),
           },
         });
@@ -220,7 +220,7 @@ export async function createGuestAppointment(
           name: `${firstName} ${lastName}`.trim(),
           email: email || null,
           phone: phoneNumber || "",
-          gender: "OTHER",
+          gender: "UNKNOWN",
           dateOfBirth: new Date("1900-01-01T00:00:00Z"),
         },
       });
@@ -343,6 +343,14 @@ export async function createPortalAppointment(
     notes: (formData.get("notes") as string) || undefined,
   };
 
+  if (!rawData.date || !rawData.time || !rawData.reason) {
+     return {
+      success: false,
+      error: "Validation failed",
+      errors: { reason: "Please fill out all required fields." }
+    };
+  }
+
   // Using a simplified schema since we don't collect name/email/phone here.
   // We can validate the date and time manually or reuse a subset of the schema.
   const [year, month, day] = rawData.date.split("-").map(Number);
@@ -354,14 +362,6 @@ export async function createPortalAppointment(
       success: false,
       error: "Validation failed",
       errors: { time: "Appointments cannot be scheduled in the past." }
-    };
-  }
-
-  if (!rawData.date || !rawData.time || !rawData.reason) {
-     return {
-      success: false,
-      error: "Validation failed",
-      errors: { reason: "Please fill out all required fields." }
     };
   }
 
@@ -384,7 +384,6 @@ export async function createPortalAppointment(
     updateTag("dashboard");
     updateTag("patients");
     updateTag(`patient-${patient.id}`);
-    updateTag("portal-appointments");
 
     return { success: true };
   } catch (error) {

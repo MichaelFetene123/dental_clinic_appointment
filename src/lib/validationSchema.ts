@@ -31,7 +31,7 @@ export const patientFormSchema = z.object({
     phone: z.string().min(10, {
         message: "Phone number must be at least 10 digits.",
     }),
-    gender: z.enum(["MALE", "FEMALE", "OTHER"], {
+    gender: z.enum(["MALE", "FEMALE", "UNKNOWN"], {
         errorMap: () => ({ message: "Please select a gender." }),
     }),
     dateOfBirth: z.string().min(1, {

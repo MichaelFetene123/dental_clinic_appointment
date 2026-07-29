@@ -16,12 +16,3 @@ export function usePortalAppointments() {
     staleTime: 5 * 60 * 1000, // 5 minutes — complements the Next.js "minutes" cacheLife
   });
 }
-
-// ─── Portal Appointments Query Client Invalidator ─────────────────────────────
-// A convenience helper used after createPortalAppointment succeeds so any
-// component consuming usePortalAppointments() immediately refetches.
-export function useInvalidatePortalAppointments() {
-  const queryClient = useQueryClient();
-  return () =>
-    queryClient.invalidateQueries({ queryKey: queryKeys.portal.appointments() });
-}

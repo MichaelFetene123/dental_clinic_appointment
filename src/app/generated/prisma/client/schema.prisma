@@ -14,7 +14,7 @@ datasource db {
 enum Gender {
   MALE
   FEMALE
-  OTHER
+  UNKNOWN
 }
 
 enum BloodType {

@@ -9,7 +9,7 @@ export function usePatients() {
   return useQuery({
     queryKey: queryKeys.patients.list(),
     queryFn: () => getPatients(),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
   });
 }
 

@@ -1,86 +1,78 @@
 # Dental Clinic Appointment System
 
-## Authentication & Session Lifecycle
+A comprehensive, modern full-stack web application built to manage a dental clinic's administrative tasks, patient records, and appointment scheduling.
 
-This document outlines the authentication architecture, token lifecycle, and session management flow used in this application. It is designed to provide high security (short-lived access tokens, strict inactivity termination) without compromising on a seamless user experience (silent token rotation).
+## 🏗️ Architecture & Technology Stack
 
-### 1. Token Architecture
-The system relies on a dual-token (Access + Refresh) structure stored securely via `HttpOnly` cookies:
-- **Access Token (`session`)**: Extremely short-lived (15 minutes). Acts as the primary credential for backend operations. 
-- **Refresh Token (`refresh`)**: Longer-lived (7 days). Used exclusively to mint new access tokens silently in the background.
+- **Framework**: Next.js 15+ (App Router)
+- **Language**: TypeScript
+- **Database**: PostgreSQL
+- **ORM**: Prisma
+- **State Management**: TanStack Query (React Query)
+- **UI/Styling**: Tailwind CSS, shadcn/ui, Radix UI primitives
+- **Data Fetching**: Server Actions & API Routes
 
-### 2. Login Flow
-When a user successfully authenticates (`/api/auth/login` or server action):
-1. The server generates a unique `familyId`, a new access token, and a new refresh token.
-2. The tokens are hashed (SHA-256) before being stored in the database.
-3. The raw tokens are sent to the client as secure, `HttpOnly` cookies.
-4. User permissions are computed and cached within the session record.
+## 📁 Project Structure
 
-### 3. Silent Token Refresh & Rotation
-To prevent the user from being logged out every 15 minutes, the system utilizes a background silent refresh mechanism:
-- **Client Hook (`useSessionRefresh`)**: Runs silently in the global layout (`SessionRefresher`).
-- **Interval**: Every 12 minutes (safely before the 15-minute access token expiry), the client triggers a `POST` request to `/api/auth/refresh`.
-- **Rotation**: The server verifies the `HttpOnly` refresh cookie. If valid, it immediately invalidates the old token pair and issues a **brand new** access and refresh token. 
-- **Security (Reuse Detection)**: If an old, already-used refresh token is presented, the system detects a "Refresh Token Reuse Attack" and immediately revokes the **entire token family** (forcing a logout across all devices).
+The project strictly follows the Next.js App Router architecture:
 
-### 4. Strict Inactivity Control
-For heightened security (critical for clinical/admin environments), sessions must not remain active indefinitely if the user walks away from the device.
-- **Activity Tracking**: The client monitors standard interaction events (`mousemove`, `keydown`, `scroll`, `click`, `touchstart`).
-- **Cross-Tab Synchronization**: Activity timestamps are stored in `localStorage` (throttled to update every 2 seconds). This ensures that activity in one tab keeps the session alive in all open tabs.
-- **15-Minute Timeout Limit**: A dedicated idle checker runs every 30 seconds.
-- **Session Expiration**: If exactly 15 minutes elapse with **zero** tracked activity across all tabs:
-  - The client instantly triggers a hard logout.
-  - The database actively revokes both the access and refresh tokens.
-  - Cookies are cleared.
-  - The user is redirected to the `/login` screen.
-  - **Note**: The token refresh cycle is completely halted if the user is considered idle. A stale session will never be artificially kept alive.
+- `src/app/` - Application routes (grouped into `(public)`, `admin`, `portal`, `api`)
+- `src/components/` - Reusable UI components (organized by domain: `admin`, `portal`, `ui`)
+- `src/lib/` - Core business logic, Prisma client, server actions, authentication utilities
+- `src/hooks/` - Custom React hooks and TanStack Query wrappers
+- `prisma/` - Database schema and migration files
 
-### 5. Manual Logout
-When a user clicks "Log Out" (or is forced out by the inactivity timer):
-1. The `logout()` server action is invoked.
-2. The current session record is marked as `revokedAt = now()` in the database.
-3. The `HttpOnly` cookies are destroyed (`maxAge=0`).
-4. Re-authentication (entering credentials) is strictly required to generate a new session family.
+## 🗄️ Database Schema & Relationships
 
+The database is built on PostgreSQL via Prisma. The core entities include:
 
+- **`User`**: Represents anyone who logs into the system (Staff, Admins, Doctors, Portal Users).
+- **`Patient`**: The central medical record. A Patient can exist *without* a User account (e.g., if they are manually added by a receptionist).
+- **`Appointment`**: Linked to a `Patient` and optionally assigned to a `User` (Doctor).
+- **`Session`**: Tracks active authenticated sessions.
+- **`Role` & `Permission`**: Manages RBAC.
 
+### Key Architectural Decision: The User-Patient Relationship
+A critical design decision is the separation of **Users** and **Patients**:
+- The `Patient` model represents the clinical entity (health records, demographics, history).
+- The `User` model represents the authentication entity.
+- **Portal Accounts**: If a patient wishes to log in, a `User` account is created and uniquely linked to their `Patient` record via `userId`. This allows the system to seamlessly track medical records whether the patient books as a guest, is added by an admin, or uses the authenticated portal.
 
+## 🔐 Authentication & RBAC
 
+The system utilizes a highly secure, custom dual-token architecture (Access + Refresh tokens) stored in `HttpOnly` cookies.
 
-## Appointment Workflow & Patient Deduplication Architecture
+- **Short-Lived Access Tokens**: Valid for 15 minutes to minimize exposure.
+- **Silent Refresh**: A client-side hook (`useSessionRefresh`) silently requests a new token pair in the background every 12 minutes to keep active users logged in without interruption.
+- **Strict Inactivity**: If a user is inactive for 15 minutes across all browser tabs (monitored via DOM events and `localStorage`), the system triggers a hard logout and revokes the session in the database.
+- **RBAC (Role-Based Access Control)**: Users are assigned `Roles` (e.g., Admin, Receptionist, Patient) containing specific `Permissions`. Middleware and Server Actions strictly guard routes and data mutations based on these cached permissions.
 
-The appointment booking system uses a bifurcated approach to handle two distinct types of users: anonymous public guests and authenticated portal users. This architecture prevents duplicate patient records while maintaining a seamless user experience.
+## 📅 Appointment Workflow & Deduplication
 
-### 1. Two Distinct Booking Flows
+The system handles appointments through a bifurcated approach to prevent duplicate patient records:
 
-#### Flow A: Authenticated Portal Patients (`/portal/appointments`)
-- **Mechanism**: The user must be fully authenticated with a valid session. The system inherently knows their identity via the `patientId` attached to their user session.
-- **Deduplication**: Not required. Appointments are booked directly onto the exact, verified patient record.
-- **Advantage**: Guaranteed 1:1 data integrity without requiring the user to re-enter their demographic details.
+### 1. Authenticated Portal Booking
+Portal users book directly through their dashboard. The system inherently knows their identity via the `patientId` attached to their user session, guaranteeing 1:1 data integrity without requiring them to re-enter demographic details.
 
-#### Flow B: Public Guest Booking (`/appointment`)
-- **Mechanism**: A completely anonymous, top-of-funnel entry point for new visitors. Users must provide their full name, email, and phone number.
-- **Challenge**: If a patient already exists in the system (e.g., they have a portal account but didn't log in, or they visited the clinic previously), the system must avoid creating a duplicate `Patient` entity.
+### 2. Public Guest Booking
+Guests book anonymously on the public-facing site. The `createGuestAppointment` Server Action intercepts the request and runs a structured, 3-tier fallback matching system to safely identify existing patients:
+1. **Email Match** (High Confidence)
+2. **Phone Match** (High Confidence)
+3. **Fuzzy Name Match** (Fallback)
 
-### 2. The Smart Deduplication Pipeline
+If a match is found, the appointment is attached to the existing `Patient` record. If no match is found, a new `Patient` is created (defaulting the gender to `UNKNOWN` until the profile is completed).
 
-When a public booking form is submitted, the `createGuestAppointment` server mutation intercepts the request and runs a structured, 3-tier fallback matching system to safely identify existing patients:
+## ⚡ Data Fetching, Caching & State Management
 
-1. **Tier 1 (High Confidence) - Email Match**: 
-   The system queries for an exact match on the provided `email`. If found, the appointment is appended to that existing patient.
-2. **Tier 2 (High Confidence) - Phone Match**: 
-   If the email check misses (or was left blank), the system queries for an exact match on the `phone` number.
-3. **Tier 3 (Fuzzy Fallback) - Full Name Match**: 
-   If both contact methods fail (e.g., the user changed their phone number and used a different email), the system takes the provided `firstName` and `lastName`, combines them, and runs a case-insensitive match against the `name` column in the database.
+The application employs a hybrid caching strategy, leveraging both Next.js Server Cache and TanStack Query client-side state.
 
-**Outcome**:
-- **Match Found**: The system says "I know who this is," bypasses patient creation, and attaches the appointment to the existing patient record. (This is completely invisible to the user).
-- **No Match Found**: The system concludes this is genuinely a brand-new person and creates a new `Patient` record in the database.
+### Server Actions (Data Layer)
+- **Mutations**: All database writes (create, update, delete) are handled strictly through Next.js Server Actions.
+- **Invalidation**: Upon successful mutation, Server Actions call `updateTag("tag-name")` to instantly purge the Next.js server-side cache.
 
-### 3. Edge Cases & Known Tradeoffs
+### TanStack Query (Client Layer)
+- **Hooks**: Server Action read queries are wrapped in TanStack Query hooks (e.g., `usePatients`, `usePortalAppointments`).
+- **Synchronization**: TanStack Query acts as the client-side state manager, handling background refetching and caching (`staleTime: 5 minutes`).
+- **Optimistic Updates & Refresh**: After a client-side mutation succeeds, the component immediately triggers `queryClient.invalidateQueries()`, ensuring the UI perfectly reflects the backend state without a hard page reload.
 
-While the deduplication pipeline resolves >95% of duplication risks, edge cases exist:
-- **Typo + New Contact Info**: If a returning patient uses a new email, a new phone number, *and* spells their name differently than their initial registration, the system will intentionally fail safely and create a duplicate patient record.
-- **Administrative Resolution**: In the event a duplicate is created, staff can manually review the records and merge them using the admin dashboard tools.
-
-By keeping these flows separated and implementing a 3-tier fallback on the public route, the system balances zero-friction guest onboarding with strong relational database integrity.
+By combining Next.js `cacheTag` invalidation with React Query's real-time client state, the application achieves instantaneous perceived performance while ensuring the server always serves the freshest data.

@@ -116,7 +116,7 @@ export async function getPatients(): Promise<PatientListResult> {
 
 export async function getPatientDetail(id: string) {
   "use cache";
-  cacheTag("patients");
+  cacheTag(`patient-${id}`);
   cacheLife("hours");
 
   const patient = await prisma.patient.findUnique({

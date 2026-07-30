@@ -63,7 +63,7 @@ export async function createPatient(
     });
 
     updateTag("patients");
-    updateTag("dashboard"); // Since patients count affects dashboard stats
+    updateTag("dashboard");
 
     return { success: true };
   } catch (error: any) {
@@ -146,8 +146,9 @@ export async function deletePatient(id: string): Promise<ActionResponse> {
     });
 
     updateTag("patients");
+    updateTag(`patient-${id}`);
     updateTag("dashboard");
-    updateTag("appointments"); // As related appointments are deleted
+    updateTag("appointments");
     updateTag("appointments-calendar");
 
     return { success: true };

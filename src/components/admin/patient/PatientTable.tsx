@@ -73,15 +73,45 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Separator } from "@/components/ui/separator"
 import Image from "next/image"
 import Link from "next/link"
-import { usePatients } from "@/hooks/use-patients"
+import { usePatients, useDeletePatient } from "@/hooks/use-patients"
 import type { PatientRow } from "@/lib/actions/queries/patient-queries"
 import { Skeleton } from "@/components/ui/skeleton"
 import { GrantAccessModal } from "@/components/admin/patient/GrantAccessModal"
 import PatientForm from "@/components/admin/forms/patientForm"
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { toast } from "sonner"
 
 function PatientRowActions({ patient }: { patient: PatientRow }) {
     const [grantModalOpen, setGrantModalOpen] = React.useState(false);
     const [editOpen, setEditOpen] = React.useState(false);
+    const [deleteOpen, setDeleteOpen] = React.useState(false);
+
+    const deleteMutation = useDeletePatient();
+
+    const handleDelete = () => {
+        deleteMutation.mutate(patient.id, {
+            onSuccess: (result) => {
+                if (result.success) {
+                    toast.success("Patient deleted successfully");
+                    setDeleteOpen(false);
+                } else {
+                    toast.error(result.error || "Failed to delete patient");
+                }
+            },
+            onError: () => {
+                toast.error("Failed to delete patient");
+            }
+        });
+    };
 
     return (
         <div className="z-50">
@@ -124,9 +154,38 @@ function PatientRowActions({ patient }: { patient: PatientRow }) {
                     >
                         {patient.userId ? "Manage Portal Access" : "Grant Portal Access"}
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="flex gap-2 cursor-pointer text-destructive focus:text-destructive">Delete patient</DropdownMenuItem>
+                    <DropdownMenuItem 
+                        className="flex gap-2 cursor-pointer text-destructive focus:text-destructive"
+                        onClick={() => setDeleteOpen(true)}
+                    >
+                        Delete patient
+                    </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
+
+            <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This will permanently delete {patient.name}'s record and all related data (appointments, history, etc.).
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={deleteMutation.isPending}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleDelete();
+                            }}
+                            className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+                            disabled={deleteMutation.isPending}
+                        >
+                            {deleteMutation.isPending ? "Deleting..." : "Delete"}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
 
             <GrantAccessModal 
                 patientId={patient.id} 

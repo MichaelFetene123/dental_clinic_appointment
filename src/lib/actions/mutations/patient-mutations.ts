@@ -136,3 +136,23 @@ export async function updatePatient(
     return { success: false, error: "Failed to update patient record. Please try again." };
   }
 }
+
+// ─── Delete Patient ────────────────────────────────────────────────────────────
+export async function deletePatient(id: string): Promise<ActionResponse> {
+  try {
+    // Delete the patient (due to onDelete: Cascade in prisma schema, this should delete related appointments, history, documents)
+    await prisma.patient.delete({
+      where: { id },
+    });
+
+    updateTag("patients");
+    updateTag("dashboard");
+    updateTag("appointments"); // As related appointments are deleted
+    updateTag("appointments-calendar");
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error deleting patient:", error);
+    return { success: false, error: "Failed to delete patient. Ensure related data is cleared or cascade rules apply." };
+  }
+}

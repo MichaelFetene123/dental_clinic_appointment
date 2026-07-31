@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { updateTag } from "next/cache";
 import { hashPassword } from "@/lib/bcrypt";
+import { requirePermission } from "@/lib/auth/guards";
 
 export type ActionResponse<T = void> =
   | { success: true; data?: T }
@@ -12,6 +13,8 @@ export async function createStaff(
   _prevState: ActionResponse,
   formData: FormData
 ): Promise<ActionResponse> {
+  await requirePermission("staff.create");
+
   const name = formData.get("name") as string;
   const email = formData.get("email") as string;
   const phone = formData.get("phone") as string;
@@ -66,7 +69,65 @@ export async function createStaff(
   }
 }
 
+/**
+ * Updates name, email, phone, position, department, and role for a staff member.
+ * Requires: staff.edit permission.
+ */
+export async function updateStaff(
+  _prevState: ActionResponse,
+  formData: FormData
+): Promise<ActionResponse> {
+  await requirePermission("staff.edit");
+
+  const id = (formData.get("id") as string | null) || "";
+  const name = (formData.get("name") as string | null) || "";
+  const email = (formData.get("email") as string | null) || "";
+  const phone = (formData.get("phone") as string | null) || "";
+  const roleId = (formData.get("roleId") as string | null) || "";
+  const position = (formData.get("position") as string | null) || "";
+  const department = (formData.get("department") as string | null) || "";
+
+  if (!id || !name || !email || !roleId || !position || !department) {
+    return { success: false, error: "Missing required fields" };
+  }
+
+  try {
+    // Check email uniqueness (excluding self)
+    const conflict = await prisma.user.findFirst({ where: { email, NOT: { id } } });
+    if (conflict) return { success: false, error: "Email is already in use by another account" };
+
+    await prisma.$transaction(async (tx) => {
+      // Update user core fields
+      await tx.user.update({
+        where: { id },
+        data: { name, email, phone: phone || null },
+      });
+
+      // Replace role: remove all current roles, assign the new one
+      await tx.userRole.deleteMany({ where: { userId: id } });
+      await tx.userRole.create({ data: { userId: id, roleId } });
+
+      // Upsert employee profile
+      await tx.employeeProfile.upsert({
+        where: { userId: id },
+        update: { position, department },
+        create: { userId: id, position, department },
+      });
+    });
+
+    updateTag("staff");
+    return { success: true };
+  } catch {
+    return { success: false, error: "Failed to update staff member" };
+  }
+}
+
+/**
+ * Deletes a staff member by their User ID.
+ * Requires: staff.delete permission.
+ */
 export async function deleteStaff(id: string): Promise<ActionResponse> {
+  await requirePermission("staff.delete");
   try {
     await prisma.user.delete({ where: { id } });
     updateTag("staff");
@@ -75,3 +136,4 @@ export async function deleteStaff(id: string): Promise<ActionResponse> {
     return { success: false, error: "Failed to delete staff member" };
   }
 }
+

@@ -22,7 +22,7 @@ export default async function StaffPage() {
                     <CardTitle>All Staff Members</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <StaffTable />
+                    <StaffTable roles={roles} />
                 </CardContent>
             </Card>
         </div>

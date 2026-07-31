@@ -42,6 +42,10 @@ export function PortalAppointmentModal() {
         if (state?.success) {
             toast.success("Appointment booked successfully!");
             queryClient.invalidateQueries({ queryKey: queryKeys.portal.appointments() }); // Instantly refresh the appointments list
+            // Also invalidate global admin query keys in case the portal is run in the same browser/app context
+            queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
+            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+            queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
             setShow(false);
             // Reset form state for next time
             setSelectedDate(undefined);

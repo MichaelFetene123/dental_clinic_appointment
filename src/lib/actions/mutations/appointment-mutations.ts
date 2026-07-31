@@ -5,7 +5,8 @@ import { updateTag } from "next/cache";
 import { AppointmentStatus } from "@/app/generated/prisma/client";
 import { appointmentFormSchema, appointmentPageSchema } from "@/lib/validationSchema";
 import { requirePatientAuth } from "@/lib/auth/guards";
-
+import { getSessionToken } from "@/lib/auth/cookies";
+import { validateSession } from "@/lib/auth/session";
 export type ActionResponse<T = void> =
   | { success: true; data?: T }
   | { success: false; error: string; errors?: Record<string, string> };
@@ -96,6 +97,7 @@ export async function createAppointment(
     updateTag("appointments-calendar");
     updateTag("dashboard");
     updateTag("patients");
+    updateTag(`patient-${patientIdToUse}`);
 
     return { success: true };
   } catch (error) {
@@ -192,29 +194,48 @@ export async function createGuestAppointment(
   const { firstName, lastName, phoneNumber, email, requestedDate, requestedTime } = result.data;
 
   try {
-    let patientIdToUse: string;
+    let patientIdToUse: string | null = null;
 
-    let existingPatient = null;
-    if (email) {
-      existingPatient = await prisma.patient.findFirst({ where: { email } });
-    }
-    if (!existingPatient && phoneNumber) {
-      existingPatient = await prisma.patient.findFirst({ where: { phone: phoneNumber } });
-    }
-    
-    // Fallback 3: Check by full name (case-insensitive) if email and phone missed
-    if (!existingPatient && firstName && lastName) {
-      const fullName = `${firstName} ${lastName}`.trim();
-      existingPatient = await prisma.patient.findFirst({ 
-        where: { 
-          name: { equals: fullName, mode: "insensitive" } 
-        } 
-      });
+    // First try: Check if the user is logged into the portal
+    const token = await getSessionToken();
+    if (token) {
+      const session = await validateSession(token);
+      if (session?.userId) {
+        // Find if this user is linked to a patient
+        const portalPatient = await prisma.patient.findUnique({
+          where: { userId: session.userId },
+        });
+        if (portalPatient) {
+          patientIdToUse = portalPatient.id;
+        }
+      }
     }
 
-    if (existingPatient) {
-      patientIdToUse = existingPatient.id;
-    } else {
+    if (!patientIdToUse) {
+      let existingPatient = null;
+      if (email) {
+        existingPatient = await prisma.patient.findFirst({ where: { email } });
+      }
+      if (!existingPatient && phoneNumber) {
+        existingPatient = await prisma.patient.findFirst({ where: { phone: phoneNumber } });
+      }
+      
+      // Fallback 3: Check by full name (case-insensitive) if email and phone missed
+      if (!existingPatient && firstName && lastName) {
+        const fullName = `${firstName} ${lastName}`.trim();
+        existingPatient = await prisma.patient.findFirst({ 
+          where: { 
+            name: { equals: fullName, mode: "insensitive" } 
+          } 
+        });
+      }
+
+      if (existingPatient) {
+        patientIdToUse = existingPatient.id;
+      }
+    }
+
+    if (!patientIdToUse) {
       const patient = await prisma.patient.create({
         data: {
           name: `${firstName} ${lastName}`.trim(),
@@ -242,6 +263,7 @@ export async function createGuestAppointment(
     updateTag("appointments-calendar");
     updateTag("dashboard");
     updateTag("patients");
+    updateTag(`patient-${patientIdToUse}`);
 
     return { success: true };
   } catch (error) {

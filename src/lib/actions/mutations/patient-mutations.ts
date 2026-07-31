@@ -63,6 +63,7 @@ export async function createPatient(
     });
 
     updateTag("patients");
+    updateTag(`patient-${patient.id}`);
     updateTag("dashboard");
 
     return { success: true };

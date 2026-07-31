@@ -13,6 +13,6 @@ export function usePortalAppointments() {
   return useQuery({
     queryKey: queryKeys.portal.appointments(),
     queryFn: () => getPortalAppointments(),
-    staleTime: 5 * 60 * 1000, // 5 minutes — complements the Next.js "minutes" cacheLife
+    staleTime: 0, // 0 ensures client fetches fresh data when server cache is busted
   });
 }

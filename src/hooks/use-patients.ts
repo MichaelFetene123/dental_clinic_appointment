@@ -17,7 +17,7 @@ export function usePatientDetail(id: string) {
   return useQuery({
     queryKey: queryKeys.patients.detail(id),
     queryFn: () => getPatientDetail(id),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
   });
 }
 

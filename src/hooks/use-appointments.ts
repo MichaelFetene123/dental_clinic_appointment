@@ -13,7 +13,7 @@ export function useAppointments(status?: AppointmentStatus | AppointmentStatus[]
   return useQuery({
     queryKey: queryKeys.appointments.list({ status }),
     queryFn: () => getAppointments(status),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
   });
 }
 
@@ -23,7 +23,7 @@ export function useCalendarAppointments(date: Date) {
   return useQuery({
     queryKey: queryKeys.appointments.calendar(month),
     queryFn: () => getCalendarAppointments(month),
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0,
   });
 }
 

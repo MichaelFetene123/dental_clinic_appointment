@@ -232,8 +232,8 @@ function PortalUserRowActions({ user }: { user: PortalUserRow }) {
   const queryClient = useQueryClient();
   const { hasPermission, isSuperAdmin } = usePermissions();
 
-  const canEdit = isSuperAdmin || hasPermission("patient.edit");
-  const canDelete = isSuperAdmin || hasPermission("patient.delete");
+  const canEdit = isSuperAdmin || hasPermission("portal_users.edit");
+  const canDelete = isSuperAdmin || hasPermission("portal_users.delete");
 
   const { mutate: remove, isPending: isUnlinking } = useMutation({
     mutationFn: () => deletePortalUser(user.id),

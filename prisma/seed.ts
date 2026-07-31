@@ -12,7 +12,7 @@ const prisma = new PrismaClient({ adapter });
 async function main() {
   console.log("Seeding permissions...");
 
-  const resources = ["patient", "appointment", "staff"];
+  const resources = ["patient", "appointment", "staff", "portal_users"];
   const actions = ["read", "create", "edit", "delete"];
 
   for (const resource of resources) {
@@ -50,6 +50,26 @@ async function main() {
   });
   
   console.log({ admin });
+
+  console.log("Seeding Admin role...");
+  const adminRole = await prisma.role.upsert({
+    where: { name: "Admin" },
+    update: {},
+    create: {
+      name: "Admin",
+      description: "Administrator with all permissions",
+    },
+  });
+
+  const allPerms = await prisma.permission.findMany();
+  for (const p of allPerms) {
+    await prisma.rolePermission.upsert({
+      where: { roleId_permissionId: { roleId: adminRole.id, permissionId: p.id } },
+      update: {},
+      create: { roleId: adminRole.id, permissionId: p.id },
+    });
+  }
+  console.log("Admin role seeded with all permissions.");
 }
 
 main()

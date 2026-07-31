@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { cacheTag, cacheLife } from "next/cache";
+import { requirePermission } from "@/lib/auth/guards";
 
 export type PortalUserRow = {
   id: string;
@@ -27,6 +28,7 @@ export type PortalUserListResult = {
  */
 export async function getPortalUsers(): Promise<PortalUserListResult> {
   "use cache";
+  await requirePermission("portal_users.read");
   cacheTag("portal-users");
   cacheLife("hours");
 

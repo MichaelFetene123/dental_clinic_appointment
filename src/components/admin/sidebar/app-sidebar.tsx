@@ -178,7 +178,7 @@ export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sideb
             title: "Portal Users",
             url: "/admin/portal-users",
             icon: KeyRound,
-            show: hasPermission("patient.edit"),
+            show: hasPermission("portal_users.read"),
         },
         {
             title: "Roles",

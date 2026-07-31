@@ -18,14 +18,15 @@ export async function createAppointment(
   formData: FormData
 ): Promise<ActionResponse> {
   const rawData = {
-    patientId: formData.get("patientId") as string,
-    name: formData.get("name") as string,
-    email: (formData.get("email") as string) || "",
-    phone: formData.get("phone") as string,
-    date: formData.get("date") as string,
-    time: formData.get("time") as string,
-    reason: formData.get("reason") as string,
-    notes: (formData.get("notes") as string) || undefined,
+    // Normalize: formData.get returns null when field is absent, coerce to empty string
+    patientId: (formData.get("patientId") as string | null) || "",
+    name: (formData.get("name") as string | null) || "",
+    email: (formData.get("email") as string | null) || "",
+    phone: (formData.get("phone") as string | null) || "",
+    date: (formData.get("date") as string | null) || "",
+    time: (formData.get("time") as string | null) || "",
+    reason: (formData.get("reason") as string | null) || "",
+    notes: (formData.get("notes") as string | null) || undefined,
   };
 
   const result = appointmentFormSchema.superRefine((data, ctx) => {
@@ -50,7 +51,9 @@ export async function createAppointment(
     return { success: false, error: "Validation failed", errors };
   }
 
-  const { patientId, name, email, phone, date, time, reason, notes } = result.data;
+  const { patientId: rawPatientId, name, email, phone, date, time, reason, notes } = result.data;
+  // Treat blank/whitespace-only patientId as "new patient" regardless of how the field arrived
+  const patientId = rawPatientId?.trim() || undefined;
 
   try {
     let patientIdToUse = patientId;

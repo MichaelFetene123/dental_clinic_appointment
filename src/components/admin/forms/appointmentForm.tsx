@@ -91,17 +91,21 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
     const actionErrors = !state?.success ? state?.errors : undefined;
 
     const prevPending = useRef(false);
+    const [wasSubmitted, setWasSubmitted] = useState(false);
     useEffect(() => {
         // Only trigger success actions if we just transitioned from pending to not pending
-        if (prevPending.current && !pending && state?.success) {
-            toast.success("Appointment booked successfully!");
-            queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
-            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
-            queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
-            if (selectedPatientId) {
-                queryClient.invalidateQueries({ queryKey: queryKeys.patients.detail(selectedPatientId) });
+        if (prevPending.current && !pending) {
+            setWasSubmitted(true);
+            if (state?.success) {
+                toast.success("Appointment booked successfully!");
+                queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
+                queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+                queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
+                if (selectedPatientId) {
+                    queryClient.invalidateQueries({ queryKey: queryKeys.patients.detail(selectedPatientId) });
+                }
+                setShow(false);
             }
-            setShow(false);
         }
         prevPending.current = pending;
     }, [pending, state?.success, queryClient, setShow, selectedPatientId]);
@@ -128,6 +132,10 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
                     </DialogDescription>
                 </DialogHeader>
                 <Separator />
+                {/* General server error — shown after submission fails without field-level errors */}
+                {wasSubmitted && !pending && !state.success && state.error && !actionErrors && (
+                    <p className="text-sm font-medium text-destructive mt-3 px-1">{state.error}</p>
+                )}
                 <form action={formAction} className="space-y-6 mt-3">
                     <div className="flex flex-col gap-3 mb-6 bg-muted/30 p-4 rounded-lg border">
                         <div className="flex items-center justify-between">

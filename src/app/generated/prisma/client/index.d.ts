@@ -13695,6 +13695,8 @@ export namespace Prisma {
     userId: string | null
     familyId: string | null
     tokenHash: string | null
+    previousTokenHash: string | null
+    previousTokenExpiresAt: Date | null
     refreshHash: string | null
     previousRefreshHash: string | null
     tokenExpiresAt: Date | null
@@ -13712,6 +13714,8 @@ export namespace Prisma {
     userId: string | null
     familyId: string | null
     tokenHash: string | null
+    previousTokenHash: string | null
+    previousTokenExpiresAt: Date | null
     refreshHash: string | null
     previousRefreshHash: string | null
     tokenExpiresAt: Date | null
@@ -13729,6 +13733,8 @@ export namespace Prisma {
     userId: number
     familyId: number
     tokenHash: number
+    previousTokenHash: number
+    previousTokenExpiresAt: number
     refreshHash: number
     previousRefreshHash: number
     tokenExpiresAt: number
@@ -13756,6 +13762,8 @@ export namespace Prisma {
     userId?: true
     familyId?: true
     tokenHash?: true
+    previousTokenHash?: true
+    previousTokenExpiresAt?: true
     refreshHash?: true
     previousRefreshHash?: true
     tokenExpiresAt?: true
@@ -13773,6 +13781,8 @@ export namespace Prisma {
     userId?: true
     familyId?: true
     tokenHash?: true
+    previousTokenHash?: true
+    previousTokenExpiresAt?: true
     refreshHash?: true
     previousRefreshHash?: true
     tokenExpiresAt?: true
@@ -13790,6 +13800,8 @@ export namespace Prisma {
     userId?: true
     familyId?: true
     tokenHash?: true
+    previousTokenHash?: true
+    previousTokenExpiresAt?: true
     refreshHash?: true
     previousRefreshHash?: true
     tokenExpiresAt?: true
@@ -13894,6 +13906,8 @@ export namespace Prisma {
     userId: string
     familyId: string
     tokenHash: string
+    previousTokenHash: string | null
+    previousTokenExpiresAt: Date | null
     refreshHash: string
     previousRefreshHash: string | null
     tokenExpiresAt: Date
@@ -13930,6 +13944,8 @@ export namespace Prisma {
     userId?: boolean
     familyId?: boolean
     tokenHash?: boolean
+    previousTokenHash?: boolean
+    previousTokenExpiresAt?: boolean
     refreshHash?: boolean
     previousRefreshHash?: boolean
     tokenExpiresAt?: boolean
@@ -13948,6 +13964,8 @@ export namespace Prisma {
     userId?: boolean
     familyId?: boolean
     tokenHash?: boolean
+    previousTokenHash?: boolean
+    previousTokenExpiresAt?: boolean
     refreshHash?: boolean
     previousRefreshHash?: boolean
     tokenExpiresAt?: boolean
@@ -13966,6 +13984,8 @@ export namespace Prisma {
     userId?: boolean
     familyId?: boolean
     tokenHash?: boolean
+    previousTokenHash?: boolean
+    previousTokenExpiresAt?: boolean
     refreshHash?: boolean
     previousRefreshHash?: boolean
     tokenExpiresAt?: boolean
@@ -13984,6 +14004,8 @@ export namespace Prisma {
     userId?: boolean
     familyId?: boolean
     tokenHash?: boolean
+    previousTokenHash?: boolean
+    previousTokenExpiresAt?: boolean
     refreshHash?: boolean
     previousRefreshHash?: boolean
     tokenExpiresAt?: boolean
@@ -13996,7 +14018,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type SessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "familyId" | "tokenHash" | "refreshHash" | "previousRefreshHash" | "tokenExpiresAt" | "refreshExpiresAt" | "rotationCount" | "revokedAt" | "permissionsJson" | "ipAddress" | "createdAt" | "updatedAt", ExtArgs["result"]["session"]>
+  export type SessionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "familyId" | "tokenHash" | "previousTokenHash" | "previousTokenExpiresAt" | "refreshHash" | "previousRefreshHash" | "tokenExpiresAt" | "refreshExpiresAt" | "rotationCount" | "revokedAt" | "permissionsJson" | "ipAddress" | "createdAt" | "updatedAt", ExtArgs["result"]["session"]>
   export type SessionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -14017,6 +14039,8 @@ export namespace Prisma {
       userId: string
       familyId: string
       tokenHash: string
+      previousTokenHash: string | null
+      previousTokenExpiresAt: Date | null
       refreshHash: string
       previousRefreshHash: string | null
       tokenExpiresAt: Date
@@ -14455,6 +14479,8 @@ export namespace Prisma {
     readonly userId: FieldRef<"Session", 'String'>
     readonly familyId: FieldRef<"Session", 'String'>
     readonly tokenHash: FieldRef<"Session", 'String'>
+    readonly previousTokenHash: FieldRef<"Session", 'String'>
+    readonly previousTokenExpiresAt: FieldRef<"Session", 'DateTime'>
     readonly refreshHash: FieldRef<"Session", 'String'>
     readonly previousRefreshHash: FieldRef<"Session", 'String'>
     readonly tokenExpiresAt: FieldRef<"Session", 'DateTime'>
@@ -16171,6 +16197,8 @@ export namespace Prisma {
     userId: 'userId',
     familyId: 'familyId',
     tokenHash: 'tokenHash',
+    previousTokenHash: 'previousTokenHash',
+    previousTokenExpiresAt: 'previousTokenExpiresAt',
     refreshHash: 'refreshHash',
     previousRefreshHash: 'previousRefreshHash',
     tokenExpiresAt: 'tokenExpiresAt',
@@ -17168,6 +17196,8 @@ export namespace Prisma {
     userId?: StringFilter<"Session"> | string
     familyId?: StringFilter<"Session"> | string
     tokenHash?: StringFilter<"Session"> | string
+    previousTokenHash?: StringNullableFilter<"Session"> | string | null
+    previousTokenExpiresAt?: DateTimeNullableFilter<"Session"> | Date | string | null
     refreshHash?: StringFilter<"Session"> | string
     previousRefreshHash?: StringNullableFilter<"Session"> | string | null
     tokenExpiresAt?: DateTimeFilter<"Session"> | Date | string
@@ -17186,6 +17216,8 @@ export namespace Prisma {
     userId?: SortOrder
     familyId?: SortOrder
     tokenHash?: SortOrder
+    previousTokenHash?: SortOrderInput | SortOrder
+    previousTokenExpiresAt?: SortOrderInput | SortOrder
     refreshHash?: SortOrder
     previousRefreshHash?: SortOrderInput | SortOrder
     tokenExpiresAt?: SortOrder
@@ -17202,12 +17234,14 @@ export namespace Prisma {
   export type SessionWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     tokenHash?: string
+    previousTokenHash?: string
     refreshHash?: string
     AND?: SessionWhereInput | SessionWhereInput[]
     OR?: SessionWhereInput[]
     NOT?: SessionWhereInput | SessionWhereInput[]
     userId?: StringFilter<"Session"> | string
     familyId?: StringFilter<"Session"> | string
+    previousTokenExpiresAt?: DateTimeNullableFilter<"Session"> | Date | string | null
     previousRefreshHash?: StringNullableFilter<"Session"> | string | null
     tokenExpiresAt?: DateTimeFilter<"Session"> | Date | string
     refreshExpiresAt?: DateTimeFilter<"Session"> | Date | string
@@ -17218,13 +17252,15 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Session"> | Date | string
     updatedAt?: DateTimeFilter<"Session"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }, "id" | "tokenHash" | "refreshHash">
+  }, "id" | "tokenHash" | "previousTokenHash" | "refreshHash">
 
   export type SessionOrderByWithAggregationInput = {
     id?: SortOrder
     userId?: SortOrder
     familyId?: SortOrder
     tokenHash?: SortOrder
+    previousTokenHash?: SortOrderInput | SortOrder
+    previousTokenExpiresAt?: SortOrderInput | SortOrder
     refreshHash?: SortOrder
     previousRefreshHash?: SortOrderInput | SortOrder
     tokenExpiresAt?: SortOrder
@@ -17250,6 +17286,8 @@ export namespace Prisma {
     userId?: StringWithAggregatesFilter<"Session"> | string
     familyId?: StringWithAggregatesFilter<"Session"> | string
     tokenHash?: StringWithAggregatesFilter<"Session"> | string
+    previousTokenHash?: StringNullableWithAggregatesFilter<"Session"> | string | null
+    previousTokenExpiresAt?: DateTimeNullableWithAggregatesFilter<"Session"> | Date | string | null
     refreshHash?: StringWithAggregatesFilter<"Session"> | string
     previousRefreshHash?: StringNullableWithAggregatesFilter<"Session"> | string | null
     tokenExpiresAt?: DateTimeWithAggregatesFilter<"Session"> | Date | string
@@ -18198,6 +18236,8 @@ export namespace Prisma {
     id?: string
     familyId: string
     tokenHash: string
+    previousTokenHash?: string | null
+    previousTokenExpiresAt?: Date | string | null
     refreshHash: string
     previousRefreshHash?: string | null
     tokenExpiresAt: Date | string
@@ -18216,6 +18256,8 @@ export namespace Prisma {
     userId: string
     familyId: string
     tokenHash: string
+    previousTokenHash?: string | null
+    previousTokenExpiresAt?: Date | string | null
     refreshHash: string
     previousRefreshHash?: string | null
     tokenExpiresAt: Date | string
@@ -18232,6 +18274,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     familyId?: StringFieldUpdateOperationsInput | string
     tokenHash?: StringFieldUpdateOperationsInput | string
+    previousTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    previousTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     refreshHash?: StringFieldUpdateOperationsInput | string
     previousRefreshHash?: NullableStringFieldUpdateOperationsInput | string | null
     tokenExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18250,6 +18294,8 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     familyId?: StringFieldUpdateOperationsInput | string
     tokenHash?: StringFieldUpdateOperationsInput | string
+    previousTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    previousTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     refreshHash?: StringFieldUpdateOperationsInput | string
     previousRefreshHash?: NullableStringFieldUpdateOperationsInput | string | null
     tokenExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18267,6 +18313,8 @@ export namespace Prisma {
     userId: string
     familyId: string
     tokenHash: string
+    previousTokenHash?: string | null
+    previousTokenExpiresAt?: Date | string | null
     refreshHash: string
     previousRefreshHash?: string | null
     tokenExpiresAt: Date | string
@@ -18283,6 +18331,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     familyId?: StringFieldUpdateOperationsInput | string
     tokenHash?: StringFieldUpdateOperationsInput | string
+    previousTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    previousTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     refreshHash?: StringFieldUpdateOperationsInput | string
     previousRefreshHash?: NullableStringFieldUpdateOperationsInput | string | null
     tokenExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18300,6 +18350,8 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
     familyId?: StringFieldUpdateOperationsInput | string
     tokenHash?: StringFieldUpdateOperationsInput | string
+    previousTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    previousTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     refreshHash?: StringFieldUpdateOperationsInput | string
     previousRefreshHash?: NullableStringFieldUpdateOperationsInput | string | null
     tokenExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -19140,6 +19192,8 @@ export namespace Prisma {
     userId?: SortOrder
     familyId?: SortOrder
     tokenHash?: SortOrder
+    previousTokenHash?: SortOrder
+    previousTokenExpiresAt?: SortOrder
     refreshHash?: SortOrder
     previousRefreshHash?: SortOrder
     tokenExpiresAt?: SortOrder
@@ -19161,6 +19215,8 @@ export namespace Prisma {
     userId?: SortOrder
     familyId?: SortOrder
     tokenHash?: SortOrder
+    previousTokenHash?: SortOrder
+    previousTokenExpiresAt?: SortOrder
     refreshHash?: SortOrder
     previousRefreshHash?: SortOrder
     tokenExpiresAt?: SortOrder
@@ -19178,6 +19234,8 @@ export namespace Prisma {
     userId?: SortOrder
     familyId?: SortOrder
     tokenHash?: SortOrder
+    previousTokenHash?: SortOrder
+    previousTokenExpiresAt?: SortOrder
     refreshHash?: SortOrder
     previousRefreshHash?: SortOrder
     tokenExpiresAt?: SortOrder
@@ -20413,6 +20471,8 @@ export namespace Prisma {
     id?: string
     familyId: string
     tokenHash: string
+    previousTokenHash?: string | null
+    previousTokenExpiresAt?: Date | string | null
     refreshHash: string
     previousRefreshHash?: string | null
     tokenExpiresAt: Date | string
@@ -20429,6 +20489,8 @@ export namespace Prisma {
     id?: string
     familyId: string
     tokenHash: string
+    previousTokenHash?: string | null
+    previousTokenExpiresAt?: Date | string | null
     refreshHash: string
     previousRefreshHash?: string | null
     tokenExpiresAt: Date | string
@@ -20667,6 +20729,8 @@ export namespace Prisma {
     userId?: StringFilter<"Session"> | string
     familyId?: StringFilter<"Session"> | string
     tokenHash?: StringFilter<"Session"> | string
+    previousTokenHash?: StringNullableFilter<"Session"> | string | null
+    previousTokenExpiresAt?: DateTimeNullableFilter<"Session"> | Date | string | null
     refreshHash?: StringFilter<"Session"> | string
     previousRefreshHash?: StringNullableFilter<"Session"> | string | null
     tokenExpiresAt?: DateTimeFilter<"Session"> | Date | string
@@ -22290,6 +22354,8 @@ export namespace Prisma {
     id?: string
     familyId: string
     tokenHash: string
+    previousTokenHash?: string | null
+    previousTokenExpiresAt?: Date | string | null
     refreshHash: string
     previousRefreshHash?: string | null
     tokenExpiresAt: Date | string
@@ -22366,6 +22432,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     familyId?: StringFieldUpdateOperationsInput | string
     tokenHash?: StringFieldUpdateOperationsInput | string
+    previousTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    previousTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     refreshHash?: StringFieldUpdateOperationsInput | string
     previousRefreshHash?: NullableStringFieldUpdateOperationsInput | string | null
     tokenExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -22382,6 +22450,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     familyId?: StringFieldUpdateOperationsInput | string
     tokenHash?: StringFieldUpdateOperationsInput | string
+    previousTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    previousTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     refreshHash?: StringFieldUpdateOperationsInput | string
     previousRefreshHash?: NullableStringFieldUpdateOperationsInput | string | null
     tokenExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -22398,6 +22468,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     familyId?: StringFieldUpdateOperationsInput | string
     tokenHash?: StringFieldUpdateOperationsInput | string
+    previousTokenHash?: NullableStringFieldUpdateOperationsInput | string | null
+    previousTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     refreshHash?: StringFieldUpdateOperationsInput | string
     previousRefreshHash?: NullableStringFieldUpdateOperationsInput | string | null
     tokenExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string

@@ -256,21 +256,23 @@ model RolePermission {
 // ==========================================
 
 model Session {
-  id                  String    @id @default(cuid())
-  userId              String
-  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  familyId            String // Groups refresh token rotations together
-  tokenHash           String    @unique // Active session token hash
-  refreshHash         String    @unique // Active refresh token hash
-  previousRefreshHash String? // For reuse detection
-  tokenExpiresAt      DateTime // 15 min sliding
-  refreshExpiresAt    DateTime // 7 days absolute
-  rotationCount       Int       @default(0)
-  revokedAt           DateTime?
-  permissionsJson     String    @default("[]") // Cached flat array of permission IDs
-  ipAddress           String?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  id                     String    @id @default(cuid())
+  userId                 String
+  user                   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  familyId               String // Groups refresh token rotations together
+  tokenHash              String    @unique // Active session token hash
+  previousTokenHash      String?   @unique // For access token grace period
+  previousTokenExpiresAt DateTime? // When the grace period ends
+  refreshHash            String    @unique // Active refresh token hash
+  previousRefreshHash    String? // For reuse detection
+  tokenExpiresAt         DateTime // 15 min sliding
+  refreshExpiresAt       DateTime // 7 days absolute
+  rotationCount          Int       @default(0)
+  revokedAt              DateTime?
+  permissionsJson        String    @default("[]") // Cached flat array of permission IDs
+  ipAddress              String?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
 
   @@index([userId])
   @@index([familyId])

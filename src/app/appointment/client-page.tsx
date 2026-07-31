@@ -7,12 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
-import { useState, useEffect, useActionState } from 'react';
+import { useState } from 'react';
 import { Badge } from "@/components/ui/badge"
 import { PhoneInput } from "@/components/ui/phone-input";
-import { createGuestAppointment, type ActionResponse } from '@/lib/actions/mutations/appointment-mutations';
+import { useCreateAppointment } from '@/hooks/use-appointments';
 import { toast } from 'sonner';
-import Form from 'next/form';
 
 const Page = () => {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
@@ -31,23 +30,31 @@ const Page = () => {
     // Ensure all values are unique and trimmed
     const timeSlots = Array.from(new Set(rawTimeSlots.map(slot => slot.trim())));
     
-    const [state, formAction, pending] = useActionState<ActionResponse, FormData>(
-        createGuestAppointment,
-        { success: false, error: '' }
-    );
-
+    const createMutation = useCreateAppointment();
+    const pending = createMutation.isPending;
+    const actionErrors = createMutation.error?.cause as Record<string, string> | undefined;
+    const rootError = createMutation.error?.message;
+    
     // Local errors state to allow clearing errors on user input
+    // We synchronize it with the server action errors when they change
     const [localErrors, setLocalErrors] = useState<Record<string, string>>({});
 
-    useEffect(() => {
-        setLocalErrors(state?.success === false ? (state.errors ?? {}) : {});
-    }, [state]);
-
-    useEffect(() => {
-        if (state?.success) {
-            toast.success('Your appointment has been booked successfully.');
-        }
-    }, [state?.success]);
+    // Keep localErrors in sync with server errors when mutation fails
+    if (createMutation.isError && actionErrors && Object.keys(localErrors).length === 0) {
+        setLocalErrors(actionErrors);
+    }
+    
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        setLocalErrors({});
+        createMutation.mutate(formData, {
+            onSuccess: () => {
+                toast.success('Your appointment has been booked successfully.');
+                // Optionally reset form
+            }
+        });
+    };
 
     // Clears the error for a specific field AND the general server error
     const clearError = (field: string) => {
@@ -70,7 +77,7 @@ const Page = () => {
                             <p className='text-center text-sm text-muted-foreground'>You can book an appointment with us.</p>
                         </CardHeader>
                         <CardContent>
-                            <Form action={formAction} className='grid gap-4'>
+                            <form onSubmit={handleSubmit} className='grid gap-4'>
                                 {/* Display Global/Server Error if it exists */}
                                 {localErrors?._form && (
                                     <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-md text-sm text-center">
@@ -171,7 +178,7 @@ const Page = () => {
                                 <Button type='submit' disabled={pending} className='w-full h-[60px] text-lg font-semibold'>
                                     {pending ? 'Booking...' : 'Book Now'}
                                 </Button>
-                            </Form>
+                            </form>
                         </CardContent>
                     </Card>
                 </Card>

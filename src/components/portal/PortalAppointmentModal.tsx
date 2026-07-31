@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import * as React from "react";
-import { useState, useActionState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
-import { createPortalAppointment } from "@/lib/actions/mutations/appointment-mutations";
+import { useCreatePortalAppointment } from "@/hooks/use-portal-appointments";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryKeys";
 import {
@@ -34,33 +34,30 @@ export function PortalAppointmentModal() {
     const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
     const [selectedReason, setSelectedReason] = useState("checkup");
 
-    const [state, formAction, pending] = useActionState(createPortalAppointment, { success: false, error: "" });
-    const actionErrors = !state?.success ? state?.errors : undefined;
-    const queryClient = useQueryClient();
+    const createMutation = useCreatePortalAppointment();
+    const actionErrors = createMutation.error?.cause as Record<string, string> | undefined;
+    const rootError = createMutation.error?.message;
+    const pending = createMutation.isPending;
 
+    // Show root error if present (when there are no specific field errors)
     useEffect(() => {
-        if (state?.success) {
-            toast.success("Appointment booked successfully!");
-            queryClient.invalidateQueries({ queryKey: queryKeys.portal.appointments() }); // Instantly refresh the appointments list
-            // Also invalidate global admin query keys in case the portal is run in the same browser/app context
-            queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
-            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
-            queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
-            setShow(false);
-            // Reset form state for next time
-            setSelectedDate(undefined);
-            setSelectedReason("checkup");
+        if (createMutation.isError && rootError && !actionErrors) {
+            toast.error(rootError);
         }
-    }, [state, queryClient]);
+    }, [createMutation.isError, rootError, actionErrors]);
 
-    // Added a small helper effect to show the root error if there is one and no specific field errors
-    useEffect(() => {
-        if (state && !state.success) {
-            if (state.error && !state.errors) {
-                toast.error(state.error);
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        createMutation.mutate(formData, {
+            onSuccess: () => {
+                toast.success("Appointment booked successfully!");
+                setShow(false);
+                setSelectedDate(undefined);
+                setSelectedReason("checkup");
             }
-        }
-    }, [state]);
+        });
+    };
 
     return (
         <Dialog open={show} onOpenChange={setShow}>
@@ -77,7 +74,7 @@ export function PortalAppointmentModal() {
                     </DialogDescription>
                 </DialogHeader>
                 <Separator />
-                <form action={formAction} className="space-y-6 mt-3">
+                <form onSubmit={handleSubmit} className="space-y-6 mt-3">
                     
                     <Field data-invalid={!!actionErrors?.reason} className="w-full">
                         <FieldLabel htmlFor="reason">Reason for Visit</FieldLabel>

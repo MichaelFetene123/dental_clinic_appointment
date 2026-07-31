@@ -10,16 +10,15 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { ClipboardIcon, PhoneCall, User } from "lucide-react";
-import React, { useState, useRef, useActionState, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { format } from "date-fns";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { toast } from "sonner"
 import { FaTooth } from "react-icons/fa";
-import { useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "@/lib/queryKeys";
-import { createPatient, updatePatient, type ActionResponse } from "@/lib/actions/mutations/patient-mutations";
 import { parseISO, isValid } from "date-fns";
 import type { PatientRow } from "@/lib/actions/queries/patient-queries";
+import { useCreatePatient, useUpdatePatient } from "@/hooks/use-patients";
+import { patientFormSchema as formSchema } from '@/lib/validationSchema';
 import {
   Dialog,
   DialogContent,
@@ -63,7 +62,7 @@ const sections = [
   { title: "Dental Info", icon: <FaTooth size={24} /> }
 ];
 
-import { patientFormSchema as formSchema } from '@/lib/validationSchema';
+
 
 // Step 0 only validates the 4 required fields. All other steps are optional.
 const stepFields: Record<number, string[]> = {
@@ -98,32 +97,40 @@ const PatientForm = ({ show, setShow, patient }: PatientFormProps) => {
   const [stepErrors, setStepErrors] = useState<Record<string, string>>({});
   const formRef = useRef<HTMLFormElement>(null);
 
-  const queryClient = useQueryClient();
+  const createMutation = useCreatePatient();
+  const updateMutation = useUpdatePatient();
 
-  const boundAction = React.useCallback(
-    (prevState: ActionResponse, formData: FormData) => {
-      if (patient) {
-        return updatePatient(patient.id, prevState, formData);
-      }
-      return createPatient(prevState, formData);
-    },
-    [patient]
-  );
-
-  const [state, formAction, pending] = useActionState(boundAction, { success: false, error: "" });
+  const pending = createMutation.isPending || updateMutation.isPending;
+  const activeError = patient ? updateMutation.error : createMutation.error;
+  const actionErrors = activeError?.cause as Record<string, string> | undefined;
+  const rootError = activeError?.message;
 
   React.useEffect(() => {
-    if (state?.success) {
-      toast.success(patient ? "Patient updated successfully!" : "Patient created successfully!");
-      queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
-      if (patient) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.patients.detail(patient.id) });
-      } else {
-        queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
-      }
-      setShow(false);
+    if (activeError && rootError && !actionErrors) {
+      toast.error(rootError);
     }
-  }, [state?.success, queryClient, setShow, patient]);
+  }, [activeError, rootError, actionErrors]);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    
+    if (patient) {
+      updateMutation.mutate({ id: patient.id, formData }, {
+        onSuccess: () => {
+          toast.success("Patient updated successfully!");
+          setShow(false);
+        }
+      });
+    } else {
+      createMutation.mutate(formData, {
+        onSuccess: () => {
+          toast.success("Patient created successfully!");
+          setShow(false);
+        }
+      });
+    }
+  };
 
   const validateCurrentStep = (): boolean => {
     if (!formRef.current) return false;
@@ -164,7 +171,6 @@ const PatientForm = ({ show, setShow, patient }: PatientFormProps) => {
     setStep((prev) => Math.max(prev - 1, 0));
   };
 
-  const actionErrors = !state?.success ? state?.errors : undefined;
   const errors = { ...actionErrors, ...stepErrors };
 
   return (
@@ -224,7 +230,7 @@ const PatientForm = ({ show, setShow, patient }: PatientFormProps) => {
 
           {/* Form Sections */}
           <CardContent className={" overflow-y-auto"}>
-            <form ref={formRef} action={formAction}>
+            <form ref={formRef} onSubmit={handleSubmit}>
               {/* Hidden inputs for controlled components */}
               <input type="hidden" name="gender" value={gender} />
               <input type="hidden" name="dateOfBirth" value={date ? format(date, "yyyy-MM-dd") : ""} />

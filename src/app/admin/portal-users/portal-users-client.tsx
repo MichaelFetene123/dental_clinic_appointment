@@ -14,6 +14,13 @@ import {
   deletePortalUser,
 } from "@/lib/actions/mutations/portal-user-mutations";
 
+import {
+  usePortalUsers,
+  useUpdatePortalUserEmail,
+  useResetPortalUserPassword,
+  useDeletePortalUser
+} from "@/hooks/use-portal-users";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -66,16 +73,6 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-// ─── Hooks ───────────────────────────────────────────────────────────────────
-
-function usePortalUsers() {
-  return useQuery({
-    queryKey: queryKeys.portalUsers.lists(),
-    queryFn: () => getPortalUsers(),
-    staleTime: 30_000,
-  });
-}
-
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function EditEmailDialog({
@@ -88,21 +85,7 @@ function EditEmailDialog({
   onOpenChange: (v: boolean) => void;
 }) {
   const [email, setEmail] = useState(user.email);
-  const queryClient = useQueryClient();
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: () => updatePortalUserEmail(user.id, email),
-    onSuccess: (res) => {
-      if (!res.success) {
-        toast.error(res.error);
-        return;
-      }
-      toast.success("Email updated successfully");
-      queryClient.invalidateQueries({ queryKey: queryKeys.portalUsers.all });
-      onOpenChange(false);
-    },
-    onError: () => toast.error("Failed to update email"),
-  });
+  const { mutate, isPending } = useUpdatePortalUserEmail();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -129,7 +112,10 @@ function EditEmailDialog({
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
             Cancel
           </Button>
-          <Button onClick={() => mutate()} disabled={isPending || !email.trim()}>
+          <Button 
+            onClick={() => mutate({ id: user.id, email }, { onSuccess: (res) => { if(res.success) onOpenChange(false); } })} 
+            disabled={isPending || !email.trim()}
+          >
             {isPending ? "Saving…" : "Save Changes"}
           </Button>
         </DialogFooter>
@@ -149,20 +135,7 @@ function ResetPasswordDialog({
 }) {
   const [tempPassword, setTempPassword] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const queryClient = useQueryClient();
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: () => resetPortalUserPassword(user.id),
-    onSuccess: (res) => {
-      if (!res.success) {
-        toast.error(res.error);
-        return;
-      }
-      setTempPassword(res.data?.tempPassword ?? null);
-      queryClient.invalidateQueries({ queryKey: queryKeys.portalUsers.all });
-    },
-    onError: () => toast.error("Failed to reset password"),
-  });
+  const { mutate, isPending } = useResetPortalUserPassword();
 
   const handleCopy = () => {
     if (tempPassword) {
@@ -209,7 +182,11 @@ function ResetPasswordDialog({
             <Button variant="outline" onClick={handleClose} disabled={isPending}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={() => mutate()} disabled={isPending}>
+            <Button 
+              variant="destructive" 
+              onClick={() => mutate(user.id, { onSuccess: (res) => { if(res.success) setTempPassword(res.data?.tempPassword ?? null); } })} 
+              disabled={isPending}
+            >
               {isPending ? "Resetting…" : "Reset Password"}
             </Button>
           </DialogFooter>
@@ -229,23 +206,12 @@ type RowAction =
 
 function PortalUserRowActions({ user }: { user: PortalUserRow }) {
   const [action, setAction] = useState<RowAction | null>(null);
-  const queryClient = useQueryClient();
   const { hasPermission, isSuperAdmin } = usePermissions();
 
   const canEdit = isSuperAdmin || hasPermission("portal_users.edit");
   const canDelete = isSuperAdmin || hasPermission("portal_users.delete");
 
-  const { mutate: remove, isPending: isUnlinking } = useMutation({
-    mutationFn: () => deletePortalUser(user.id),
-    onSuccess: (res) => {
-      if (!res.success) { toast.error(res.error); return; }
-      toast.success("Portal account unlinked and removed.");
-      queryClient.invalidateQueries({ queryKey: queryKeys.portalUsers.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
-      setAction(null);
-    },
-    onError: () => toast.error("Failed to remove portal account"),
-  });
+  const { mutate: remove, isPending: isUnlinking } = useDeletePortalUser();
 
   return (
     <>
@@ -309,7 +275,7 @@ function PortalUserRowActions({ user }: { user: PortalUserRow }) {
             <AlertDialogFooter>
               <AlertDialogCancel disabled={isUnlinking}>Cancel</AlertDialogCancel>
               <AlertDialogAction
-                onClick={() => remove()}
+                onClick={() => remove(user.id, { onSuccess: (res) => { if(res.success) setAction(null); } })}
                 disabled={isUnlinking}
                 className="bg-destructive hover:bg-destructive/90 text-white"
               >

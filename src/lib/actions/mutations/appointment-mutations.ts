@@ -14,7 +14,6 @@ export type ActionResponse<T = void> =
 // ─── Create appointment (Admin form) ──────────────────────────────────────────
 // Always creates or finds a Patient record first, then links the Appointment.
 export async function createAppointment(
-  _prevState: ActionResponse,
   formData: FormData
 ): Promise<ActionResponse> {
   const rawData = {
@@ -160,7 +159,6 @@ export async function deleteAppointment(
 // ─── Create guest appointment (Public booking form) ───────────────────────────
 // Creates a Patient record for the visitor, then links the Appointment.
 export async function createGuestAppointment(
-  _prevState: ActionResponse,
   formData: FormData
 ): Promise<ActionResponse> {
   const rawData = {
@@ -281,7 +279,6 @@ export async function createGuestAppointment(
 // ─── Update appointment (Admin edit form) ─────────────────────────────────────
 // Updates both the Appointment and the linked Patient's contact info.
 export async function updateAppointmentAdmin(
-  _prevState: ActionResponse,
   formData: FormData
 ): Promise<ActionResponse> {
   const id = formData.get("id") as string;
@@ -359,7 +356,6 @@ export async function updateAppointmentAdmin(
 // ─── Create Portal Appointment (Authenticated Patients) ─────────────────────────
 // Creates an appointment directly linked to the verified portal user's patient ID.
 export async function createPortalAppointment(
-  _prevState: ActionResponse,
   formData: FormData
 ): Promise<ActionResponse> {
   const rawData = {

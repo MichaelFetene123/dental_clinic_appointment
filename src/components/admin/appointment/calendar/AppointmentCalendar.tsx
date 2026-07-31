@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useActionState, useEffect, useRef } from "react";
-import { useCalendarAppointments } from "@/hooks/use-appointments";
+import { useCalendarAppointments, useCreateAppointment } from "@/hooks/use-appointments";
 import { useQueryClient } from "@tanstack/react-query";
 import { createAppointment, type ActionResponse } from "@/lib/actions/mutations/appointment-mutations";
 import { toast } from "sonner";
@@ -28,47 +28,31 @@ export default function AppointmentCalendar() {
     const queryClient = useQueryClient();
 
     // ── Create-appointment action ──────────────────────────────────────────────
-    const [state, formAction, isPending] = useActionState<ActionResponse, FormData>(
-        createAppointment,
-        { success: false, error: "" }
-    );
+    const createMutation = useCreateAppointment();
 
     const [selectedSlot, setSelectedSlot] = useState<{ date: Date; time: string } | null>(null);
     const [pendingSlot, setPendingSlot] = useState<{ date: string; time: string } | null>(null);
-
-    // Track the slot that was active when the form was submitted
-    // (selectedSlot may be cleared before the effect fires)
-    const submittedSlotRef = useRef<{ date: Date; time: string } | null>(null);
-
-    // Detect a *new* success response — useActionState never resets state between
-    // submissions, so depending on state.success alone skips the effect on repeat submits.
-    const prevStateRef = useRef<ActionResponse | null>(null);
-
-    useEffect(() => {
-        // Only react when a genuinely new state object has arrived AND it's a success.
-        // This ensures repeated submissions each trigger the toast + close.
-        if (prevStateRef.current === state) return;
-        prevStateRef.current = state;
-
-        if (state.success) {
-            if (submittedSlotRef.current) {
-                setPendingSlot({
-                    date: format(submittedSlotRef.current.date, "yyyy-MM-dd"),
-                    time: submittedSlotRef.current.time,
-                });
-                submittedSlotRef.current = null;
-            }
-            setSelectedSlot(null);
-            toast.success("Appointment successfully scheduled!");
-            queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
-            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
-        }
-    }, [state, queryClient]);
 
     // Clear the optimistic skeleton once the refetch settles
     useEffect(() => {
         if (!isCalendarFetching && pendingSlot) setPendingSlot(null);
     }, [isCalendarFetching, pendingSlot]);
+
+    const handleCreateAppointment = (formData: FormData) => {
+        const slot = selectedSlot;
+        createMutation.mutate(formData, {
+            onSuccess: () => {
+                if (slot) {
+                    setPendingSlot({
+                        date: format(slot.date, "yyyy-MM-dd"),
+                        time: slot.time,
+                    });
+                }
+                setSelectedSlot(null);
+                toast.success("Appointment successfully scheduled!");
+            }
+        });
+    };
 
     // ── Normalise server data ──────────────────────────────────────────────────
     const appointments: AppointmentEntry[] =
@@ -176,10 +160,9 @@ export default function AppointmentCalendar() {
                 <NewAppointmentDialog
                     selectedSlot={selectedSlot}
                     onClose={() => setSelectedSlot(null)}
-                    formAction={formAction}
-                    onSubmit={() => { submittedSlotRef.current = selectedSlot; }}
-                    state={state}
-                    isPending={isPending}
+                    onSubmit={handleCreateAppointment}
+                    error={createMutation.error}
+                    isPending={createMutation.isPending}
                 />
 
                 <ViewAppointmentDialog

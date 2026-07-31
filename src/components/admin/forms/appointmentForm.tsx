@@ -4,15 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import * as React from "react";
-import { useState, useActionState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryKeys";
 import { toast } from "sonner";
-import { createAppointment } from "@/lib/actions/mutations/appointment-mutations";
 import { searchPatients } from "@/lib/actions/queries/patient-search-query";
+import { useCreateAppointment } from "@/hooks/use-appointments";
 import { cn } from "@/lib/utils";
 import {
     Command,
@@ -88,29 +88,35 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
     }, [patientSearchOpen, patientSearchQuery]);
 
     const queryClient = useQueryClient();
+    const createMutation = useCreateAppointment();
+    const pending = createMutation.isPending;
+    const actionErrors = createMutation.error?.cause as Record<string, string> | undefined;
+    const rootError = createMutation.error?.message;
 
-    const [state, formAction, pending] = useActionState(createAppointment, { success: false, error: "" });
-    const actionErrors = !state?.success ? state?.errors : undefined;
-
-    const prevPending = useRef(false);
-    const [wasSubmitted, setWasSubmitted] = useState(false);
-    useEffect(() => {
-        // Only trigger success actions if we just transitioned from pending to not pending
-        if (prevPending.current && !pending) {
-            setWasSubmitted(true);
-            if (state?.success) {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        createMutation.mutate(formData, {
+            onSuccess: () => {
                 toast.success("Appointment booked successfully!");
-                queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
-                queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
-                queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
                 if (selectedPatientId) {
-                    queryClient.invalidateQueries({ queryKey: queryKeys.patients.detail(selectedPatientId) });
+                   queryClient.invalidateQueries({ queryKey: queryKeys.patients.detail(selectedPatientId) });
                 }
                 setShow(false);
+                setSelectedDate(undefined);
+                setSelectedReason("checkup");
+                setIsNewPatient(patient ? false : true);
+                setPatientSearchOpen(false);
+                setPatientSearchQuery("");
+                setSelectedPatientId(patient ? patient.id : "");
+                setNewName("");
+                setNewEmail("");
+                setNewPhone("");
+                setTime("");
+                setNotes("");
             }
-        }
-        prevPending.current = pending;
-    }, [pending, state?.success, queryClient, setShow, selectedPatientId]);
+        });
+    };
 
     const handleSwitchMode = () => {
         setIsNewPatient(!isNewPatient);
@@ -135,10 +141,10 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
                 </DialogHeader>
                 <Separator />
                 {/* General server error — shown after submission fails without field-level errors */}
-                {wasSubmitted && !pending && !state.success && state.error && !actionErrors && (
-                    <p className="text-sm font-medium text-destructive mt-3 px-1">{state.error}</p>
+                {createMutation.isError && rootError && !actionErrors && (
+                    <p className="text-sm font-medium text-destructive mt-3 px-1">{rootError}</p>
                 )}
-                <form action={formAction} className="space-y-6 mt-3">
+                <form onSubmit={handleSubmit} className="space-y-6 mt-3">
                     <div className="flex flex-col gap-3 mb-6 bg-muted/30 p-4 rounded-lg border">
                         <div className="flex items-center justify-between">
                             <FieldLabel className="text-base font-semibold">Patient Information</FieldLabel>

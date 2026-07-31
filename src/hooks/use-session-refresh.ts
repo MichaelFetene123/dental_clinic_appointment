@@ -34,12 +34,18 @@ export function useSessionRefresh() {
     if (inactiveDuration >= IDLE_TIMEOUT_MS) return;
 
     try {
+      console.log(`[AUTH DEBUG] [${new Date().toISOString()}] attemptRefresh(): Calling /api/auth/refresh`);
       const res = await fetch("/api/auth/refresh", { method: "POST" });
-      if (!res.ok) {
+      if (res.ok) {
+        console.log(`[AUTH DEBUG] [${new Date().toISOString()}] attemptRefresh(): Success`);
+        localStorage.setItem("lastRefresh", Date.now().toString());
+      } else {
+        console.log(`[AUTH DEBUG] [${new Date().toISOString()}] attemptRefresh(): Failed with status ${res.status}, redirecting to /login`);
         // Refresh token is gone/expired/revoked → force re-login
         router.push("/login");
       }
     } catch {
+      console.log(`[AUTH DEBUG] [${new Date().toISOString()}] attemptRefresh(): Network error`);
       // Network error – stay quiet and retry at the next interval
     }
   };
@@ -51,10 +57,10 @@ export function useSessionRefresh() {
       // User has been inactive for >= 15 mins.
       // Force logout: revokes tokens in DB, clears cookies, redirects to login.
       try {
+        console.log(`[AUTH DEBUG] [${new Date().toISOString()}] checkIdleStatus(): User idle, forcing logout`);
         await logout();
       } catch (e) {
         // Next.js redirect() throws an error. Catch it to prevent console noise.
-        // If the redirect doesn't happen automatically, fallback to router.push
         if (e && typeof e === 'object' && 'digest' in e && (e as any).digest?.startsWith('NEXT_REDIRECT')) {
              throw e; // Let Next.js handle its own redirect
         }
@@ -64,6 +70,7 @@ export function useSessionRefresh() {
   };
 
   useEffect(() => {
+    console.log(`[AUTH DEBUG] [${new Date().toISOString()}] useSessionRefresh() mounted`);
     // Initialize activity tracker
     localStorage.setItem(ACTIVITY_STORAGE_KEY, Date.now().toString());
 
@@ -82,7 +89,7 @@ export function useSessionRefresh() {
     const events = ["mousemove", "keydown", "scroll", "click", "touchstart"];
     events.forEach((evt) => window.addEventListener(evt, updateActivity, { passive: true }));
 
-    // Fire initial refresh
+    // Manage initial refresh - fire immediately to test grace period
     attemptRefresh();
 
     // Setup intervals
@@ -95,6 +102,7 @@ export function useSessionRefresh() {
         checkIdleStatus().then(() => {
            const inactiveDuration = Date.now() - getLastActivity();
            if (inactiveDuration < IDLE_TIMEOUT_MS) {
+             console.log(`[AUTH DEBUG] [${new Date().toISOString()}] Visibility changed to visible. Firing attemptRefresh().`);
              attemptRefresh();
            }
         });
@@ -103,6 +111,7 @@ export function useSessionRefresh() {
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
+      console.log(`[AUTH DEBUG] [${new Date().toISOString()}] useSessionRefresh() unmounted`);
       if (refreshTimerRef.current) clearInterval(refreshTimerRef.current);
       if (idleCheckTimerRef.current) clearInterval(idleCheckTimerRef.current);
       if (throttleTimeout) clearTimeout(throttleTimeout);

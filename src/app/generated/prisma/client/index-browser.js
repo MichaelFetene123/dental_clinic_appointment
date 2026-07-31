@@ -242,6 +242,8 @@ exports.Prisma.SessionScalarFieldEnum = {
   userId: 'userId',
   familyId: 'familyId',
   tokenHash: 'tokenHash',
+  previousTokenHash: 'previousTokenHash',
+  previousTokenExpiresAt: 'previousTokenExpiresAt',
   refreshHash: 'refreshHash',
   previousRefreshHash: 'previousRefreshHash',
   tokenExpiresAt: 'tokenExpiresAt',

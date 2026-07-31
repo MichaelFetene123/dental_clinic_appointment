@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useActionState } from "react";
+import React, { useActionState, useEffect } from "react";
 import Image from "next/image";
 import { BiArrowBack } from "react-icons/bi";
 import Link from "next/link";
@@ -19,6 +19,12 @@ import {
 
 const LoginPage = () => {
   const [state, formAction, isPending] = useActionState(login, undefined);
+
+  useEffect(() => {
+    // Clear any lingering session tracking from previous sessions
+    localStorage.removeItem("lastRefresh");
+    localStorage.removeItem("lastActivity");
+  }, []);
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-muted/40 p-4">

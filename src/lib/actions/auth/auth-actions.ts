@@ -69,7 +69,9 @@ export async function login(
   // Reset attempt counter on success
   loginAttempts.delete(key);
 
+  console.log(`[AUTH DEBUG] [${new Date().toISOString()}] Login successful for ${email}, creating session...`);
   await createSession(user.id, ip);
+  console.log(`[AUTH DEBUG] [${new Date().toISOString()}] Session created, redirecting to ${canAccessAdmin ? '/admin' : '/portal'}...`);
 
   if (canAccessAdmin) {
     redirect("/admin");

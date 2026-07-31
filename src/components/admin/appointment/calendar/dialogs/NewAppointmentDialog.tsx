@@ -14,21 +14,20 @@ import type { ActionResponse } from "@/lib/actions/mutations/appointment-mutatio
 interface NewAppointmentDialogProps {
     selectedSlot: { date: Date; time: string } | null;
     onClose:      () => void;
-    formAction:   (payload: FormData) => void;
-    onSubmit:     () => void;
-    state:        ActionResponse;
+    onSubmit:     (formData: FormData) => void;
+    error:        Error | null;
     isPending:    boolean;
 }
 
 export function NewAppointmentDialog({
     selectedSlot,
     onClose,
-    formAction,
     onSubmit,
-    state,
+    error,
     isPending,
 }: NewAppointmentDialogProps) {
-    const errors = !state.success ? state.errors : undefined;
+    const actionErrors = error?.cause as Record<string, string> | undefined;
+    const rootError = error?.message;
 
     // CLIENT SIDE VALIDATION
     const isPast = selectedSlot ? (() => {
@@ -37,6 +36,12 @@ export function NewAppointmentDialog({
         selectedDateTime.setHours(hours, minutes, 0, 0);
         return selectedDateTime < new Date();
     })() : false;
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        onSubmit(formData);
+    };
 
     return (
         <Dialog open={!!selectedSlot} onOpenChange={onClose}>
@@ -47,10 +52,7 @@ export function NewAppointmentDialog({
 
                 {selectedSlot && (
                     <form
-                        action={(formData) => {
-                            onSubmit();
-                            formAction(formData);
-                        }}
+                        onSubmit={handleSubmit}
                         className="space-y-4 py-4"
                     >
                         <input type="hidden" name="date" value={format(selectedSlot.date, "yyyy-MM-dd")} />
@@ -75,7 +77,7 @@ export function NewAppointmentDialog({
                         <div className="space-y-2">
                             <Label>Patient Name</Label>
                             <Input name="name" placeholder="Enter patient name" />
-                            {errors?.name && <p className="text-sm text-destructive">{errors.name}</p>}
+                            {actionErrors?.name && <p className="text-sm text-destructive">{actionErrors.name}</p>}
                         </div>
 
                         {/* Phone + Email */}
@@ -83,12 +85,12 @@ export function NewAppointmentDialog({
                             <div className="space-y-2">
                                 <Label>Phone</Label>
                                 <Input name="phone" type="tel" placeholder="+1234567890" />
-                                {errors?.phone && <p className="text-sm text-destructive">{errors.phone}</p>}
+                                {actionErrors?.phone && <p className="text-sm text-destructive">{actionErrors.phone}</p>}
                             </div>
                             <div className="space-y-2">
                                 <Label>Email</Label>
                                 <Input name="email" type="email" placeholder="patient@example.com" />
-                                {errors?.email && <p className="text-sm text-destructive">{errors.email}</p>}
+                                {actionErrors?.email && <p className="text-sm text-destructive">{actionErrors.email}</p>}
                             </div>
                         </div>
 
@@ -114,7 +116,7 @@ export function NewAppointmentDialog({
                                     ))}
                                 </SelectContent>
                             </Select>
-                            {errors?.reason && <p className="text-sm text-destructive">{errors.reason}</p>}
+                            {actionErrors?.reason && <p className="text-sm text-destructive">{actionErrors.reason}</p>}
                         </div>
 
                         {/* Notes */}
@@ -124,8 +126,8 @@ export function NewAppointmentDialog({
                         </div>
 
                         {/* Server-level error */}
-                        {!state.success && state.error && !state.errors && (
-                            <p className="text-sm text-destructive font-medium">{state.error}</p>
+                        {error && rootError && !actionErrors && (
+                            <p className="text-sm text-destructive font-medium">{rootError}</p>
                         )}
 
                         <Button type="submit" disabled={isPending || isPast} className="w-full">

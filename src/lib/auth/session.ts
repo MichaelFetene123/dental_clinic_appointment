@@ -76,13 +76,25 @@ export async function validateSession(rawToken: string): Promise<{
 } | null> {
   const tokenHash = hashToken(rawToken);
 
-  const session = await prisma.session.findUnique({
+  let session = await prisma.session.findUnique({
     where: { tokenHash },
     include: { user: true },
   });
 
+  // If not found by active tokenHash, check if it matches a token within its 15s grace period
+  if (!session) {
+    session = await prisma.session.findUnique({
+      where: { previousTokenHash: tokenHash },
+      include: { user: true },
+    });
+
+    if (!session || !session.previousTokenExpiresAt || session.previousTokenExpiresAt < new Date()) {
+      return null;
+    }
+  }
+
+  // Common invalidation checks for both active and grace-period sessions
   if (
-    !session ||
     session.revokedAt !== null ||
     session.tokenExpiresAt < new Date()
   ) {
@@ -142,6 +154,7 @@ export async function rotateSession(rawRefreshToken: string, ipAddress?: string)
     }
 
     // Happy path: rotate
+    console.log(`[AUTH DEBUG] [${new Date().toISOString()}] rotateSession: Generating new tokens for session ${session.id}...`);
     const newSessionToken = generateToken();
     const newRefreshToken = generateToken();
     const permissions = await computePermissions(session.userId);
@@ -149,6 +162,8 @@ export async function rotateSession(rawRefreshToken: string, ipAddress?: string)
     await prisma.session.update({
       where: { id: session.id },
       data: {
+        previousTokenHash: session.tokenHash,
+        previousTokenExpiresAt: new Date(Date.now() + 15000), // 15-second grace period
         previousRefreshHash: session.refreshHash,
         tokenHash: hashToken(newSessionToken),
         refreshHash: hashToken(newRefreshToken),
@@ -159,6 +174,7 @@ export async function rotateSession(rawRefreshToken: string, ipAddress?: string)
       },
     });
 
+    console.log(`[AUTH DEBUG] [${new Date().toISOString()}] rotateSession: Tokens rotated and DB updated for session ${session.id}. Setting cookies...`);
     await setAuthCookies(newSessionToken, newRefreshToken);
     return true;
   }
@@ -196,11 +212,18 @@ export async function rotateSession(rawRefreshToken: string, ipAddress?: string)
 
 /**
  * Revokes a single session by its session token hash.
+ * Checks both active and grace-period hashes.
  */
 export async function revokeSession(rawToken: string) {
   const tokenHash = hashToken(rawToken);
   await prisma.session.updateMany({
-    where: { tokenHash, revokedAt: null },
+    where: { 
+      OR: [
+        { tokenHash },
+        { previousTokenHash: tokenHash }
+      ],
+      revokedAt: null 
+    },
     data: { revokedAt: new Date() },
   });
 }

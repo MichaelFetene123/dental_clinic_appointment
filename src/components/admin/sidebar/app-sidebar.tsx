@@ -27,6 +27,8 @@ import {
     SidebarHeader,
     SidebarRail,
 } from "@/components/ui/sidebar"
+import { usePermissions } from "@/components/providers/PermissionProvider"
+import { ShieldCheck } from "lucide-react"
 
 // This is sample data.
 const data = {
@@ -142,8 +144,6 @@ const data = {
     ]
 }
 
-import { usePermissions } from "@/components/providers/PermissionProvider"
-import { ShieldCheck } from "lucide-react"
 
 export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sidebar> & { user: { name: string, email: string, avatar: string } }) {
     const { hasPermission } = usePermissions();

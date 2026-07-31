@@ -3,7 +3,7 @@
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryKeys";
 import { getAppointments, getCalendarAppointments } from "@/lib/actions/queries/appointment-queries";
-import { updateAppointmentStatus, deleteAppointment } from "@/lib/actions/mutations/appointment-mutations";
+import { updateAppointmentStatus, deleteAppointment, createAppointment, updateAppointmentAdmin } from "@/lib/actions/mutations/appointment-mutations";
 import type { AppointmentStatus } from "@/app/generated/prisma/client";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -61,5 +61,39 @@ export function useDeleteAppointment() {
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
     },
     onError: () => toast.error("Failed to delete appointment."),
+  });
+}
+
+// ─── Create Mutation ──────────────────────────────────────────────────────────
+export function useCreateAppointment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      const res = await createAppointment(formData);
+      if (!res.success) throw new Error(res.error, { cause: res.errors });
+      return res;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
+    },
+  });
+}
+
+// ─── Update Mutation ──────────────────────────────────────────────────────────
+export function useUpdateAppointment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (formData: FormData) => {
+      const res = await updateAppointmentAdmin(formData);
+      if (!res.success) throw new Error(res.error, { cause: res.errors });
+      return res;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
+    },
   });
 }

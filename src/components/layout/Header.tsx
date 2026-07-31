@@ -7,6 +7,7 @@ import { Button } from "../ui/button"
 import { IoIosArrowDown } from "react-icons/io";
 import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
+import { usePathname } from 'next/navigation';
 
 
 const navigation = [
@@ -96,7 +97,7 @@ const navigation = [
 
 ]
 
-import { usePathname } from 'next/navigation';
+
 
 const Header = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)

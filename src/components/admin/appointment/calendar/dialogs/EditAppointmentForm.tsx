@@ -1,11 +1,11 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast }   from "sonner";
 import { format }  from "date-fns";
-import { updateAppointmentAdmin, type ActionResponse } from "@/lib/actions/mutations/appointment-mutations";
 import { queryKeys } from "@/lib/queryKeys";
+import { useUpdateAppointment } from "@/hooks/use-appointments";
 import { Button }    from "@/components/ui/button";
 import { Input }     from "@/components/ui/input";
 import { Label }     from "@/components/ui/label";
@@ -25,17 +25,20 @@ export function EditAppointmentForm({
     onSuccess,
 }: EditAppointmentFormProps) {
     const queryClient = useQueryClient();
-    const [editState, editAction, isEditPending] = useActionState<ActionResponse, FormData>(
-        updateAppointmentAdmin,
-        { success: false, error: "" }
-    );
-    const editErrors = !editState.success ? editState.errors : undefined;
+    
+    const updateMutation = useUpdateAppointment();
+    const isEditPending = updateMutation.isPending;
+    const editErrors = updateMutation.error?.cause as Record<string, string> | undefined;
+    const rootError = updateMutation.error?.message;
 
     // Track whether the submitted data differed from the original appointment
     const hadChangesRef = useRef(false);
 
     const handleSubmit = useCallback(
-        (formData: FormData) => {
+        (e: React.FormEvent<HTMLFormElement>) => {
+            e.preventDefault();
+            const formData = new FormData(e.currentTarget);
+
             const name  = formData.get("name") as string;
             const email = formData.get("email") as string;
             const phone = formData.get("phone") as string;
@@ -58,26 +61,22 @@ export function EditAppointmentForm({
                 reason !== selectedAppointment.type ||
                 notes  !== originalNotes;
 
-            editAction(formData);
+            updateMutation.mutate(formData, {
+                onSuccess: () => {
+                    if (hadChangesRef.current) {
+                        toast.success("Appointment successfully updated!");
+                    } else {
+                        toast.warning("No changes were made to the appointment.");
+                    }
+                    onSuccess();
+                }
+            });
         },
-        [editAction, selectedAppointment]
+        [updateMutation, selectedAppointment, onSuccess]
     );
 
-    useEffect(() => {
-        if (editState.success) {
-            if (hadChangesRef.current) {
-                toast.success("Appointment successfully updated!");
-            } else {
-                toast.warning("No changes were made to the appointment.");
-            }
-            queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
-            queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
-            onSuccess();
-        }
-    }, [editState.success, queryClient, onSuccess]);
-
     return (
-        <form action={handleSubmit} className="space-y-4 py-4">
+        <form onSubmit={handleSubmit} className="space-y-4 py-4">
             <input type="hidden" name="id" value={selectedAppointment.id} />
 
             {/* Patient name */}
@@ -168,8 +167,8 @@ export function EditAppointmentForm({
             </div>
 
             {/* Server-level error */}
-            {!editState.success && editState.error && !editState.errors && (
-                <p className="text-sm text-destructive font-medium">{editState.error}</p>
+            {updateMutation.isError && rootError && !editErrors && (
+                <p className="text-sm text-destructive font-medium">{rootError}</p>
             )}
 
             {/* Actions */}

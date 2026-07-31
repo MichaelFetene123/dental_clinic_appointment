@@ -10,7 +10,6 @@ export type ActionResponse<T = void> =
   | { success: false; error: string; errors?: Record<string, string> };
 
 export async function createPatient(
-  _prevState: ActionResponse,
   formData: FormData
 ): Promise<ActionResponse> {
   const rawData: Record<string, string> = {};
@@ -75,7 +74,6 @@ export async function createPatient(
 
 export async function updatePatient(
   id: string,
-  _prevState: ActionResponse,
   formData: FormData
 ): Promise<ActionResponse> {
   const rawData: Record<string, string> = {};

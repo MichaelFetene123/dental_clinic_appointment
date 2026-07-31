@@ -9,5 +9,6 @@ export function useDashboardStats() {
     queryKey: queryKeys.dashboard.stats(),
     queryFn: () => getDashboardData(),
     staleTime: 0,
+    refetchOnWindowFocus: true, // Refetch when admin switches back from another tab/window
   });
 }

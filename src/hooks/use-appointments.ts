@@ -14,6 +14,7 @@ export function useAppointments(status?: AppointmentStatus | AppointmentStatus[]
     queryKey: queryKeys.appointments.list({ status }),
     queryFn: () => getAppointments(status),
     staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 }
 
@@ -24,6 +25,7 @@ export function useCalendarAppointments(date: Date) {
     queryKey: queryKeys.appointments.calendar(month),
     queryFn: () => getCalendarAppointments(month),
     staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 }
 

@@ -10,6 +10,7 @@ export function usePatients() {
     queryKey: queryKeys.patients.list(),
     queryFn: () => getPatients(),
     staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 }
 
@@ -18,6 +19,7 @@ export function usePatientDetail(id: string) {
     queryKey: queryKeys.patients.detail(id),
     queryFn: () => getPatientDetail(id),
     staleTime: 0,
+    refetchOnWindowFocus: true,
   });
 }
 

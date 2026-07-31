@@ -2,29 +2,27 @@
 
 import { prisma } from "@/lib/prisma";
 
-export async function searchPatients(query: string) {
-  if (!query || query.trim().length < 2) {
-    return [];
-  }
-
+export async function searchPatients(query: string = "") {
   const normalizedQuery = query.trim().toLowerCase();
 
   try {
     const patients = await prisma.patient.findMany({
-      where: {
+      where: normalizedQuery ? {
         OR: [
           { name: { contains: normalizedQuery, mode: 'insensitive' } },
           { email: { contains: normalizedQuery, mode: 'insensitive' } },
           { phone: { contains: normalizedQuery, mode: 'insensitive' } },
         ],
-      },
-      take: 10,
+      } : undefined,
       select: {
         id: true,
         name: true,
         email: true,
         phone: true,
       },
+      orderBy: {
+        name: 'asc'
+      }
     });
 
     return patients;

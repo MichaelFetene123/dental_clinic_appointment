@@ -59,6 +59,8 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
     const [patientSearchQuery, setPatientSearchQuery] = useState("");
     const [patientSearchResults, setPatientSearchResults] = useState<{ id: string; name: string; email: string | null; phone: string | null }[]>([]);
     const [selectedPatientId, setSelectedPatientId] = useState<string>(patient ? patient.id : "");
+    const [isPatientsLoaded, setIsPatientsLoaded] = useState(false);
+    const [isLoadingPatients, setIsLoadingPatients] = useState(false);
 
     // Prefilled data for existing patient
     const [prefilledName, setPrefilledName] = useState(patient ? patient.name : "");
@@ -66,17 +68,15 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
     const [prefilledPhone, setPrefilledPhone] = useState(patient && patient.phone !== "N/A" ? patient.phone || "" : "");
 
     useEffect(() => {
-        if (patientSearchQuery.length >= 2) {
-            const delayDebounceFn = setTimeout(() => {
-                searchPatients(patientSearchQuery).then(results => {
-                    setPatientSearchResults(results);
-                });
-            }, 300);
-            return () => clearTimeout(delayDebounceFn);
-        } else {
-            setPatientSearchResults([]);
+        if (patientSearchOpen && !isPatientsLoaded) {
+            setIsLoadingPatients(true);
+            searchPatients("").then(results => {
+                setPatientSearchResults(results);
+                setIsPatientsLoaded(true);
+                setIsLoadingPatients(false);
+            });
         }
-    }, [patientSearchQuery]);
+    }, [patientSearchOpen, isPatientsLoaded]);
 
     const queryClient = useQueryClient();
 
@@ -163,20 +163,21 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
                                                     onValueChange={setPatientSearchQuery}
                                                 />
                                                 <CommandList>
-                                                    <CommandEmpty>No patients found.</CommandEmpty>
+                                                    <CommandEmpty>{isLoadingPatients ? "Loading patients..." : "No patients found."}</CommandEmpty>
                                                     <CommandGroup>
                                                         {patientSearchResults.map((patient) => (
                                                             <CommandItem
                                                                 key={patient.id}
-                                                                value={patient.id}
-                                                                onSelect={(currentValue) => {
-                                                                    setSelectedPatientId(currentValue);
+                                                                value={`${patient.name} ${patient.email || ''} ${patient.phone || ''} ${patient.id}`}
+                                                                onSelect={() => {
+                                                                    setSelectedPatientId(patient.id);
                                                                     setPrefilledName(patient.name);
                                                                     setPrefilledEmail(patient.email || "");
                                                                     setPrefilledPhone(patient.phone || "");
                                                                     setPatientSearchOpen(false);
                                                                 }}
                                                             >
+
                                                                 <Check
                                                                     className={cn(
                                                                         "mr-2 h-4 w-4",

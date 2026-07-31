@@ -59,7 +59,6 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
     const [patientSearchQuery, setPatientSearchQuery] = useState("");
     const [patientSearchResults, setPatientSearchResults] = useState<{ id: string; name: string; email: string | null; phone: string | null }[]>([]);
     const [selectedPatientId, setSelectedPatientId] = useState<string>(patient ? patient.id : "");
-    const [isPatientsLoaded, setIsPatientsLoaded] = useState(false);
     const [isLoadingPatients, setIsLoadingPatients] = useState(false);
 
     // Controlled inputs for new-patient — values survive validation failures (no form reset)
@@ -75,15 +74,18 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
     const [prefilledPhone, setPrefilledPhone] = useState(patient && patient.phone !== "N/A" ? patient.phone || "" : "");
 
     useEffect(() => {
-        if (patientSearchOpen && !isPatientsLoaded) {
-            setIsLoadingPatients(true);
-            searchPatients("").then(results => {
+        if (!patientSearchOpen) return;
+
+        setIsLoadingPatients(true);
+        const timer = setTimeout(() => {
+            searchPatients(patientSearchQuery).then(results => {
                 setPatientSearchResults(results);
-                setIsPatientsLoaded(true);
                 setIsLoadingPatients(false);
             });
-        }
-    }, [patientSearchOpen, isPatientsLoaded]);
+        }, 300); // 300ms debounce
+
+        return () => clearTimeout(timer);
+    }, [patientSearchOpen, patientSearchQuery]);
 
     const queryClient = useQueryClient();
 
@@ -179,7 +181,7 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
                                             </Button>
                                         </PopoverTrigger>
                                         <PopoverContent className="w-[450px] p-0" align="start">
-                                            <Command>
+                                            <Command shouldFilter={false}>
                                                 <CommandInput
                                                     placeholder="Search by name, email, or phone..."
                                                     value={patientSearchQuery}

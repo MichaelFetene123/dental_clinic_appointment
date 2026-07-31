@@ -14,6 +14,7 @@ export async function searchPatients(query: string = "") {
           { phone: { contains: normalizedQuery, mode: 'insensitive' } },
         ],
       } : undefined,
+      take: 50, // Limit initial results for performance
       select: {
         id: true,
         name: true,

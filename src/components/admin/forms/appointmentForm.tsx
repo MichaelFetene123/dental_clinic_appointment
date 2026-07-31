@@ -62,7 +62,14 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
     const [isPatientsLoaded, setIsPatientsLoaded] = useState(false);
     const [isLoadingPatients, setIsLoadingPatients] = useState(false);
 
-    // Prefilled data for existing patient
+    // Controlled inputs for new-patient — values survive validation failures (no form reset)
+    const [newName, setNewName] = useState("");
+    const [newEmail, setNewEmail] = useState("");
+    const [newPhone, setNewPhone] = useState("");
+    const [time, setTime] = useState("");
+    const [notes, setNotes] = useState("");
+
+    // Prefilled data for existing patient selected via search
     const [prefilledName, setPrefilledName] = useState(patient ? patient.name : "");
     const [prefilledEmail, setPrefilledEmail] = useState(patient && patient.email !== "N/A" ? patient.email || "" : "");
     const [prefilledPhone, setPrefilledPhone] = useState(patient && patient.phone !== "N/A" ? patient.phone || "" : "");
@@ -99,6 +106,18 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
         prevPending.current = pending;
     }, [pending, state?.success, queryClient, setShow, selectedPatientId]);
 
+    const handleSwitchMode = () => {
+        setIsNewPatient(!isNewPatient);
+        setSelectedPatientId("");
+        setPrefilledName("");
+        setPrefilledEmail("");
+        setPrefilledPhone("");
+        setPatientSearchQuery("");
+        setNewName("");
+        setNewEmail("");
+        setNewPhone("");
+    };
+
     return (
         <Dialog open={show} onOpenChange={setShow}>
             <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
@@ -122,14 +141,7 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
                                     type="button"
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => {
-                                        setIsNewPatient(!isNewPatient);
-                                        setSelectedPatientId("");
-                                        setPrefilledName("");
-                                        setPrefilledEmail("");
-                                        setPrefilledPhone("");
-                                        setPatientSearchQuery("");
-                                    }}
+                                    onClick={handleSwitchMode}
                                 >
                                     {isNewPatient ? "Select Existing Patient" : "Add New Patient"}
                                 </Button>
@@ -199,52 +211,89 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
                                         </PopoverContent>
                                     </Popover>
                                 )}
-                                <input type="hidden" name="patientId" value={selectedPatientId} />
-                                <input type="hidden" name="name" value={prefilledName} />
+                                {/* Hidden fields send the existing patient's data to the server action */}
+                                <input type="hidden" name="patientId" value={patient ? patient.id : selectedPatientId} />
+                                <input type="hidden" name="name" value={patient ? patient.name : prefilledName} />
+                                <input type="hidden" name="email" value={patient ? (patient.email || "") : prefilledEmail} />
+                                <input type="hidden" name="phone" value={patient ? (patient.phone || "") : prefilledPhone} />
                             </div>
                         )}
 
+                        {/* Name & Email — controlled when new patient so values persist on validation failure */}
                         <div className="flex justify-between gap-5 mt-2">
                             <Field data-invalid={!!actionErrors?.name} className="w-1/2">
                                 <FieldLabel htmlFor="name">Name</FieldLabel>
-                                <Input
-                                    key={`name-${isNewPatient ? 'new' : selectedPatientId}`}
-                                    id="name"
-                                    name="name"
-                                    placeholder="John Doe"
-                                    disabled={pending || !isNewPatient}
-                                    defaultValue={!isNewPatient ? prefilledName : ""}
-                                />
+                                {isNewPatient ? (
+                                    <Input
+                                        id="name"
+                                        name="name"
+                                        placeholder="John Doe"
+                                        disabled={pending}
+                                        value={newName}
+                                        onChange={(e) => setNewName(e.target.value)}
+                                    />
+                                ) : (
+                                    <Input
+                                        id="name"
+                                        placeholder="John Doe"
+                                        disabled
+                                        value={patient ? patient.name : prefilledName}
+                                        readOnly
+                                    />
+                                )}
                                 {actionErrors?.name && <FieldError>{actionErrors.name}</FieldError>}
                             </Field>
 
                             <Field data-invalid={!!actionErrors?.email} className="w-1/2">
                                 <FieldLabel htmlFor="email">Email</FieldLabel>
-                                <Input
-                                    key={`email-${isNewPatient ? 'new' : selectedPatientId}`}
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    placeholder="example@email.com"
-                                    disabled={pending || !isNewPatient}
-                                    defaultValue={!isNewPatient ? prefilledEmail : ""}
-                                />
+                                {isNewPatient ? (
+                                    <Input
+                                        id="email"
+                                        name="email"
+                                        type="email"
+                                        placeholder="example@email.com"
+                                        disabled={pending}
+                                        value={newEmail}
+                                        onChange={(e) => setNewEmail(e.target.value)}
+                                    />
+                                ) : (
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        placeholder="example@email.com"
+                                        disabled
+                                        value={patient ? (patient.email || "") : prefilledEmail}
+                                        readOnly
+                                    />
+                                )}
                                 {actionErrors?.email && <FieldError>{actionErrors.email}</FieldError>}
                             </Field>
                         </div>
 
+                        {/* Phone */}
                         <div className="flex justify-between gap-5">
                             <Field data-invalid={!!actionErrors?.phone} className="w-full">
                                 <FieldLabel htmlFor="phone">Phone Number</FieldLabel>
-                                <Input
-                                    key={`phone-${isNewPatient ? 'new' : selectedPatientId}`}
-                                    id="phone"
-                                    name="phone"
-                                    type="tel"
-                                    placeholder="123-456-7890"
-                                    disabled={pending || !isNewPatient}
-                                    defaultValue={!isNewPatient ? prefilledPhone : ""}
-                                />
+                                {isNewPatient ? (
+                                    <Input
+                                        id="phone"
+                                        name="phone"
+                                        type="tel"
+                                        placeholder="123-456-7890"
+                                        disabled={pending}
+                                        value={newPhone}
+                                        onChange={(e) => setNewPhone(e.target.value)}
+                                    />
+                                ) : (
+                                    <Input
+                                        id="phone"
+                                        type="tel"
+                                        placeholder="123-456-7890"
+                                        disabled
+                                        value={patient ? (patient.phone || "") : prefilledPhone}
+                                        readOnly
+                                    />
+                                )}
                                 {actionErrors?.phone && <FieldError>{actionErrors.phone}</FieldError>}
                             </Field>
                         </div>
@@ -301,14 +350,28 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
 
                         <Field data-invalid={!!actionErrors?.time} className="w-1/2">
                             <FieldLabel htmlFor="time">Time</FieldLabel>
-                            <Input id="time" name="time" type="time" disabled={pending} />
+                            <Input
+                                id="time"
+                                name="time"
+                                type="time"
+                                disabled={pending}
+                                value={time}
+                                onChange={(e) => setTime(e.target.value)}
+                            />
                             {actionErrors?.time && <FieldError>{actionErrors.time}</FieldError>}
                         </Field>
                     </div>
 
                     <Field data-invalid={!!actionErrors?.notes}>
                         <FieldLabel htmlFor="notes">Notes</FieldLabel>
-                        <Textarea id="notes" name="notes" placeholder="Additional notes (optional)" disabled={pending} />
+                        <Textarea
+                            id="notes"
+                            name="notes"
+                            placeholder="Additional notes (optional)"
+                            disabled={pending}
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                        />
                         {actionErrors?.notes && <FieldError>{actionErrors.notes}</FieldError>}
                     </Field>
 

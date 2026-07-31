@@ -45,16 +45,17 @@ function StaffRowActions({ staff, roles }: { staff: StaffRow, roles: RoleData[] 
     const canEdit = isSuperAdmin || hasPermission("staff.edit");
     const canDelete = isSuperAdmin || hasPermission("staff.delete");
     const [action, setAction] = React.useState<"edit" | "delete" | null>(null);
-    const deleteStaff = useDeleteStaff();
-    const [isDeleting, setIsDeleting] = React.useState(false);
+    const deleteMutation = useDeleteStaff();
+    const isDeleting = deleteMutation.isPending;
 
     if (!canEdit && !canDelete) return null;
 
-    const handleDelete = async () => {
-        setIsDeleting(true);
-        await deleteStaff(staff.id);
-        setIsDeleting(false);
-        setAction(null);
+    const handleDelete = () => {
+        deleteMutation.mutate(staff.id, {
+            onSuccess: (result) => {
+                if (result.success) setAction(null);
+            },
+        });
     };
 
     return (

@@ -76,15 +76,9 @@ const statusColors: Record<string, string> = {
 }
 
 function AppointmentActions({ appointment }: { appointment: AppointmentRow }) {
-    const updateStatus = useUpdateAppointmentStatus()
-    const deleteAppt = useDeleteAppointment()
-    const [isPending, setIsPending] = React.useState(false)
-
-    const handle = async (fn: () => Promise<unknown>) => {
-        setIsPending(true)
-        await fn()
-        setIsPending(false)
-    }
+    const updateStatusMutation = useUpdateAppointmentStatus()
+    const deleteMutation = useDeleteAppointment()
+    const isPending = updateStatusMutation.isPending || deleteMutation.isPending
 
     return (
         <div className="flex justify-center gap-2 flex-wrap">
@@ -94,7 +88,7 @@ function AppointmentActions({ appointment }: { appointment: AppointmentRow }) {
                     variant="outline"
                     className="text-emerald-600 border-emerald-500/50 hover:bg-emerald-500/10"
                     disabled={isPending}
-                    onClick={() => handle(() => updateStatus(appointment.id, "CONFIRMED" as AppointmentStatus))}
+                    onClick={() => updateStatusMutation.mutate({ id: appointment.id, status: "CONFIRMED" as AppointmentStatus })}
                 >
                     <CheckCircle className="w-4 h-4 mr-1" /> Accept
                 </Button>
@@ -105,7 +99,7 @@ function AppointmentActions({ appointment }: { appointment: AppointmentRow }) {
                     variant="outline"
                     className="text-emerald-600 border-emerald-500/50 hover:bg-emerald-500/10"
                     disabled={isPending}
-                    onClick={() => handle(() => updateStatus(appointment.id, "COMPLETED" as AppointmentStatus))}
+                    onClick={() => updateStatusMutation.mutate({ id: appointment.id, status: "COMPLETED" as AppointmentStatus })}
                 >
                     <CheckCircle className="w-4 h-4 mr-1" /> Complete
                 </Button>
@@ -116,7 +110,7 @@ function AppointmentActions({ appointment }: { appointment: AppointmentRow }) {
                     variant="outline"
                     className="text-destructive border-destructive/50 hover:bg-destructive/10"
                     disabled={isPending}
-                    onClick={() => handle(() => updateStatus(appointment.id, "CANCELLED" as AppointmentStatus))}
+                    onClick={() => updateStatusMutation.mutate({ id: appointment.id, status: "CANCELLED" as AppointmentStatus })}
                 >
                     <XCircle className="w-4 h-4 mr-1" /> Cancel
                 </Button>
@@ -137,7 +131,7 @@ function AppointmentActions({ appointment }: { appointment: AppointmentRow }) {
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                            onClick={() => handle(() => deleteAppt(appointment.id))}
+                            onClick={() => deleteMutation.mutate(appointment.id)}
                             className="bg-transparent border border-destructive text-destructive hover:bg-red-500/10 hover:text-destructive transition-colors"
                         >
                             Delete

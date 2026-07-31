@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryKeys";
 import { getAppointments, getCalendarAppointments } from "@/lib/actions/queries/appointment-queries";
 import { updateAppointmentStatus, deleteAppointment } from "@/lib/actions/mutations/appointment-mutations";
@@ -14,7 +14,6 @@ export function useAppointments(status?: AppointmentStatus | AppointmentStatus[]
     queryKey: queryKeys.appointments.list({ status }),
     queryFn: () => getAppointments(status),
     staleTime: 0,
-    refetchOnWindowFocus: true,
   });
 }
 
@@ -25,40 +24,42 @@ export function useCalendarAppointments(date: Date) {
     queryKey: queryKeys.appointments.calendar(month),
     queryFn: () => getCalendarAppointments(month),
     staleTime: 0,
-    refetchOnWindowFocus: true,
   });
 }
 
-// ─── Status Update Action ─────────────────────────────────────────────────────
+// ─── Status Update Mutation ───────────────────────────────────────────────────
 export function useUpdateAppointmentStatus() {
   const queryClient = useQueryClient();
-
-  return async (id: string, status: AppointmentStatus) => {
-    const result = await updateAppointmentStatus(id, status);
-    if (result.success) {
+  return useMutation({
+    mutationFn: ({ id, status }: { id: string; status: AppointmentStatus }) =>
+      updateAppointmentStatus(id, status),
+    onSuccess: (result, { status }) => {
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
       toast.success(`Appointment marked as ${status.toLowerCase()}.`);
       queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
-    } else {
-      toast.error(result.error);
-    }
-    return result;
-  };
+    },
+    onError: () => toast.error("Failed to update appointment status."),
+  });
 }
 
-// ─── Delete Action ────────────────────────────────────────────────────────────
+// ─── Delete Mutation ──────────────────────────────────────────────────────────
 export function useDeleteAppointment() {
   const queryClient = useQueryClient();
-
-  return async (id: string) => {
-    const result = await deleteAppointment(id);
-    if (result.success) {
+  return useMutation({
+    mutationFn: (id: string) => deleteAppointment(id),
+    onSuccess: (result) => {
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
       toast.success("Appointment deleted.");
       queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
-    } else {
-      toast.error(result.error);
-    }
-    return result;
-  };
+    },
+    onError: () => toast.error("Failed to delete appointment."),
+  });
 }

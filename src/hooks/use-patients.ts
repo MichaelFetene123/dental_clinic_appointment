@@ -10,7 +10,6 @@ export function usePatients() {
     queryKey: queryKeys.patients.list(),
     queryFn: () => getPatients(),
     staleTime: 0,
-    refetchOnWindowFocus: true,
   });
 }
 
@@ -19,7 +18,6 @@ export function usePatientDetail(id: string) {
     queryKey: queryKeys.patients.detail(id),
     queryFn: () => getPatientDetail(id),
     staleTime: 0,
-    refetchOnWindowFocus: true,
   });
 }
 
@@ -30,6 +28,8 @@ export function useDeletePatient() {
     onSuccess: (result) => {
       if (result.success) {
         queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
+        queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+        queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
       }
     },
   });

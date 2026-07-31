@@ -197,6 +197,7 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
                                     </Popover>
                                 )}
                                 <input type="hidden" name="patientId" value={selectedPatientId} />
+                                <input type="hidden" name="name" value={prefilledName} />
                             </div>
                         )}
 

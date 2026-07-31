@@ -70,7 +70,7 @@ export async function createAppointment(
       } else {
         const patient = await prisma.patient.create({
           data: {
-            name,
+            name: name || "",
             email: email || null,
             phone: phone || "",
             gender: "UNKNOWN",
@@ -285,6 +285,7 @@ export async function updateAppointmentAdmin(
   if (!id) return { success: false, error: "Appointment ID is required" };
 
   const rawData = {
+    patientId: "existing",
     name: formData.get("name") as string,
     email: (formData.get("email") as string) || "",
     phone: formData.get("phone") as string,
@@ -323,9 +324,9 @@ export async function updateAppointmentAdmin(
       prisma.patient.update({
         where: { id: existing.patientId },
         data: {
-          name,
-          email: email || null,
-          phone: phone || "",
+          ...(name ? { name } : {}),
+          ...(email !== null && email !== undefined ? { email: email || null } : {}),
+          ...(phone ? { phone } : {}),
         },
       }),
       prisma.appointment.update({

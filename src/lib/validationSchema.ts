@@ -14,12 +14,29 @@ export const appointmentPageSchema = z.object({
 export const appointmentFormSchema = z.object({
     patientId: z.string().optional(),
     name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-    email: z.string().email({ message: "Invalid email address." }).optional().or(z.literal("")),
-    phone: z.string().min(10, { message: "Phone number must be at least 10 digits." }),
+    email: z.string().email({ message: "Invalid email address." }).nullable().optional().or(z.literal("")),
+    phone: z.string().nullable().optional().or(z.literal("")),
     date: z.string().min(1, { message: "Date is required." }),
     time: z.string().min(1, { message: "Time is required." }),
     reason: z.string().min(5, { message: "Reason must be at least 5 characters." }),
-    notes: z.string().optional(),
+    notes: z.string().nullable().optional(),
+}).superRefine((data, ctx) => {
+    if (!data.patientId) {
+        if (!data.email || data.email.trim() === "") {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Email is required for new patients.",
+                path: ["email"],
+            });
+        }
+        if (!data.phone || data.phone.trim().length < 10) {
+            ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Phone number must be at least 10 digits.",
+                path: ["phone"],
+            });
+        }
+    }
 });
 
 // ─── Patient form (no longer requires a User account) ────────────────────────

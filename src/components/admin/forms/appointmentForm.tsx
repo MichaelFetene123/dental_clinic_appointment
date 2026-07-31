@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import * as React from "react";
-import { useState, useActionState, useEffect } from "react";
+import { useState, useActionState, useEffect, useRef } from "react";
 import { format } from "date-fns";
 import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -83,8 +83,10 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
     const [state, formAction, pending] = useActionState(createAppointment, { success: false, error: "" });
     const actionErrors = !state?.success ? state?.errors : undefined;
 
+    const prevPending = useRef(false);
     useEffect(() => {
-        if (state?.success) {
+        // Only trigger success actions if we just transitioned from pending to not pending
+        if (prevPending.current && !pending && state?.success) {
             toast.success("Appointment booked successfully!");
             queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
             queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
@@ -94,7 +96,8 @@ export function AppointmentForm({ show, setShow, patient }: AppointmentFormProps
             }
             setShow(false);
         }
-    }, [state?.success, queryClient, setShow, selectedPatientId]);
+        prevPending.current = pending;
+    }, [pending, state?.success, queryClient, setShow, selectedPatientId]);
 
     return (
         <Dialog open={show} onOpenChange={setShow}>

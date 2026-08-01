@@ -10,6 +10,7 @@ import { format, addDays, startOfWeek, eachDayOfInterval, addMonths, startOfMont
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { usePermissions } from "@/components/providers/PermissionProvider";
 
 import type { AppointmentEntry } from "./types";
 import { CalendarToolbar } from "./calenderUtils/CalendarToolbar";
@@ -26,6 +27,8 @@ export default function AppointmentCalendar() {
     const { data: serverAppointments, isFetching: isCalendarFetching } =
         useCalendarAppointments(currentDate);
     const queryClient = useQueryClient();
+    const { hasPermission } = usePermissions();
+    const canCreate = hasPermission("appointment.create");
 
     // ── Create-appointment action ──────────────────────────────────────────────
     const createMutation = useCreateAppointment();
@@ -124,7 +127,9 @@ export default function AppointmentCalendar() {
                                         appointments={appointments}
                                         isCalendarFetching={isCalendarFetching}
                                         pendingSlot={pendingSlot}
-                                        onSlotClick={(date, time) => setSelectedSlot({ date, time })}
+                                        onSlotClick={(date, time) => {
+                                            if (canCreate) setSelectedSlot({ date, time });
+                                        }}
                                         onAppointmentClick={setSelectedAppointment}
                                     />
                                 </TabsContent>
@@ -134,7 +139,9 @@ export default function AppointmentCalendar() {
                                         appointments={appointments}
                                         isCalendarFetching={isCalendarFetching}
                                         pendingSlot={pendingSlot}
-                                        onSlotClick={(date, time) => setSelectedSlot({ date, time })}
+                                        onSlotClick={(date, time) => {
+                                            if (canCreate) setSelectedSlot({ date, time });
+                                        }}
                                         onAppointmentClick={setSelectedAppointment}
                                     />
                                 </TabsContent>

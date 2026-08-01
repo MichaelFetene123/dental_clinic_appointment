@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { updateTag } from "next/cache";
 import { AppointmentStatus } from "@/app/generated/prisma/client";
 import { appointmentFormSchema, appointmentPageSchema } from "@/lib/validationSchema";
-import { requirePatientAuth } from "@/lib/auth/guards";
+import { requirePatientAuth, requirePermission } from "@/lib/auth/guards";
 import { getSessionToken } from "@/lib/auth/cookies";
 import { validateSession } from "@/lib/auth/session";
 export type ActionResponse<T = void> =
@@ -16,6 +16,7 @@ export type ActionResponse<T = void> =
 export async function createAppointment(
   formData: FormData
 ): Promise<ActionResponse> {
+  await requirePermission("appointment.create");
   const rawData = {
     // Normalize: formData.get returns null when field is absent, coerce to empty string
     patientId: (formData.get("patientId") as string | null) || "",
@@ -113,6 +114,7 @@ export async function updateAppointmentStatus(
   id: string,
   status: AppointmentStatus
 ): Promise<ActionResponse> {
+  await requirePermission("appointment.edit");
   try {
     const appt = await prisma.appointment.update({
       where: { id },
@@ -137,6 +139,7 @@ export async function updateAppointmentStatus(
 export async function deleteAppointment(
   id: string
 ): Promise<ActionResponse> {
+  await requirePermission("appointment.delete");
   try {
     const appt = await prisma.appointment.delete({ 
       where: { id },
@@ -281,6 +284,7 @@ export async function createGuestAppointment(
 export async function updateAppointmentAdmin(
   formData: FormData
 ): Promise<ActionResponse> {
+  await requirePermission("appointment.edit");
   const id = formData.get("id") as string;
   if (!id) return { success: false, error: "Appointment ID is required" };
 

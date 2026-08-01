@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { cacheTag, cacheLife } from "next/cache";
 import { AppointmentStatus } from "@/app/generated/prisma/client";
 import { format } from "date-fns";
+import { requirePermission } from "@/lib/auth/guards";
 
 export type AppointmentRow = {
   id: string;
@@ -35,6 +36,13 @@ export type AppointmentListResult = {
 };
 
 export async function getAppointments(
+  status?: AppointmentStatus | AppointmentStatus[]
+): Promise<AppointmentListResult> {
+  await requirePermission("appointment.read");
+  return fetchAppointments(status);
+}
+
+async function fetchAppointments(
   status?: AppointmentStatus | AppointmentStatus[]
 ): Promise<AppointmentListResult> {
   "use cache";
@@ -76,6 +84,13 @@ export async function getAppointments(
 
 export async function getCalendarAppointments(
   month: string // "YYYY-MM"
+): Promise<CalendarAppointment[]> {
+  await requirePermission("appointment.read");
+  return fetchCalendarAppointments(month);
+}
+
+async function fetchCalendarAppointments(
+  month: string
 ): Promise<CalendarAppointment[]> {
   "use cache";
   cacheTag("appointments-calendar");

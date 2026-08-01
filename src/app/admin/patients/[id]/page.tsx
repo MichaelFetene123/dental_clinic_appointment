@@ -1,5 +1,6 @@
 import PatientDetailClient from './patient-detail-client'
 import { notFound } from 'next/navigation'
+import { requirePermission } from '@/lib/auth/guards'
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -9,6 +10,10 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     if (!id || id.length < 10 || id.includes(".")) {
         notFound();
     }
+
+    // Guard: only users with patient.read permission may view a patient's detail page.
+    // This blocks direct URL access regardless of whether any hook or query fires.
+    await requirePermission("patient.read");
 
     return <PatientDetailClient id={id} />
 }

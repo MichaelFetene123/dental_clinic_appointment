@@ -5,6 +5,7 @@ import { DataTable } from '@/components/admin/patient/PatientTable'
 import { Button } from '@/components/ui/button'
 import React, { Suspense, useState } from 'react'
 import { SectionCards } from '@/components/admin/sidebar/section-cards'
+import { usePermissions } from '@/components/providers/PermissionProvider'
 import { AlertTriangleIcon, CalendarCheckIcon, CircleCheckBig, TrendingUpIcon, Users } from 'lucide-react'
 import PatientForm from '@/components/admin/forms/patientForm'
 import { useDashboardStats } from '@/hooks/use-dashboard'
@@ -13,6 +14,8 @@ import { useDashboardStats } from '@/hooks/use-dashboard'
 const Page = () => {
     const [showForm, setShowForm] = useState(false);
     const { data: dashData } = useDashboardStats();
+    const { hasPermission } = usePermissions();
+    const canCreate = hasPermission("patient.create");
 
     const cardData = [
         {
@@ -54,13 +57,15 @@ const Page = () => {
                         <p className='text-muted-foreground'>Here are the update patient list last 7 days </p>
                     </div>
                     <div className='flex gap-3'>
-                        <Button
-                            size="lg"
-                            className="font-semibold"
-                            onClick={() => setShowForm(!showForm)} // Toggle form visibility
-                        >
-                            {showForm ? "Close Form" : "Add patient"}
-                        </Button>
+                        {canCreate && (
+                            <Button
+                                size="lg"
+                                className="font-semibold"
+                                onClick={() => setShowForm(!showForm)} // Toggle form visibility
+                            >
+                                {showForm ? "Close Form" : "Add patient"}
+                            </Button>
+                        )}
                     </div>
                 </div>
                 <SectionCards data={cardData} />

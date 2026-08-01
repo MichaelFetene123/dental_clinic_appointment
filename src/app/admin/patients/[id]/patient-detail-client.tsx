@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import { format } from 'date-fns'
 import { usePatientDetail } from '@/hooks/use-patients'
+import { usePermissions } from '@/components/providers/PermissionProvider'
 
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -27,6 +28,10 @@ interface PatientDetailClientProps {
 
 export default function PatientDetailClient({ id }: PatientDetailClientProps) {
     const { data: patient, isLoading } = usePatientDetail(id)
+    const { hasPermission, isSuperAdmin } = usePermissions();
+    const canEdit = isSuperAdmin || hasPermission("patient.edit");
+    const canManagePortal = isSuperAdmin || hasPermission("portal_users.edit");
+    const canCreateAppointment = isSuperAdmin || hasPermission("appointment.create");
 
     // Dialog States
     const [grantModalOpen, setGrantModalOpen] = useState(false);
@@ -86,25 +91,24 @@ export default function PatientDetailClient({ id }: PatientDetailClientProps) {
                     </div>
                 </div>
                 <div className='flex flex-wrap gap-2 items-center'>
-                    {patient.userId ? (
-                        <Badge variant="outline" className="text-green-600 border-green-600 bg-green-50 h-10 px-4 cursor-pointer gap-2 transition-colors hover:bg-green-100" onClick={() => setGrantModalOpen(true)}>
+                    {canManagePortal && (
+                        <Button variant={patient.userId ? "outline" : "default"} className="gap-2 h-10" onClick={() => setGrantModalOpen(true)}>
                             <Key className="w-4 h-4" />
-                            Portal Active
-                        </Badge>
-                    ) : (
-                        <Button variant="outline" className="gap-2 h-10" onClick={() => setGrantModalOpen(true)}>
-                            <Key className="w-4 h-4" />
-                            Grant Access
+                            {patient.userId ? "Manage Access" : "Grant Access"}
                         </Button>
                     )}
-                    <Button variant="outline" className="gap-2 h-10" onClick={() => setEditPatientOpen(true)}>
-                        <Edit className="w-4 h-4" />
-                        Edit Profile
-                    </Button>
-                    <Button className="gap-2 h-10 font-semibold shadow-sm" onClick={() => setShowApptForm(true)}>
-                        <Plus className="w-4 h-4" />
-                        New Appointment
-                    </Button>
+                    {canEdit && (
+                        <Button variant="outline" className="gap-2 h-10" onClick={() => setEditPatientOpen(true)}>
+                            <Edit className="w-4 h-4" />
+                            Edit Profile
+                        </Button>
+                    )}
+                    {canCreateAppointment && (
+                        <Button className="gap-2 h-10 font-semibold shadow-sm" onClick={() => setShowApptForm(true)}>
+                            <Plus className="w-4 h-4" />
+                            New Appointment
+                        </Button>
+                    )}
                 </div>
             </div>
 

@@ -17,6 +17,7 @@ import { ArrowUpDown, Eye, Trash2, CheckCircle, XCircle, Calendar, Clock, Phone,
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
+import { Skeleton } from "@/components/ui/skeleton"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -62,11 +63,11 @@ import {
     ChevronsRightIcon,
 } from "lucide-react"
 import { Label } from "@/components/ui/label"
-import { Skeleton } from "@/components/ui/skeleton"
 import { format } from "date-fns"
 import type { AppointmentStatus } from "@/app/generated/prisma/client"
 import { useAppointments, useDeleteAppointment, useUpdateAppointmentStatus } from "@/hooks/use-appointments"
 import type { AppointmentRow } from "@/lib/actions/queries/appointment-queries"
+import { usePermissions } from "@/components/providers/PermissionProvider"
 
 const statusColors: Record<string, string> = {
     PENDING: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 font-semibold",
@@ -80,9 +81,13 @@ function AppointmentActions({ appointment }: { appointment: AppointmentRow }) {
     const deleteMutation = useDeleteAppointment()
     const isPending = updateStatusMutation.isPending || deleteMutation.isPending
 
+    const { hasPermission, isSuperAdmin } = usePermissions();
+    const canEdit = isSuperAdmin || hasPermission("appointment.edit");
+    const canDelete = isSuperAdmin || hasPermission("appointment.delete");
+
     return (
         <div className="flex justify-center gap-2 flex-wrap">
-            {appointment.status === "PENDING" && (
+            {canEdit && appointment.status === "PENDING" && (
                 <Button
                     size="sm"
                     variant="outline"
@@ -93,7 +98,7 @@ function AppointmentActions({ appointment }: { appointment: AppointmentRow }) {
                     <CheckCircle className="w-4 h-4 mr-1" /> Accept
                 </Button>
             )}
-            {appointment.status === "CONFIRMED" && (
+            {canEdit && appointment.status === "CONFIRMED" && (
                 <Button
                     size="sm"
                     variant="outline"
@@ -104,7 +109,7 @@ function AppointmentActions({ appointment }: { appointment: AppointmentRow }) {
                     <CheckCircle className="w-4 h-4 mr-1" /> Complete
                 </Button>
             )}
-            {(appointment.status === "PENDING" || appointment.status === "CONFIRMED") && (
+            {canEdit && (appointment.status === "PENDING" || appointment.status === "CONFIRMED") && (
                 <Button
                     size="sm"
                     variant="outline"
@@ -115,30 +120,32 @@ function AppointmentActions({ appointment }: { appointment: AppointmentRow }) {
                     <XCircle className="w-4 h-4 mr-1" /> Cancel
                 </Button>
             )}
-            <AlertDialog>
-                <AlertDialogTrigger asChild>
-                    <Button size="sm" variant="outline" className="text-destructive border-destructive hover:text-destructive transition-colors" disabled={isPending}>
-                        <Trash2 className="w-4 h-4 mr-1" /> Delete
-                    </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Appointment</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Are you sure you want to delete this appointment? This action cannot be undone.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={() => deleteMutation.mutate(appointment.id)}
-                            className="bg-transparent border border-destructive text-destructive hover:bg-red-500/10 hover:text-destructive transition-colors"
-                        >
-                            Delete
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            {canDelete && (
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button size="sm" variant="outline" className="text-destructive border-destructive hover:text-destructive transition-colors" disabled={isPending}>
+                            <Trash2 className="w-4 h-4 mr-1" /> Delete
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Appointment</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                Are you sure you want to delete this appointment? This action cannot be undone.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={() => deleteMutation.mutate(appointment.id)}
+                                className="bg-transparent border border-destructive text-destructive hover:bg-red-500/10 hover:text-destructive transition-colors"
+                            >
+                                Delete
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            )}
         </div>
     )
 }

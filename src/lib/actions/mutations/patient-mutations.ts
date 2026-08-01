@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { updateTag } from "next/cache";
 import { patientFormSchema } from "@/lib/validationSchema";
 import { Gender, BloodType, GumCondition } from "@/app/generated/prisma/client";
+import { requirePermission } from "@/lib/auth/guards";
 
 export type ActionResponse<T = void> =
   | { success: true; data?: T }
@@ -12,6 +13,7 @@ export type ActionResponse<T = void> =
 export async function createPatient(
   formData: FormData
 ): Promise<ActionResponse> {
+  await requirePermission("patient.create");
   const rawData: Record<string, string> = {};
   formData.forEach((value, key) => {
     rawData[key] = value as string;
@@ -76,6 +78,7 @@ export async function updatePatient(
   id: string,
   formData: FormData
 ): Promise<ActionResponse> {
+  await requirePermission("patient.edit");
   const rawData: Record<string, string> = {};
   formData.forEach((value, key) => {
     rawData[key] = value as string;
@@ -138,6 +141,7 @@ export async function updatePatient(
 
 // ─── Delete Patient ────────────────────────────────────────────────────────────
 export async function deletePatient(id: string): Promise<ActionResponse> {
+  await requirePermission("patient.delete");
   try {
     // Delete the patient (due to onDelete: Cascade in prisma schema, this should delete related appointments, history, documents)
     await prisma.patient.delete({

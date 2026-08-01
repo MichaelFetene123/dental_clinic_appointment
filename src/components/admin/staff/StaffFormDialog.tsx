@@ -13,9 +13,13 @@ import {
 } from "@/components/ui/dialog";
 import { StaffForm } from "./StaffForm";
 import { RoleData } from "@/lib/actions/queries/role-queries";
+import { usePermissions } from "@/components/providers/PermissionProvider";
 
 export function StaffFormDialog({ roles }: { roles: RoleData[] }) {
   const [open, setOpen] = useState(false);
+  const { hasPermission } = usePermissions();
+
+  if (!hasPermission("staff.create")) return null;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { cacheTag, cacheLife } from "next/cache";
+import { requirePermission } from "@/lib/auth/guards";
 
 export type PatientRow = {
   id: string;
@@ -45,6 +46,11 @@ export type PatientListResult = {
 };
 
 export async function getPatients(): Promise<PatientListResult> {
+  await requirePermission("patient.read");
+  return fetchPatients();
+}
+
+async function fetchPatients(): Promise<PatientListResult> {
   "use cache";
   cacheTag("patients");
   cacheLife("hours");
@@ -115,6 +121,11 @@ export async function getPatients(): Promise<PatientListResult> {
 }
 
 export async function getPatientDetail(id: string) {
+  await requirePermission("patient.read");
+  return fetchPatientDetail(id);
+}
+
+async function fetchPatientDetail(id: string) {
   "use cache";
   cacheTag(`patient-${id}`);
   cacheLife("hours");

@@ -89,11 +89,17 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
+import { usePermissions } from "@/components/providers/PermissionProvider"
 
 function PatientRowActions({ patient }: { patient: PatientRow }) {
     const [grantModalOpen, setGrantModalOpen] = React.useState(false);
     const [editOpen, setEditOpen] = React.useState(false);
     const [deleteOpen, setDeleteOpen] = React.useState(false);
+
+    const { hasPermission, isSuperAdmin } = usePermissions();
+    const canEdit = isSuperAdmin || hasPermission("patient.edit");
+    const canDelete = isSuperAdmin || hasPermission("patient.delete");
+    const canManagePortal = isSuperAdmin || hasPermission("portal_users.edit");
 
     const deleteMutation = useDeletePatient();
 
@@ -142,24 +148,30 @@ function PatientRowActions({ patient }: { patient: PatientRow }) {
                     <DropdownMenuItem className="flex gap-2 cursor-pointer" asChild>
                         <Link href={`/admin/patients/${patient.id}`}>View patient details</Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                        className="flex gap-2 cursor-pointer"
-                        onClick={() => setEditOpen(true)}
-                    >
-                        Edit patient details
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                        className="flex gap-2 cursor-pointer"
-                        onClick={() => setGrantModalOpen(true)}
-                    >
-                        {patient.userId ? "Manage Portal Access" : "Grant Portal Access"}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                        className="flex gap-2 cursor-pointer text-destructive focus:text-destructive"
-                        onClick={() => setDeleteOpen(true)}
-                    >
-                        Delete patient
-                    </DropdownMenuItem>
+                    {canEdit && (
+                        <DropdownMenuItem
+                            className="flex gap-2 cursor-pointer"
+                            onClick={() => setEditOpen(true)}
+                        >
+                            Edit patient details
+                        </DropdownMenuItem>
+                    )}
+                    {canManagePortal && (
+                        <DropdownMenuItem 
+                            className="flex gap-2 cursor-pointer"
+                            onClick={() => setGrantModalOpen(true)}
+                        >
+                            {patient.userId ? "Manage Portal Access" : "Grant Portal Access"}
+                        </DropdownMenuItem>
+                    )}
+                    {canDelete && (
+                        <DropdownMenuItem 
+                            className="flex gap-2 cursor-pointer text-destructive focus:text-destructive"
+                            onClick={() => setDeleteOpen(true)}
+                        >
+                            Delete patient
+                        </DropdownMenuItem>
+                    )}
                 </DropdownMenuContent>
             </DropdownMenu>
 

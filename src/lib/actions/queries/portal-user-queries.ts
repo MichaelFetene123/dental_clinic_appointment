@@ -25,10 +25,18 @@ export type PortalUserListResult = {
 /**
  * Returns all User accounts that are linked to a Patient (portal accounts).
  * Excludes staff/employee accounts.
+ *
+ * Auth check is performed in the outer function so that cookies() is never
+ * called inside the "use cache" scope (Next.js forbids dynamic data sources
+ * inside cached functions).
  */
 export async function getPortalUsers(): Promise<PortalUserListResult> {
-  "use cache";
   await requirePermission("portal_users.read");
+  return fetchPortalUsers();
+}
+
+async function fetchPortalUsers(): Promise<PortalUserListResult> {
+  "use cache";
   cacheTag("portal-users");
   cacheLife("hours");
 

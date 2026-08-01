@@ -9,11 +9,14 @@ import AppointmentForm from '@/components/admin/forms/appointmentForm';
 import AppointmentCalendar from '@/components/admin/appointment/calendar/AppointmentCalendar';
 import { AppointmentCalendarSkeleton } from '@/lib/skeleton/AppointmentCalendarSkeleton';
 import { useDashboardStats } from '@/hooks/use-dashboard';
+import { usePermissions } from '@/components/providers/PermissionProvider';
 
 const Page = () => {
     const [activeTab, setActiveTab] = useState<'all' | 'confirmed' | 'queue' | 'archive'>('all');
     const [showForm, setShowForm] = useState(false);
     const { data: dashData } = useDashboardStats();
+    const { hasPermission } = usePermissions();
+    const canCreate = hasPermission("appointment.create");
 
     const cardData = [
         {
@@ -50,13 +53,15 @@ const Page = () => {
         <div className="flex flex-col w-full min-w-0 gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
             <div className='flex flex-col sm:flex-row justify-between gap-4 items-start sm:items-center'>
                 <h1 className='text-2xl font-semibold'>Appointments</h1>
-                <Button
-                    size="lg"
-                    className="font-semibold w-full sm:w-auto"
-                    onClick={() => setShowForm(!showForm)} // Toggle form visibility
-                >
-                    {showForm ? "Close Form" : "Add Appointment"}
-                </Button>
+                {canCreate && (
+                    <Button
+                        size="lg"
+                        className="font-semibold w-full sm:w-auto"
+                        onClick={() => setShowForm(!showForm)} // Toggle form visibility
+                    >
+                        {showForm ? "Close Form" : "Add Appointment"}
+                    </Button>
+                )}
             </div>
 
             <SectionCards data={cardData} />

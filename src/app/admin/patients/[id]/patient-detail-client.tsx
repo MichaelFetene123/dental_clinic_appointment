@@ -30,7 +30,7 @@ export default function PatientDetailClient({ id }: PatientDetailClientProps) {
     const { data: patient, isLoading } = usePatientDetail(id)
     const { hasPermission, isSuperAdmin } = usePermissions();
     const canEdit = isSuperAdmin || hasPermission("patient.edit");
-    const canManagePortal = isSuperAdmin || hasPermission("portal_users.edit");
+    const canManagePortal = isSuperAdmin || hasPermission("portal_users.manage");
     const canCreateAppointment = isSuperAdmin || hasPermission("appointment.create");
 
     // Dialog States

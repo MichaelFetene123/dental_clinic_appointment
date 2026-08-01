@@ -208,8 +208,7 @@ function PortalUserRowActions({ user }: { user: PortalUserRow }) {
   const [action, setAction] = useState<RowAction | null>(null);
   const { hasPermission, isSuperAdmin } = usePermissions();
 
-  const canEdit = isSuperAdmin || hasPermission("portal_users.edit");
-  const canDelete = isSuperAdmin || hasPermission("portal_users.delete");
+  const canManage = isSuperAdmin || hasPermission("portal_users.manage");
 
   const { mutate: remove, isPending: isUnlinking } = useDeletePortalUser();
 
@@ -223,7 +222,7 @@ function PortalUserRowActions({ user }: { user: PortalUserRow }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
-          {canEdit && (
+          {canManage && (
             <>
               <DropdownMenuItem onClick={() => setAction({ type: "editEmail", user })} className="gap-2">
                 <Mail className="h-4 w-4" />

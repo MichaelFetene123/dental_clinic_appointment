@@ -99,7 +99,7 @@ function PatientRowActions({ patient }: { patient: PatientRow }) {
     const { hasPermission, isSuperAdmin } = usePermissions();
     const canEdit = isSuperAdmin || hasPermission("patient.edit");
     const canDelete = isSuperAdmin || hasPermission("patient.delete");
-    const canManagePortal = isSuperAdmin || hasPermission("portal_users.edit");
+    const canManagePortal = isSuperAdmin || hasPermission("portal_users.manage");
 
     const deleteMutation = useDeletePatient();
 

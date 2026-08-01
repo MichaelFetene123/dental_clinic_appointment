@@ -10,15 +10,15 @@ export type ActionResponse<T = void> =
   | { success: false; error: string };
 
 /**
- * Updates the email address for a portal user account.
- * Requires: portal_users.edit permission.
+ * Updates portal user access.
+ * Requires: portal_users.manage permission.
  */
 export async function updatePortalUserEmail(
   userId: string,
   newEmail: string
 ): Promise<ActionResponse> {
   try {
-    await requirePermission("portal_users.edit");
+    await requirePermission("portal_users.manage");
 
     if (!newEmail.trim()) return { success: false, error: "Email is required" };
 
@@ -43,13 +43,13 @@ export async function updatePortalUserEmail(
 
 /**
  * Resets a portal user's password to a random temporary password.
- * Requires: portal_users.edit permission.
+ * Requires: portal_users.manage permission.
  */
 export async function resetPortalUserPassword(
   userId: string
 ): Promise<ActionResponse<{ tempPassword: string }>> {
   try {
-    await requirePermission("portal_users.edit");
+    await requirePermission("portal_users.manage");
 
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) return { success: false, error: "User not found" };
@@ -77,13 +77,14 @@ export async function resetPortalUserPassword(
 }
 
 /**
- * Unlinks a portal user account from the patient record (sets Patient.userId = null).
- * The Patient record is preserved. The User account is deleted if it has no other roles.
- * Requires: portal_users.edit permission.
+ * Revokes portal access for a user.
+ * Requires: portal_users.manage permission.
  */
-export async function unlinkPortalUser(userId: string): Promise<ActionResponse> {
+export async function unlinkPortalUser(
+  userId: string
+): Promise<ActionResponse> {
   try {
-    await requirePermission("portal_users.edit");
+    await requirePermission("portal_users.manage");
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -122,13 +123,12 @@ export async function unlinkPortalUser(userId: string): Promise<ActionResponse> 
 }
 
 /**
- * Completely deletes a portal user account and permanently nullifies the Patient link.
- * Note: Patient record itself is preserved.
- * Requires: portal_users.delete permission.
+ * Deletes a portal user (this is a soft delete or hard delete depending on requirements, here we hard delete the User record).
+ * Requires: portal_users.manage permission.
  */
 export async function deletePortalUser(userId: string): Promise<ActionResponse> {
   try {
-    await requirePermission("portal_users.delete");
+    await requirePermission("portal_users.manage");
 
     const user = await prisma.user.findUnique({
       where: { id: userId },

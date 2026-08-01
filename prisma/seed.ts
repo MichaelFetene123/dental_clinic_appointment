@@ -12,20 +12,24 @@ const prisma = new PrismaClient({ adapter });
 async function main() {
   console.log("Seeding permissions...");
 
-  const resources = ["patient", "appointment", "staff", "portal_users"];
-  const actions = ["read", "create", "edit", "delete"];
+  const resources = [
+    { name: "patient", actions: ["read", "create", "edit", "delete"] },
+    { name: "appointment", actions: ["read", "create", "edit", "delete"] },
+    { name: "staff", actions: ["read", "create", "edit", "delete"] },
+    { name: "portal_users", actions: ["read", "manage"] }
+  ];
 
   for (const resource of resources) {
-    for (const action of actions) {
-      const id = `${resource}.${action}`;
+    for (const action of resource.actions) {
+      const id = `${resource.name}.${action}`;
       await prisma.permission.upsert({
         where: { id },
         update: {},
         create: {
           id,
-          resource,
+          resource: resource.name,
           action,
-          description: `Can ${action} ${resource}`,
+          description: `Can ${action} ${resource.name}`,
         },
       });
     }

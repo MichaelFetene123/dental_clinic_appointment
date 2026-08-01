@@ -74,6 +74,8 @@ async function main() {
     });
   }
   console.log("Admin role seeded with all permissions.");
+
+
 }
 
 main()

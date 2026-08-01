@@ -41,6 +41,7 @@ export async function createRole(
     });
 
     updateTag("roles");
+    updateTag("permissions");
     return { success: true };
   } catch (error: any) {
     console.error("Failed to create role:", error);
@@ -95,6 +96,7 @@ export async function updateRole(
     }
 
     updateTag("roles");
+    updateTag("permissions");
     return { success: true };
   } catch (error: any) {
     console.error("Failed to update role:", error);
@@ -114,6 +116,7 @@ export async function deleteRole(id: string): Promise<ActionResponse> {
     await prisma.role.delete({ where: { id } });
     
     updateTag("roles");
+    updateTag("permissions");
     updateTag("staff"); // Invalidate staff list since their roles may have changed
     return { success: true };
   } catch (error: any) {

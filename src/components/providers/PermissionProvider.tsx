@@ -34,7 +34,13 @@ export function PermissionProvider({
 export function usePermissions() {
   const context = useContext(PermissionContext);
   if (!context) {
-    throw new Error("usePermissions must be used within a PermissionProvider");
+    // When used outside a provider (e.g. in a Suspense fallback), return a safe loading state
+    return {
+      permissions: [],
+      isSuperAdmin: false,
+      hasPermission: () => false,
+      isLoading: true
+    };
   }
-  return context;
+  return { ...context, isLoading: false };
 }

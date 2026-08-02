@@ -4,6 +4,7 @@ import { Separator } from '@/components/ui/separator'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { ArrowRight, ClipboardPlus, Ellipsis } from 'lucide-react'
 import React from 'react'
+import { Skeleton } from '@/components/ui/skeleton'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import type { AppointmentStatus } from '@prisma/client'
@@ -19,9 +20,10 @@ type RecentAppointment = {
 
 interface AppointmentListProps {
     recentAppointments?: RecentAppointment[];
+    isLoading?: boolean;
 }
 
-const AppointmentList = ({ recentAppointments = [] }: AppointmentListProps) => {
+const AppointmentList = ({ recentAppointments = [], isLoading = false }: AppointmentListProps) => {
     return (
         <Card className='flex flex-col min-h-[430px]'>
             <CardHeader className="flex flex-row items-center justify-between pb-6">
@@ -32,7 +34,13 @@ const AppointmentList = ({ recentAppointments = [] }: AppointmentListProps) => {
                 <Ellipsis className="text-muted-foreground h-5 w-5" />
             </CardHeader>
             <CardContent className="flex-1">
-                {recentAppointments.length === 0 ? (
+                {isLoading ? (
+                    <div className="space-y-4">
+                        {Array.from({ length: 4 }).map((_, i) => (
+                            <Skeleton key={i} className="h-12 w-full rounded-md" />
+                        ))}
+                    </div>
+                ) : recentAppointments.length === 0 ? (
                     <p className="text-sm text-muted-foreground text-center py-8">No recent appointments.</p>
                 ) : (
                     recentAppointments.map((appointment, index) => (

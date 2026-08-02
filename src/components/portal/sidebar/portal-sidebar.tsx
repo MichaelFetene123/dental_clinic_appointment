@@ -9,6 +9,7 @@ import {
     UserIcon,
 } from "lucide-react"
 
+import { Skeleton } from "@/components/ui/skeleton"
 import { PortalNavMain } from "./portal-nav-main"
 import { PortalNavUser } from "./portal-nav-user"
 import {
@@ -67,7 +68,14 @@ export function PortalSidebar({ user, ...props }: React.ComponentProps<typeof Si
                 <PortalNavMain items={portalNav} name="Patient Portal" />
             </SidebarContent>
             <SidebarFooter>
-                <PortalNavUser user={user} />
+                {user.name === "Loading..." ? (
+                    <div className="flex items-center gap-3 p-2">
+                        <Skeleton className="h-8 w-8 rounded-full" />
+                        <Skeleton className="h-8 w-24 rounded-md group-data-[collapsible=icon]:hidden" />
+                    </div>
+                ) : (
+                    <PortalNavUser user={user} />
+                )}
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>

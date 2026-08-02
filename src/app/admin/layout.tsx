@@ -10,12 +10,18 @@ import { requireAuth } from "@/lib/auth/guards";
 import { prisma } from "@/lib/prisma";
 import { SessionRefresher } from "@/components/providers/SessionRefresher";
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-    // Top-level layout guard: fetch current session. 
-    // This throws an error/redirect and blocks rendering if no valid session is found.
+async function AdminSidebarWrapper() {
+    const session = await requireAuth();
+    return (
+        <PermissionProvider permissions={session.permissions} isSuperAdmin={session.isSuperAdmin}>
+            <AppSidebar variant="inset" user={{ name: session.userName, email: session.userEmail, avatar: session.userAvatar || "" }} />
+        </PermissionProvider>
+    );
+}
+
+async function AdminContentWrapper({ children }: { children: React.ReactNode }) {
     const session = await requireAuth();
 
-    // Redirect pure patients to the portal
     if (!session.isSuperAdmin && session.permissions.length === 0) {
         const user = await prisma.user.findUnique({
             where: { id: session.userId },
@@ -29,20 +35,32 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
     return (
         <PermissionProvider permissions={session.permissions} isSuperAdmin={session.isSuperAdmin}>
-            <SidebarProvider className="h-screen overflow-hidden">
-                <AppSidebar variant="inset" user={{ name: session.userName, email: session.userEmail, avatar: session.userAvatar || "" }} />
-                <SidebarInset className="overflow-y-auto">
-                    <Suspense fallback={<div className="h-12 border-b" />}>
-                        <SiteHeader />
-                    </Suspense>
-                    <div className="flex flex-1 flex-col min-h-0">
-                        <div className="@container/main flex flex-1 flex-col gap-2 min-h-0">
-                            <SessionRefresher />
-                            {children}
-                        </div>
-                    </div>
-                </SidebarInset>
-            </SidebarProvider>
+            <SessionRefresher />
+            {children}
         </PermissionProvider>
+    );
+}
+
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
+    return (
+        <SidebarProvider className="h-screen overflow-hidden">
+            <Suspense fallback={<AppSidebar variant="inset" user={{ name: "Loading...", email: "", avatar: "" }} />}>
+                <AdminSidebarWrapper />
+            </Suspense>
+            <SidebarInset className="overflow-y-auto">
+                <Suspense fallback={<div className="h-12 border-b" />}>
+                    <SiteHeader />
+                </Suspense>
+                <div className="flex flex-1 flex-col min-h-0">
+                    <div className="@container/main flex flex-1 flex-col gap-2 min-h-0">
+                        <Suspense fallback={<div />}>
+                            <AdminContentWrapper>
+                                {children}
+                            </AdminContentWrapper>
+                        </Suspense>
+                    </div>
+                </div>
+            </SidebarInset>
+        </SidebarProvider>
     );
 }

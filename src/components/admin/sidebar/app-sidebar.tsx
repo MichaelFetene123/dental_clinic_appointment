@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/sidebar"
 import { usePermissions } from "@/components/providers/PermissionProvider"
 import { ShieldCheck } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 
 // This is sample data.
 const data = {
@@ -146,7 +147,7 @@ const data = {
 
 
 export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sidebar> & { user: { name: string, email: string, avatar: string } }) {
-    const { hasPermission } = usePermissions();
+    const { hasPermission, isLoading } = usePermissions();
 
     // Filter clinic navigation based on permissions
     const clinicNav = [
@@ -160,34 +161,33 @@ export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sideb
             title: "Appointments",
             url: "/admin/appointment",
             icon: CalendarIcon,
-            show: hasPermission("appointment.read"),
+            show: isLoading || hasPermission("appointment.read"),
         },
         {
             title: "Patients",
             url: "/admin/patients",
             icon: Stethoscope,
-            show: hasPermission("patient.read"),
+            show: isLoading || hasPermission("patient.read"),
         },
         {
             title: "Staff list",
             url: "/admin/staff",
             icon: UserIcon,
-            show: hasPermission("staff.read"),
+            show: isLoading || hasPermission("staff.read"),
         },
         {
             title: "Portal Users",
             url: "/admin/portal-users",
             icon: KeyRound,
-            show: hasPermission("portal_users.read"),
+            show: isLoading || hasPermission("portal_users.read"),
         },
         {
             title: "Roles",
             url: "/admin/roles",
             icon: ShieldCheck,
-            show: hasPermission("staff.manage"), // specific perm for roles
+            show: isLoading || hasPermission("staff.manage"), // specific perm for roles
         }
     ].filter(item => item.show);
-
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
@@ -198,7 +198,14 @@ export function AppSidebar({ user, ...props }: React.ComponentProps<typeof Sideb
                 <NavMain items={clinicNav} name="Clinic"/>
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={user} />
+                {isLoading ? (
+                    <div className="flex items-center gap-3 p-2">
+                        <Skeleton className="h-8 w-8 rounded-full" />
+                        <Skeleton className="h-8 w-24 rounded-md group-data-[collapsible=icon]:hidden" />
+                    </div>
+                ) : (
+                    <NavUser user={user} />
+                )}
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>

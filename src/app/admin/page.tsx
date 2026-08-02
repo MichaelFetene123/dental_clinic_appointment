@@ -4,6 +4,8 @@ import { PatientStatusChart } from "@/components/admin/sidebar/PatientStatusChar
 import AdminHero from "@/components/admin/adminHero"
 import DashboardClient from "@/components/admin/DashboardClient"
 import { Suspense } from "react"
+import { Skeleton } from "@/components/ui/skeleton"
+import { DashboardCardsSkeleton } from "@/components/skeleton/DashboardCardSkeleton"
 
 export default function Page() {
     return (
@@ -11,14 +13,22 @@ export default function Page() {
             <div className="@container/main flex flex-1 flex-col gap-2">
                 <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
                     <AdminHero />
+                    
                     {/* Live stats + recent appointments via TanStack Query */}
-                    <DashboardClient />
+                    <Suspense fallback={<DashboardCardsSkeleton count={4} />}>
+                        <DashboardClient />
+                    </Suspense>
+
                     <div className="md:flex justify-between gap-4 h-full">
                         <div className="md:w-[70%] md:h-full h-[100vh]">
-                            <ChartAreaInteractive />
+                            <Suspense fallback={<Skeleton className="h-full w-full min-h-[400px] rounded-xl" />}>
+                                <ChartAreaInteractive />
+                            </Suspense>
                         </div>
                         <div className="md:w-[30%] h-full">
-                            <PatientStatusChart />
+                            <Suspense fallback={<Skeleton className="h-full w-full min-h-[300px] rounded-xl" />}>
+                                <PatientStatusChart />
+                            </Suspense>
                         </div>
                     </div>
                     <div className="w-full">

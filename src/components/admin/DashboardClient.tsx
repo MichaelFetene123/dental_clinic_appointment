@@ -47,28 +47,22 @@ export default function DashboardClient() {
         },
     ];
 
-    if (isLoading) {
-        return (
-            <div className="flex flex-col gap-4">
-                <DashboardCardsSkeleton count={4} />
-            </div>
-        );
-    }
-
-    if (isError) {
-        return (
-            <div className="p-4 rounded-lg border border-destructive/30 bg-destructive/10 text-destructive text-sm">
-                Failed to load dashboard statistics. Please refresh the page.
-            </div>
-        );
-    }
-
     return (
         <div className="flex flex-col gap-4 md:gap-6">
-            <SectionCards data={cardData} />
+            {isLoading ? (
+                <div className="flex flex-col gap-4">
+                    <DashboardCardsSkeleton count={4} />
+                </div>
+            ) : isError ? (
+                <div className="p-4 rounded-lg border border-destructive/30 bg-destructive/10 text-destructive text-sm">
+                    Failed to load dashboard statistics. Please refresh the page.
+                </div>
+            ) : (
+                <SectionCards data={cardData} />
+            )}
             <div className="grid md:grid-cols-2 gap-4 h-full">
                 <EmployeeList />
-                <AppointmentList recentAppointments={data?.recentAppointments ?? []} />
+                <AppointmentList recentAppointments={data?.recentAppointments ?? []} isLoading={isLoading} />
             </div>
         </div>
     );

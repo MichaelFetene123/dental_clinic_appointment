@@ -12,9 +12,19 @@ if (!connectionString) {
   throw new Error("DATABASE_URL is not defined. Please check your environment variables.");
 }
 
-// Re-use a single Pool in development to avoid exhausting connections
 function createPrismaClient() {
-  const pool = new Pool({ connectionString });
+  const pool = new Pool({ 
+    connectionString,
+    max: 10,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 5000,
+  });
+
+  // Catch unhandled errors on idle connections to prevent the process from crashing
+  pool.on("error", (err) => {
+    console.error("PrismaPg Pool Error: Unexpected error on idle client", err);
+  });
+
   const adapter = new PrismaPg(pool);
   return new PrismaClient({ adapter });
 }

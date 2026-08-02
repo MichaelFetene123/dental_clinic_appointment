@@ -7,7 +7,7 @@ export default async function PortalHistoryPage() {
     const history = await getPortalHistory();
 
     return (
-        <div className="space-y-6">
+        <div className="flex flex-col gap-5 py-4 md:gap-6 md:py-6 px-4 lg:px-6 space-y-6">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Dental History</h1>
                 <p className="text-muted-foreground">View your past treatments and diagnoses.</p>

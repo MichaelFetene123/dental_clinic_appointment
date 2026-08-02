@@ -7,7 +7,7 @@ export default async function PortalDocumentsPage() {
     const documents = await getPortalDocuments();
 
     return (
-        <div className="space-y-6">
+        <div className="flex flex-col gap-5 py-4 md:gap-6 md:py-6 px-4 lg:px-6 space-y-6">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Documents</h1>
                 <p className="text-muted-foreground">Access your medical documents, x-rays, and prescriptions.</p>

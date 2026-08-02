@@ -17,7 +17,7 @@ export default async function PortalDashboardPage() {
         .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
 
     return (
-        <div className="space-y-8">
+        <div className="flex flex-col gap-5 py-4 md:gap-6 md:py-6 px-4 lg:px-6 space-y-8">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Welcome back, {patient.name}!</h1>
                 <p className="text-muted-foreground mt-2">Here is an overview of your dental care.</p>

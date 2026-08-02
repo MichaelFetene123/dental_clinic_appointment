@@ -8,7 +8,7 @@ export default async function PortalProfilePage() {
     const { patient } = await requirePatientAuth();
 
     return (
-        <div className="space-y-6 max-w-2xl">
+        <div className="flex flex-col gap-5 py-4 md:gap-6 md:py-6 px-4 lg:px-6 space-y-6 max-w-2xl">
             <div>
                 <h1 className="text-3xl font-bold tracking-tight">Profile</h1>
                 <p className="text-muted-foreground">Manage your personal information and contact details.</p>

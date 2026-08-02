@@ -34,7 +34,7 @@ export async function getStaff(): Promise<StaffListResult> {
   cacheTag("staff");
   cacheLife("hours");
 
-  const [users, total] = await Promise.all([
+  const [users, total] = await prisma.$transaction([
     prisma.user.findMany({
       where: staffFilter,
       select: {

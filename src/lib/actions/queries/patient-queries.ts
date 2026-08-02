@@ -55,7 +55,7 @@ async function fetchPatients(): Promise<PatientListResult> {
   cacheTag("patients");
   cacheLife("hours");
 
-  const [patients, total] = await Promise.all([
+  const [patients, total] = await prisma.$transaction([
     prisma.patient.findMany({
       include: {
         appointments: {

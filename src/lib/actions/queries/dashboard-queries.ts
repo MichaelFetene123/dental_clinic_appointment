@@ -36,7 +36,7 @@ export async function getDashboardData(): Promise<DashboardData> {
     completedProcedures,
     pendingInQueue,
     recentAppointments,
-  ] = await Promise.all([
+  ] = await prisma.$transaction([
     // Total registered patients
     prisma.patient.count(),
 

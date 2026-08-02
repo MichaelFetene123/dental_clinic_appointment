@@ -55,7 +55,7 @@ async function fetchAppointments(
       : { status }
     : {};
 
-  const [rows, total] = await Promise.all([
+  const [rows, total] = await prisma.$transaction([
     prisma.appointment.findMany({
       where,
       orderBy: { createdAt: "desc" },

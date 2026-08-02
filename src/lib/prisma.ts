@@ -15,7 +15,7 @@ if (!connectionString) {
 function createPrismaClient() {
   const pool = new Pool({ 
     connectionString,
-    max: 30, // Increased to 30 to comfortably handle concurrent Promise.all batches (e.g. 5x queries per dashboard load)
+    max: 10, // Reverted to 10: pushing this higher overloaded the upstream Supabase PgBouncer pooler limit
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 5000,
   });

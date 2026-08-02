@@ -73,6 +73,11 @@ export type Session = $Result.DefaultSelection<Prisma.$SessionPayload>
  * 
  */
 export type AuditLog = $Result.DefaultSelection<Prisma.$AuditLogPayload>
+/**
+ * Model AuditLogArchive
+ * 
+ */
+export type AuditLogArchive = $Result.DefaultSelection<Prisma.$AuditLogArchivePayload>
 
 /**
  * Enums
@@ -403,6 +408,16 @@ export class PrismaClient<
     * ```
     */
   get auditLog(): Prisma.AuditLogDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.auditLogArchive`: Exposes CRUD operations for the **AuditLogArchive** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AuditLogArchives
+    * const auditLogArchives = await prisma.auditLogArchive.findMany()
+    * ```
+    */
+  get auditLogArchive(): Prisma.AuditLogArchiveDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -848,7 +863,8 @@ export namespace Prisma {
     UserRole: 'UserRole',
     RolePermission: 'RolePermission',
     Session: 'Session',
-    AuditLog: 'AuditLog'
+    AuditLog: 'AuditLog',
+    AuditLogArchive: 'AuditLogArchive'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -864,7 +880,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "employeeProfile" | "patient" | "appointment" | "dentalHistory" | "medicalDocument" | "role" | "permission" | "userRole" | "rolePermission" | "session" | "auditLog"
+      modelProps: "user" | "employeeProfile" | "patient" | "appointment" | "dentalHistory" | "medicalDocument" | "role" | "permission" | "userRole" | "rolePermission" | "session" | "auditLog" | "auditLogArchive"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1756,6 +1772,80 @@ export namespace Prisma {
           }
         }
       }
+      AuditLogArchive: {
+        payload: Prisma.$AuditLogArchivePayload<ExtArgs>
+        fields: Prisma.AuditLogArchiveFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AuditLogArchiveFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogArchivePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AuditLogArchiveFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogArchivePayload>
+          }
+          findFirst: {
+            args: Prisma.AuditLogArchiveFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogArchivePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AuditLogArchiveFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogArchivePayload>
+          }
+          findMany: {
+            args: Prisma.AuditLogArchiveFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogArchivePayload>[]
+          }
+          create: {
+            args: Prisma.AuditLogArchiveCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogArchivePayload>
+          }
+          createMany: {
+            args: Prisma.AuditLogArchiveCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AuditLogArchiveCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogArchivePayload>[]
+          }
+          delete: {
+            args: Prisma.AuditLogArchiveDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogArchivePayload>
+          }
+          update: {
+            args: Prisma.AuditLogArchiveUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogArchivePayload>
+          }
+          deleteMany: {
+            args: Prisma.AuditLogArchiveDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AuditLogArchiveUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AuditLogArchiveUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogArchivePayload>[]
+          }
+          upsert: {
+            args: Prisma.AuditLogArchiveUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuditLogArchivePayload>
+          }
+          aggregate: {
+            args: Prisma.AuditLogArchiveAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAuditLogArchive>
+          }
+          groupBy: {
+            args: Prisma.AuditLogArchiveGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AuditLogArchiveGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AuditLogArchiveCountArgs<ExtArgs>
+            result: $Utils.Optional<AuditLogArchiveCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1876,6 +1966,7 @@ export namespace Prisma {
     rolePermission?: RolePermissionOmit
     session?: SessionOmit
     auditLog?: AuditLogOmit
+    auditLogArchive?: AuditLogArchiveOmit
   }
 
   /* Types for Logging */
@@ -1960,6 +2051,7 @@ export namespace Prisma {
     userRoles: number
     sessions: number
     auditLogs: number
+    auditLogArchives: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1967,6 +2059,7 @@ export namespace Prisma {
     userRoles?: boolean | UserCountOutputTypeCountUserRolesArgs
     sessions?: boolean | UserCountOutputTypeCountSessionsArgs
     auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
+    auditLogArchives?: boolean | UserCountOutputTypeCountAuditLogArchivesArgs
   }
 
   // Custom InputTypes
@@ -2006,6 +2099,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountAuditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AuditLogWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountAuditLogArchivesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuditLogArchiveWhereInput
   }
 
 
@@ -2343,6 +2443,7 @@ export namespace Prisma {
     userRoles?: boolean | User$userRolesArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
+    auditLogArchives?: boolean | User$auditLogArchivesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -2393,6 +2494,7 @@ export namespace Prisma {
     userRoles?: boolean | User$userRolesArgs<ExtArgs>
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
+    auditLogArchives?: boolean | User$auditLogArchivesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2407,6 +2509,7 @@ export namespace Prisma {
       userRoles: Prisma.$UserRolePayload<ExtArgs>[]
       sessions: Prisma.$SessionPayload<ExtArgs>[]
       auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
+      auditLogArchives: Prisma.$AuditLogArchivePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2819,6 +2922,7 @@ export namespace Prisma {
     userRoles<T extends User$userRolesArgs<ExtArgs> = {}>(args?: Subset<T, User$userRolesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserRolePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     auditLogs<T extends User$auditLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    auditLogArchives<T extends User$auditLogArchivesArgs<ExtArgs> = {}>(args?: Subset<T, User$auditLogArchivesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogArchivePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3382,6 +3486,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * User.auditLogArchives
+   */
+  export type User$auditLogArchivesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLogArchive
+     */
+    select?: AuditLogArchiveSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLogArchive
+     */
+    omit?: AuditLogArchiveOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogArchiveInclude<ExtArgs> | null
+    where?: AuditLogArchiveWhereInput
+    orderBy?: AuditLogArchiveOrderByWithRelationInput | AuditLogArchiveOrderByWithRelationInput[]
+    cursor?: AuditLogArchiveWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AuditLogArchiveScalarFieldEnum | AuditLogArchiveScalarFieldEnum[]
   }
 
   /**
@@ -16032,6 +16160,1127 @@ export namespace Prisma {
 
 
   /**
+   * Model AuditLogArchive
+   */
+
+  export type AggregateAuditLogArchive = {
+    _count: AuditLogArchiveCountAggregateOutputType | null
+    _min: AuditLogArchiveMinAggregateOutputType | null
+    _max: AuditLogArchiveMaxAggregateOutputType | null
+  }
+
+  export type AuditLogArchiveMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    action: string | null
+    resource: string | null
+    resourceId: string | null
+    details: string | null
+    ipAddress: string | null
+    timestamp: Date | null
+  }
+
+  export type AuditLogArchiveMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    action: string | null
+    resource: string | null
+    resourceId: string | null
+    details: string | null
+    ipAddress: string | null
+    timestamp: Date | null
+  }
+
+  export type AuditLogArchiveCountAggregateOutputType = {
+    id: number
+    userId: number
+    action: number
+    resource: number
+    resourceId: number
+    details: number
+    ipAddress: number
+    timestamp: number
+    _all: number
+  }
+
+
+  export type AuditLogArchiveMinAggregateInputType = {
+    id?: true
+    userId?: true
+    action?: true
+    resource?: true
+    resourceId?: true
+    details?: true
+    ipAddress?: true
+    timestamp?: true
+  }
+
+  export type AuditLogArchiveMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    action?: true
+    resource?: true
+    resourceId?: true
+    details?: true
+    ipAddress?: true
+    timestamp?: true
+  }
+
+  export type AuditLogArchiveCountAggregateInputType = {
+    id?: true
+    userId?: true
+    action?: true
+    resource?: true
+    resourceId?: true
+    details?: true
+    ipAddress?: true
+    timestamp?: true
+    _all?: true
+  }
+
+  export type AuditLogArchiveAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuditLogArchive to aggregate.
+     */
+    where?: AuditLogArchiveWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditLogArchives to fetch.
+     */
+    orderBy?: AuditLogArchiveOrderByWithRelationInput | AuditLogArchiveOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AuditLogArchiveWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditLogArchives from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditLogArchives.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AuditLogArchives
+    **/
+    _count?: true | AuditLogArchiveCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AuditLogArchiveMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AuditLogArchiveMaxAggregateInputType
+  }
+
+  export type GetAuditLogArchiveAggregateType<T extends AuditLogArchiveAggregateArgs> = {
+        [P in keyof T & keyof AggregateAuditLogArchive]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAuditLogArchive[P]>
+      : GetScalarType<T[P], AggregateAuditLogArchive[P]>
+  }
+
+
+
+
+  export type AuditLogArchiveGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuditLogArchiveWhereInput
+    orderBy?: AuditLogArchiveOrderByWithAggregationInput | AuditLogArchiveOrderByWithAggregationInput[]
+    by: AuditLogArchiveScalarFieldEnum[] | AuditLogArchiveScalarFieldEnum
+    having?: AuditLogArchiveScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AuditLogArchiveCountAggregateInputType | true
+    _min?: AuditLogArchiveMinAggregateInputType
+    _max?: AuditLogArchiveMaxAggregateInputType
+  }
+
+  export type AuditLogArchiveGroupByOutputType = {
+    id: string
+    userId: string | null
+    action: string
+    resource: string
+    resourceId: string | null
+    details: string | null
+    ipAddress: string | null
+    timestamp: Date
+    _count: AuditLogArchiveCountAggregateOutputType | null
+    _min: AuditLogArchiveMinAggregateOutputType | null
+    _max: AuditLogArchiveMaxAggregateOutputType | null
+  }
+
+  type GetAuditLogArchiveGroupByPayload<T extends AuditLogArchiveGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AuditLogArchiveGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AuditLogArchiveGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AuditLogArchiveGroupByOutputType[P]>
+            : GetScalarType<T[P], AuditLogArchiveGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AuditLogArchiveSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    action?: boolean
+    resource?: boolean
+    resourceId?: boolean
+    details?: boolean
+    ipAddress?: boolean
+    timestamp?: boolean
+    user?: boolean | AuditLogArchive$userArgs<ExtArgs>
+  }, ExtArgs["result"]["auditLogArchive"]>
+
+  export type AuditLogArchiveSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    action?: boolean
+    resource?: boolean
+    resourceId?: boolean
+    details?: boolean
+    ipAddress?: boolean
+    timestamp?: boolean
+    user?: boolean | AuditLogArchive$userArgs<ExtArgs>
+  }, ExtArgs["result"]["auditLogArchive"]>
+
+  export type AuditLogArchiveSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    action?: boolean
+    resource?: boolean
+    resourceId?: boolean
+    details?: boolean
+    ipAddress?: boolean
+    timestamp?: boolean
+    user?: boolean | AuditLogArchive$userArgs<ExtArgs>
+  }, ExtArgs["result"]["auditLogArchive"]>
+
+  export type AuditLogArchiveSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    action?: boolean
+    resource?: boolean
+    resourceId?: boolean
+    details?: boolean
+    ipAddress?: boolean
+    timestamp?: boolean
+  }
+
+  export type AuditLogArchiveOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "action" | "resource" | "resourceId" | "details" | "ipAddress" | "timestamp", ExtArgs["result"]["auditLogArchive"]>
+  export type AuditLogArchiveInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | AuditLogArchive$userArgs<ExtArgs>
+  }
+  export type AuditLogArchiveIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | AuditLogArchive$userArgs<ExtArgs>
+  }
+  export type AuditLogArchiveIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | AuditLogArchive$userArgs<ExtArgs>
+  }
+
+  export type $AuditLogArchivePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AuditLogArchive"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string | null
+      action: string
+      resource: string
+      resourceId: string | null
+      details: string | null
+      ipAddress: string | null
+      timestamp: Date
+    }, ExtArgs["result"]["auditLogArchive"]>
+    composites: {}
+  }
+
+  type AuditLogArchiveGetPayload<S extends boolean | null | undefined | AuditLogArchiveDefaultArgs> = $Result.GetResult<Prisma.$AuditLogArchivePayload, S>
+
+  type AuditLogArchiveCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AuditLogArchiveFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AuditLogArchiveCountAggregateInputType | true
+    }
+
+  export interface AuditLogArchiveDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AuditLogArchive'], meta: { name: 'AuditLogArchive' } }
+    /**
+     * Find zero or one AuditLogArchive that matches the filter.
+     * @param {AuditLogArchiveFindUniqueArgs} args - Arguments to find a AuditLogArchive
+     * @example
+     * // Get one AuditLogArchive
+     * const auditLogArchive = await prisma.auditLogArchive.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AuditLogArchiveFindUniqueArgs>(args: SelectSubset<T, AuditLogArchiveFindUniqueArgs<ExtArgs>>): Prisma__AuditLogArchiveClient<$Result.GetResult<Prisma.$AuditLogArchivePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AuditLogArchive that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AuditLogArchiveFindUniqueOrThrowArgs} args - Arguments to find a AuditLogArchive
+     * @example
+     * // Get one AuditLogArchive
+     * const auditLogArchive = await prisma.auditLogArchive.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AuditLogArchiveFindUniqueOrThrowArgs>(args: SelectSubset<T, AuditLogArchiveFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AuditLogArchiveClient<$Result.GetResult<Prisma.$AuditLogArchivePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AuditLogArchive that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogArchiveFindFirstArgs} args - Arguments to find a AuditLogArchive
+     * @example
+     * // Get one AuditLogArchive
+     * const auditLogArchive = await prisma.auditLogArchive.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AuditLogArchiveFindFirstArgs>(args?: SelectSubset<T, AuditLogArchiveFindFirstArgs<ExtArgs>>): Prisma__AuditLogArchiveClient<$Result.GetResult<Prisma.$AuditLogArchivePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AuditLogArchive that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogArchiveFindFirstOrThrowArgs} args - Arguments to find a AuditLogArchive
+     * @example
+     * // Get one AuditLogArchive
+     * const auditLogArchive = await prisma.auditLogArchive.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AuditLogArchiveFindFirstOrThrowArgs>(args?: SelectSubset<T, AuditLogArchiveFindFirstOrThrowArgs<ExtArgs>>): Prisma__AuditLogArchiveClient<$Result.GetResult<Prisma.$AuditLogArchivePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AuditLogArchives that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogArchiveFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AuditLogArchives
+     * const auditLogArchives = await prisma.auditLogArchive.findMany()
+     * 
+     * // Get first 10 AuditLogArchives
+     * const auditLogArchives = await prisma.auditLogArchive.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const auditLogArchiveWithIdOnly = await prisma.auditLogArchive.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AuditLogArchiveFindManyArgs>(args?: SelectSubset<T, AuditLogArchiveFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogArchivePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AuditLogArchive.
+     * @param {AuditLogArchiveCreateArgs} args - Arguments to create a AuditLogArchive.
+     * @example
+     * // Create one AuditLogArchive
+     * const AuditLogArchive = await prisma.auditLogArchive.create({
+     *   data: {
+     *     // ... data to create a AuditLogArchive
+     *   }
+     * })
+     * 
+     */
+    create<T extends AuditLogArchiveCreateArgs>(args: SelectSubset<T, AuditLogArchiveCreateArgs<ExtArgs>>): Prisma__AuditLogArchiveClient<$Result.GetResult<Prisma.$AuditLogArchivePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AuditLogArchives.
+     * @param {AuditLogArchiveCreateManyArgs} args - Arguments to create many AuditLogArchives.
+     * @example
+     * // Create many AuditLogArchives
+     * const auditLogArchive = await prisma.auditLogArchive.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AuditLogArchiveCreateManyArgs>(args?: SelectSubset<T, AuditLogArchiveCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AuditLogArchives and returns the data saved in the database.
+     * @param {AuditLogArchiveCreateManyAndReturnArgs} args - Arguments to create many AuditLogArchives.
+     * @example
+     * // Create many AuditLogArchives
+     * const auditLogArchive = await prisma.auditLogArchive.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AuditLogArchives and only return the `id`
+     * const auditLogArchiveWithIdOnly = await prisma.auditLogArchive.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AuditLogArchiveCreateManyAndReturnArgs>(args?: SelectSubset<T, AuditLogArchiveCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogArchivePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AuditLogArchive.
+     * @param {AuditLogArchiveDeleteArgs} args - Arguments to delete one AuditLogArchive.
+     * @example
+     * // Delete one AuditLogArchive
+     * const AuditLogArchive = await prisma.auditLogArchive.delete({
+     *   where: {
+     *     // ... filter to delete one AuditLogArchive
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AuditLogArchiveDeleteArgs>(args: SelectSubset<T, AuditLogArchiveDeleteArgs<ExtArgs>>): Prisma__AuditLogArchiveClient<$Result.GetResult<Prisma.$AuditLogArchivePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AuditLogArchive.
+     * @param {AuditLogArchiveUpdateArgs} args - Arguments to update one AuditLogArchive.
+     * @example
+     * // Update one AuditLogArchive
+     * const auditLogArchive = await prisma.auditLogArchive.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AuditLogArchiveUpdateArgs>(args: SelectSubset<T, AuditLogArchiveUpdateArgs<ExtArgs>>): Prisma__AuditLogArchiveClient<$Result.GetResult<Prisma.$AuditLogArchivePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AuditLogArchives.
+     * @param {AuditLogArchiveDeleteManyArgs} args - Arguments to filter AuditLogArchives to delete.
+     * @example
+     * // Delete a few AuditLogArchives
+     * const { count } = await prisma.auditLogArchive.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AuditLogArchiveDeleteManyArgs>(args?: SelectSubset<T, AuditLogArchiveDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AuditLogArchives.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogArchiveUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AuditLogArchives
+     * const auditLogArchive = await prisma.auditLogArchive.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AuditLogArchiveUpdateManyArgs>(args: SelectSubset<T, AuditLogArchiveUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AuditLogArchives and returns the data updated in the database.
+     * @param {AuditLogArchiveUpdateManyAndReturnArgs} args - Arguments to update many AuditLogArchives.
+     * @example
+     * // Update many AuditLogArchives
+     * const auditLogArchive = await prisma.auditLogArchive.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AuditLogArchives and only return the `id`
+     * const auditLogArchiveWithIdOnly = await prisma.auditLogArchive.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AuditLogArchiveUpdateManyAndReturnArgs>(args: SelectSubset<T, AuditLogArchiveUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogArchivePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AuditLogArchive.
+     * @param {AuditLogArchiveUpsertArgs} args - Arguments to update or create a AuditLogArchive.
+     * @example
+     * // Update or create a AuditLogArchive
+     * const auditLogArchive = await prisma.auditLogArchive.upsert({
+     *   create: {
+     *     // ... data to create a AuditLogArchive
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AuditLogArchive we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AuditLogArchiveUpsertArgs>(args: SelectSubset<T, AuditLogArchiveUpsertArgs<ExtArgs>>): Prisma__AuditLogArchiveClient<$Result.GetResult<Prisma.$AuditLogArchivePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AuditLogArchives.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogArchiveCountArgs} args - Arguments to filter AuditLogArchives to count.
+     * @example
+     * // Count the number of AuditLogArchives
+     * const count = await prisma.auditLogArchive.count({
+     *   where: {
+     *     // ... the filter for the AuditLogArchives we want to count
+     *   }
+     * })
+    **/
+    count<T extends AuditLogArchiveCountArgs>(
+      args?: Subset<T, AuditLogArchiveCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AuditLogArchiveCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AuditLogArchive.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogArchiveAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AuditLogArchiveAggregateArgs>(args: Subset<T, AuditLogArchiveAggregateArgs>): Prisma.PrismaPromise<GetAuditLogArchiveAggregateType<T>>
+
+    /**
+     * Group by AuditLogArchive.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuditLogArchiveGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AuditLogArchiveGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AuditLogArchiveGroupByArgs['orderBy'] }
+        : { orderBy?: AuditLogArchiveGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AuditLogArchiveGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAuditLogArchiveGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AuditLogArchive model
+   */
+  readonly fields: AuditLogArchiveFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AuditLogArchive.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AuditLogArchiveClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends AuditLogArchive$userArgs<ExtArgs> = {}>(args?: Subset<T, AuditLogArchive$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AuditLogArchive model
+   */
+  interface AuditLogArchiveFieldRefs {
+    readonly id: FieldRef<"AuditLogArchive", 'String'>
+    readonly userId: FieldRef<"AuditLogArchive", 'String'>
+    readonly action: FieldRef<"AuditLogArchive", 'String'>
+    readonly resource: FieldRef<"AuditLogArchive", 'String'>
+    readonly resourceId: FieldRef<"AuditLogArchive", 'String'>
+    readonly details: FieldRef<"AuditLogArchive", 'String'>
+    readonly ipAddress: FieldRef<"AuditLogArchive", 'String'>
+    readonly timestamp: FieldRef<"AuditLogArchive", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AuditLogArchive findUnique
+   */
+  export type AuditLogArchiveFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLogArchive
+     */
+    select?: AuditLogArchiveSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLogArchive
+     */
+    omit?: AuditLogArchiveOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogArchiveInclude<ExtArgs> | null
+    /**
+     * Filter, which AuditLogArchive to fetch.
+     */
+    where: AuditLogArchiveWhereUniqueInput
+  }
+
+  /**
+   * AuditLogArchive findUniqueOrThrow
+   */
+  export type AuditLogArchiveFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLogArchive
+     */
+    select?: AuditLogArchiveSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLogArchive
+     */
+    omit?: AuditLogArchiveOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogArchiveInclude<ExtArgs> | null
+    /**
+     * Filter, which AuditLogArchive to fetch.
+     */
+    where: AuditLogArchiveWhereUniqueInput
+  }
+
+  /**
+   * AuditLogArchive findFirst
+   */
+  export type AuditLogArchiveFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLogArchive
+     */
+    select?: AuditLogArchiveSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLogArchive
+     */
+    omit?: AuditLogArchiveOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogArchiveInclude<ExtArgs> | null
+    /**
+     * Filter, which AuditLogArchive to fetch.
+     */
+    where?: AuditLogArchiveWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditLogArchives to fetch.
+     */
+    orderBy?: AuditLogArchiveOrderByWithRelationInput | AuditLogArchiveOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuditLogArchives.
+     */
+    cursor?: AuditLogArchiveWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditLogArchives from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditLogArchives.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuditLogArchives.
+     */
+    distinct?: AuditLogArchiveScalarFieldEnum | AuditLogArchiveScalarFieldEnum[]
+  }
+
+  /**
+   * AuditLogArchive findFirstOrThrow
+   */
+  export type AuditLogArchiveFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLogArchive
+     */
+    select?: AuditLogArchiveSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLogArchive
+     */
+    omit?: AuditLogArchiveOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogArchiveInclude<ExtArgs> | null
+    /**
+     * Filter, which AuditLogArchive to fetch.
+     */
+    where?: AuditLogArchiveWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditLogArchives to fetch.
+     */
+    orderBy?: AuditLogArchiveOrderByWithRelationInput | AuditLogArchiveOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuditLogArchives.
+     */
+    cursor?: AuditLogArchiveWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditLogArchives from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditLogArchives.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuditLogArchives.
+     */
+    distinct?: AuditLogArchiveScalarFieldEnum | AuditLogArchiveScalarFieldEnum[]
+  }
+
+  /**
+   * AuditLogArchive findMany
+   */
+  export type AuditLogArchiveFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLogArchive
+     */
+    select?: AuditLogArchiveSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLogArchive
+     */
+    omit?: AuditLogArchiveOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogArchiveInclude<ExtArgs> | null
+    /**
+     * Filter, which AuditLogArchives to fetch.
+     */
+    where?: AuditLogArchiveWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuditLogArchives to fetch.
+     */
+    orderBy?: AuditLogArchiveOrderByWithRelationInput | AuditLogArchiveOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AuditLogArchives.
+     */
+    cursor?: AuditLogArchiveWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuditLogArchives from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuditLogArchives.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuditLogArchives.
+     */
+    distinct?: AuditLogArchiveScalarFieldEnum | AuditLogArchiveScalarFieldEnum[]
+  }
+
+  /**
+   * AuditLogArchive create
+   */
+  export type AuditLogArchiveCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLogArchive
+     */
+    select?: AuditLogArchiveSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLogArchive
+     */
+    omit?: AuditLogArchiveOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogArchiveInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AuditLogArchive.
+     */
+    data: XOR<AuditLogArchiveCreateInput, AuditLogArchiveUncheckedCreateInput>
+  }
+
+  /**
+   * AuditLogArchive createMany
+   */
+  export type AuditLogArchiveCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AuditLogArchives.
+     */
+    data: AuditLogArchiveCreateManyInput | AuditLogArchiveCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AuditLogArchive createManyAndReturn
+   */
+  export type AuditLogArchiveCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLogArchive
+     */
+    select?: AuditLogArchiveSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLogArchive
+     */
+    omit?: AuditLogArchiveOmit<ExtArgs> | null
+    /**
+     * The data used to create many AuditLogArchives.
+     */
+    data: AuditLogArchiveCreateManyInput | AuditLogArchiveCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogArchiveIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AuditLogArchive update
+   */
+  export type AuditLogArchiveUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLogArchive
+     */
+    select?: AuditLogArchiveSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLogArchive
+     */
+    omit?: AuditLogArchiveOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogArchiveInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AuditLogArchive.
+     */
+    data: XOR<AuditLogArchiveUpdateInput, AuditLogArchiveUncheckedUpdateInput>
+    /**
+     * Choose, which AuditLogArchive to update.
+     */
+    where: AuditLogArchiveWhereUniqueInput
+  }
+
+  /**
+   * AuditLogArchive updateMany
+   */
+  export type AuditLogArchiveUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AuditLogArchives.
+     */
+    data: XOR<AuditLogArchiveUpdateManyMutationInput, AuditLogArchiveUncheckedUpdateManyInput>
+    /**
+     * Filter which AuditLogArchives to update
+     */
+    where?: AuditLogArchiveWhereInput
+    /**
+     * Limit how many AuditLogArchives to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AuditLogArchive updateManyAndReturn
+   */
+  export type AuditLogArchiveUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLogArchive
+     */
+    select?: AuditLogArchiveSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLogArchive
+     */
+    omit?: AuditLogArchiveOmit<ExtArgs> | null
+    /**
+     * The data used to update AuditLogArchives.
+     */
+    data: XOR<AuditLogArchiveUpdateManyMutationInput, AuditLogArchiveUncheckedUpdateManyInput>
+    /**
+     * Filter which AuditLogArchives to update
+     */
+    where?: AuditLogArchiveWhereInput
+    /**
+     * Limit how many AuditLogArchives to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogArchiveIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AuditLogArchive upsert
+   */
+  export type AuditLogArchiveUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLogArchive
+     */
+    select?: AuditLogArchiveSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLogArchive
+     */
+    omit?: AuditLogArchiveOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogArchiveInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AuditLogArchive to update in case it exists.
+     */
+    where: AuditLogArchiveWhereUniqueInput
+    /**
+     * In case the AuditLogArchive found by the `where` argument doesn't exist, create a new AuditLogArchive with this data.
+     */
+    create: XOR<AuditLogArchiveCreateInput, AuditLogArchiveUncheckedCreateInput>
+    /**
+     * In case the AuditLogArchive was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AuditLogArchiveUpdateInput, AuditLogArchiveUncheckedUpdateInput>
+  }
+
+  /**
+   * AuditLogArchive delete
+   */
+  export type AuditLogArchiveDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLogArchive
+     */
+    select?: AuditLogArchiveSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLogArchive
+     */
+    omit?: AuditLogArchiveOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogArchiveInclude<ExtArgs> | null
+    /**
+     * Filter which AuditLogArchive to delete.
+     */
+    where: AuditLogArchiveWhereUniqueInput
+  }
+
+  /**
+   * AuditLogArchive deleteMany
+   */
+  export type AuditLogArchiveDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuditLogArchives to delete
+     */
+    where?: AuditLogArchiveWhereInput
+    /**
+     * Limit how many AuditLogArchives to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AuditLogArchive.user
+   */
+  export type AuditLogArchive$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * AuditLogArchive without action
+   */
+  export type AuditLogArchiveDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLogArchive
+     */
+    select?: AuditLogArchiveSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLogArchive
+     */
+    omit?: AuditLogArchiveOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogArchiveInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -16226,6 +17475,20 @@ export namespace Prisma {
   };
 
   export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+  export const AuditLogArchiveScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    action: 'action',
+    resource: 'resource',
+    resourceId: 'resourceId',
+    details: 'details',
+    ipAddress: 'ipAddress',
+    timestamp: 'timestamp'
+  };
+
+  export type AuditLogArchiveScalarFieldEnum = (typeof AuditLogArchiveScalarFieldEnum)[keyof typeof AuditLogArchiveScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -16427,6 +17690,7 @@ export namespace Prisma {
     userRoles?: UserRoleListRelationFilter
     sessions?: SessionListRelationFilter
     auditLogs?: AuditLogListRelationFilter
+    auditLogArchives?: AuditLogArchiveListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -16446,6 +17710,7 @@ export namespace Prisma {
     userRoles?: UserRoleOrderByRelationAggregateInput
     sessions?: SessionOrderByRelationAggregateInput
     auditLogs?: AuditLogOrderByRelationAggregateInput
+    auditLogArchives?: AuditLogArchiveOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -16468,6 +17733,7 @@ export namespace Prisma {
     userRoles?: UserRoleListRelationFilter
     sessions?: SessionListRelationFilter
     auditLogs?: AuditLogListRelationFilter
+    auditLogArchives?: AuditLogArchiveListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -17370,6 +18636,76 @@ export namespace Prisma {
     timestamp?: DateTimeWithAggregatesFilter<"AuditLog"> | Date | string
   }
 
+  export type AuditLogArchiveWhereInput = {
+    AND?: AuditLogArchiveWhereInput | AuditLogArchiveWhereInput[]
+    OR?: AuditLogArchiveWhereInput[]
+    NOT?: AuditLogArchiveWhereInput | AuditLogArchiveWhereInput[]
+    id?: StringFilter<"AuditLogArchive"> | string
+    userId?: StringNullableFilter<"AuditLogArchive"> | string | null
+    action?: StringFilter<"AuditLogArchive"> | string
+    resource?: StringFilter<"AuditLogArchive"> | string
+    resourceId?: StringNullableFilter<"AuditLogArchive"> | string | null
+    details?: StringNullableFilter<"AuditLogArchive"> | string | null
+    ipAddress?: StringNullableFilter<"AuditLogArchive"> | string | null
+    timestamp?: DateTimeFilter<"AuditLogArchive"> | Date | string
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }
+
+  export type AuditLogArchiveOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    action?: SortOrder
+    resource?: SortOrder
+    resourceId?: SortOrderInput | SortOrder
+    details?: SortOrderInput | SortOrder
+    ipAddress?: SortOrderInput | SortOrder
+    timestamp?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type AuditLogArchiveWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AuditLogArchiveWhereInput | AuditLogArchiveWhereInput[]
+    OR?: AuditLogArchiveWhereInput[]
+    NOT?: AuditLogArchiveWhereInput | AuditLogArchiveWhereInput[]
+    userId?: StringNullableFilter<"AuditLogArchive"> | string | null
+    action?: StringFilter<"AuditLogArchive"> | string
+    resource?: StringFilter<"AuditLogArchive"> | string
+    resourceId?: StringNullableFilter<"AuditLogArchive"> | string | null
+    details?: StringNullableFilter<"AuditLogArchive"> | string | null
+    ipAddress?: StringNullableFilter<"AuditLogArchive"> | string | null
+    timestamp?: DateTimeFilter<"AuditLogArchive"> | Date | string
+    user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }, "id">
+
+  export type AuditLogArchiveOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrderInput | SortOrder
+    action?: SortOrder
+    resource?: SortOrder
+    resourceId?: SortOrderInput | SortOrder
+    details?: SortOrderInput | SortOrder
+    ipAddress?: SortOrderInput | SortOrder
+    timestamp?: SortOrder
+    _count?: AuditLogArchiveCountOrderByAggregateInput
+    _max?: AuditLogArchiveMaxOrderByAggregateInput
+    _min?: AuditLogArchiveMinOrderByAggregateInput
+  }
+
+  export type AuditLogArchiveScalarWhereWithAggregatesInput = {
+    AND?: AuditLogArchiveScalarWhereWithAggregatesInput | AuditLogArchiveScalarWhereWithAggregatesInput[]
+    OR?: AuditLogArchiveScalarWhereWithAggregatesInput[]
+    NOT?: AuditLogArchiveScalarWhereWithAggregatesInput | AuditLogArchiveScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AuditLogArchive"> | string
+    userId?: StringNullableWithAggregatesFilter<"AuditLogArchive"> | string | null
+    action?: StringWithAggregatesFilter<"AuditLogArchive"> | string
+    resource?: StringWithAggregatesFilter<"AuditLogArchive"> | string
+    resourceId?: StringNullableWithAggregatesFilter<"AuditLogArchive"> | string | null
+    details?: StringNullableWithAggregatesFilter<"AuditLogArchive"> | string | null
+    ipAddress?: StringNullableWithAggregatesFilter<"AuditLogArchive"> | string | null
+    timestamp?: DateTimeWithAggregatesFilter<"AuditLogArchive"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     email: string
@@ -17387,6 +18723,7 @@ export namespace Prisma {
     userRoles?: UserRoleCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    auditLogArchives?: AuditLogArchiveCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -17406,6 +18743,7 @@ export namespace Prisma {
     userRoles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    auditLogArchives?: AuditLogArchiveUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -17425,6 +18763,7 @@ export namespace Prisma {
     userRoles?: UserRoleUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    auditLogArchives?: AuditLogArchiveUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -17444,6 +18783,7 @@ export namespace Prisma {
     userRoles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    auditLogArchives?: AuditLogArchiveUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -18440,6 +19780,82 @@ export namespace Prisma {
     timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type AuditLogArchiveCreateInput = {
+    id?: string
+    action: string
+    resource: string
+    resourceId?: string | null
+    details?: string | null
+    ipAddress?: string | null
+    timestamp?: Date | string
+    user?: UserCreateNestedOneWithoutAuditLogArchivesInput
+  }
+
+  export type AuditLogArchiveUncheckedCreateInput = {
+    id?: string
+    userId?: string | null
+    action: string
+    resource: string
+    resourceId?: string | null
+    details?: string | null
+    ipAddress?: string | null
+    timestamp?: Date | string
+  }
+
+  export type AuditLogArchiveUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    resource?: StringFieldUpdateOperationsInput | string
+    resourceId?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneWithoutAuditLogArchivesNestedInput
+  }
+
+  export type AuditLogArchiveUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    action?: StringFieldUpdateOperationsInput | string
+    resource?: StringFieldUpdateOperationsInput | string
+    resourceId?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogArchiveCreateManyInput = {
+    id?: string
+    userId?: string | null
+    action: string
+    resource: string
+    resourceId?: string | null
+    details?: string | null
+    ipAddress?: string | null
+    timestamp?: Date | string
+  }
+
+  export type AuditLogArchiveUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    resource?: StringFieldUpdateOperationsInput | string
+    resourceId?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogArchiveUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: NullableStringFieldUpdateOperationsInput | string | null
+    action?: StringFieldUpdateOperationsInput | string
+    resource?: StringFieldUpdateOperationsInput | string
+    resourceId?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -18520,6 +19936,12 @@ export namespace Prisma {
     none?: AuditLogWhereInput
   }
 
+  export type AuditLogArchiveListRelationFilter = {
+    every?: AuditLogArchiveWhereInput
+    some?: AuditLogArchiveWhereInput
+    none?: AuditLogArchiveWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -18538,6 +19960,10 @@ export namespace Prisma {
   }
 
   export type AuditLogOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AuditLogArchiveOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -19285,6 +20711,39 @@ export namespace Prisma {
     timestamp?: SortOrder
   }
 
+  export type AuditLogArchiveCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    action?: SortOrder
+    resource?: SortOrder
+    resourceId?: SortOrder
+    details?: SortOrder
+    ipAddress?: SortOrder
+    timestamp?: SortOrder
+  }
+
+  export type AuditLogArchiveMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    action?: SortOrder
+    resource?: SortOrder
+    resourceId?: SortOrder
+    details?: SortOrder
+    ipAddress?: SortOrder
+    timestamp?: SortOrder
+  }
+
+  export type AuditLogArchiveMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    action?: SortOrder
+    resource?: SortOrder
+    resourceId?: SortOrder
+    details?: SortOrder
+    ipAddress?: SortOrder
+    timestamp?: SortOrder
+  }
+
   export type PatientCreateNestedOneWithoutUserInput = {
     create?: XOR<PatientCreateWithoutUserInput, PatientUncheckedCreateWithoutUserInput>
     connectOrCreate?: PatientCreateOrConnectWithoutUserInput
@@ -19325,6 +20784,13 @@ export namespace Prisma {
     connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
   }
 
+  export type AuditLogArchiveCreateNestedManyWithoutUserInput = {
+    create?: XOR<AuditLogArchiveCreateWithoutUserInput, AuditLogArchiveUncheckedCreateWithoutUserInput> | AuditLogArchiveCreateWithoutUserInput[] | AuditLogArchiveUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AuditLogArchiveCreateOrConnectWithoutUserInput | AuditLogArchiveCreateOrConnectWithoutUserInput[]
+    createMany?: AuditLogArchiveCreateManyUserInputEnvelope
+    connect?: AuditLogArchiveWhereUniqueInput | AuditLogArchiveWhereUniqueInput[]
+  }
+
   export type PatientUncheckedCreateNestedOneWithoutUserInput = {
     create?: XOR<PatientCreateWithoutUserInput, PatientUncheckedCreateWithoutUserInput>
     connectOrCreate?: PatientCreateOrConnectWithoutUserInput
@@ -19363,6 +20829,13 @@ export namespace Prisma {
     connectOrCreate?: AuditLogCreateOrConnectWithoutUserInput | AuditLogCreateOrConnectWithoutUserInput[]
     createMany?: AuditLogCreateManyUserInputEnvelope
     connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+  }
+
+  export type AuditLogArchiveUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<AuditLogArchiveCreateWithoutUserInput, AuditLogArchiveUncheckedCreateWithoutUserInput> | AuditLogArchiveCreateWithoutUserInput[] | AuditLogArchiveUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AuditLogArchiveCreateOrConnectWithoutUserInput | AuditLogArchiveCreateOrConnectWithoutUserInput[]
+    createMany?: AuditLogArchiveCreateManyUserInputEnvelope
+    connect?: AuditLogArchiveWhereUniqueInput | AuditLogArchiveWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -19457,6 +20930,20 @@ export namespace Prisma {
     deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
   }
 
+  export type AuditLogArchiveUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AuditLogArchiveCreateWithoutUserInput, AuditLogArchiveUncheckedCreateWithoutUserInput> | AuditLogArchiveCreateWithoutUserInput[] | AuditLogArchiveUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AuditLogArchiveCreateOrConnectWithoutUserInput | AuditLogArchiveCreateOrConnectWithoutUserInput[]
+    upsert?: AuditLogArchiveUpsertWithWhereUniqueWithoutUserInput | AuditLogArchiveUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AuditLogArchiveCreateManyUserInputEnvelope
+    set?: AuditLogArchiveWhereUniqueInput | AuditLogArchiveWhereUniqueInput[]
+    disconnect?: AuditLogArchiveWhereUniqueInput | AuditLogArchiveWhereUniqueInput[]
+    delete?: AuditLogArchiveWhereUniqueInput | AuditLogArchiveWhereUniqueInput[]
+    connect?: AuditLogArchiveWhereUniqueInput | AuditLogArchiveWhereUniqueInput[]
+    update?: AuditLogArchiveUpdateWithWhereUniqueWithoutUserInput | AuditLogArchiveUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AuditLogArchiveUpdateManyWithWhereWithoutUserInput | AuditLogArchiveUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AuditLogArchiveScalarWhereInput | AuditLogArchiveScalarWhereInput[]
+  }
+
   export type PatientUncheckedUpdateOneWithoutUserNestedInput = {
     create?: XOR<PatientCreateWithoutUserInput, PatientUncheckedCreateWithoutUserInput>
     connectOrCreate?: PatientCreateOrConnectWithoutUserInput
@@ -19531,6 +21018,20 @@ export namespace Prisma {
     update?: AuditLogUpdateWithWhereUniqueWithoutUserInput | AuditLogUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: AuditLogUpdateManyWithWhereWithoutUserInput | AuditLogUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+  }
+
+  export type AuditLogArchiveUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<AuditLogArchiveCreateWithoutUserInput, AuditLogArchiveUncheckedCreateWithoutUserInput> | AuditLogArchiveCreateWithoutUserInput[] | AuditLogArchiveUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: AuditLogArchiveCreateOrConnectWithoutUserInput | AuditLogArchiveCreateOrConnectWithoutUserInput[]
+    upsert?: AuditLogArchiveUpsertWithWhereUniqueWithoutUserInput | AuditLogArchiveUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: AuditLogArchiveCreateManyUserInputEnvelope
+    set?: AuditLogArchiveWhereUniqueInput | AuditLogArchiveWhereUniqueInput[]
+    disconnect?: AuditLogArchiveWhereUniqueInput | AuditLogArchiveWhereUniqueInput[]
+    delete?: AuditLogArchiveWhereUniqueInput | AuditLogArchiveWhereUniqueInput[]
+    connect?: AuditLogArchiveWhereUniqueInput | AuditLogArchiveWhereUniqueInput[]
+    update?: AuditLogArchiveUpdateWithWhereUniqueWithoutUserInput | AuditLogArchiveUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: AuditLogArchiveUpdateManyWithWhereWithoutUserInput | AuditLogArchiveUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: AuditLogArchiveScalarWhereInput | AuditLogArchiveScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutEmployeeProfileInput = {
@@ -20043,6 +21544,22 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAuditLogsInput, UserUpdateWithoutAuditLogsInput>, UserUncheckedUpdateWithoutAuditLogsInput>
   }
 
+  export type UserCreateNestedOneWithoutAuditLogArchivesInput = {
+    create?: XOR<UserCreateWithoutAuditLogArchivesInput, UserUncheckedCreateWithoutAuditLogArchivesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAuditLogArchivesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneWithoutAuditLogArchivesNestedInput = {
+    create?: XOR<UserCreateWithoutAuditLogArchivesInput, UserUncheckedCreateWithoutAuditLogArchivesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutAuditLogArchivesInput
+    upsert?: UserUpsertWithoutAuditLogArchivesInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutAuditLogArchivesInput, UserUpdateWithoutAuditLogArchivesInput>, UserUncheckedUpdateWithoutAuditLogArchivesInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -20543,6 +22060,36 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type AuditLogArchiveCreateWithoutUserInput = {
+    id?: string
+    action: string
+    resource: string
+    resourceId?: string | null
+    details?: string | null
+    ipAddress?: string | null
+    timestamp?: Date | string
+  }
+
+  export type AuditLogArchiveUncheckedCreateWithoutUserInput = {
+    id?: string
+    action: string
+    resource: string
+    resourceId?: string | null
+    details?: string | null
+    ipAddress?: string | null
+    timestamp?: Date | string
+  }
+
+  export type AuditLogArchiveCreateOrConnectWithoutUserInput = {
+    where: AuditLogArchiveWhereUniqueInput
+    create: XOR<AuditLogArchiveCreateWithoutUserInput, AuditLogArchiveUncheckedCreateWithoutUserInput>
+  }
+
+  export type AuditLogArchiveCreateManyUserInputEnvelope = {
+    data: AuditLogArchiveCreateManyUserInput | AuditLogArchiveCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type PatientUpsertWithoutUserInput = {
     update: XOR<PatientUpdateWithoutUserInput, PatientUncheckedUpdateWithoutUserInput>
     create: XOR<PatientCreateWithoutUserInput, PatientUncheckedCreateWithoutUserInput>
@@ -20773,6 +22320,36 @@ export namespace Prisma {
     timestamp?: DateTimeFilter<"AuditLog"> | Date | string
   }
 
+  export type AuditLogArchiveUpsertWithWhereUniqueWithoutUserInput = {
+    where: AuditLogArchiveWhereUniqueInput
+    update: XOR<AuditLogArchiveUpdateWithoutUserInput, AuditLogArchiveUncheckedUpdateWithoutUserInput>
+    create: XOR<AuditLogArchiveCreateWithoutUserInput, AuditLogArchiveUncheckedCreateWithoutUserInput>
+  }
+
+  export type AuditLogArchiveUpdateWithWhereUniqueWithoutUserInput = {
+    where: AuditLogArchiveWhereUniqueInput
+    data: XOR<AuditLogArchiveUpdateWithoutUserInput, AuditLogArchiveUncheckedUpdateWithoutUserInput>
+  }
+
+  export type AuditLogArchiveUpdateManyWithWhereWithoutUserInput = {
+    where: AuditLogArchiveScalarWhereInput
+    data: XOR<AuditLogArchiveUpdateManyMutationInput, AuditLogArchiveUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type AuditLogArchiveScalarWhereInput = {
+    AND?: AuditLogArchiveScalarWhereInput | AuditLogArchiveScalarWhereInput[]
+    OR?: AuditLogArchiveScalarWhereInput[]
+    NOT?: AuditLogArchiveScalarWhereInput | AuditLogArchiveScalarWhereInput[]
+    id?: StringFilter<"AuditLogArchive"> | string
+    userId?: StringNullableFilter<"AuditLogArchive"> | string | null
+    action?: StringFilter<"AuditLogArchive"> | string
+    resource?: StringFilter<"AuditLogArchive"> | string
+    resourceId?: StringNullableFilter<"AuditLogArchive"> | string | null
+    details?: StringNullableFilter<"AuditLogArchive"> | string | null
+    ipAddress?: StringNullableFilter<"AuditLogArchive"> | string | null
+    timestamp?: DateTimeFilter<"AuditLogArchive"> | Date | string
+  }
+
   export type UserCreateWithoutEmployeeProfileInput = {
     id?: string
     email: string
@@ -20789,6 +22366,7 @@ export namespace Prisma {
     userRoles?: UserRoleCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    auditLogArchives?: AuditLogArchiveCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutEmployeeProfileInput = {
@@ -20807,6 +22385,7 @@ export namespace Prisma {
     userRoles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    auditLogArchives?: AuditLogArchiveUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutEmployeeProfileInput = {
@@ -20841,6 +22420,7 @@ export namespace Prisma {
     userRoles?: UserRoleUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    auditLogArchives?: AuditLogArchiveUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEmployeeProfileInput = {
@@ -20859,6 +22439,7 @@ export namespace Prisma {
     userRoles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    auditLogArchives?: AuditLogArchiveUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutPatientInput = {
@@ -20877,6 +22458,7 @@ export namespace Prisma {
     userRoles?: UserRoleCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    auditLogArchives?: AuditLogArchiveCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPatientInput = {
@@ -20895,6 +22477,7 @@ export namespace Prisma {
     userRoles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    auditLogArchives?: AuditLogArchiveUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPatientInput = {
@@ -21027,6 +22610,7 @@ export namespace Prisma {
     userRoles?: UserRoleUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    auditLogArchives?: AuditLogArchiveUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPatientInput = {
@@ -21045,6 +22629,7 @@ export namespace Prisma {
     userRoles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    auditLogArchives?: AuditLogArchiveUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AppointmentUpsertWithWhereUniqueWithoutPatientInput = {
@@ -21213,6 +22798,7 @@ export namespace Prisma {
     userRoles?: UserRoleCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    auditLogArchives?: AuditLogArchiveCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDoctorAppointmentsInput = {
@@ -21231,6 +22817,7 @@ export namespace Prisma {
     userRoles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    auditLogArchives?: AuditLogArchiveUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDoctorAppointmentsInput = {
@@ -21373,6 +22960,7 @@ export namespace Prisma {
     userRoles?: UserRoleUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    auditLogArchives?: AuditLogArchiveUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDoctorAppointmentsInput = {
@@ -21391,6 +22979,7 @@ export namespace Prisma {
     userRoles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    auditLogArchives?: AuditLogArchiveUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DentalHistoryUpsertWithoutAppointmentInput = {
@@ -21926,6 +23515,7 @@ export namespace Prisma {
     doctorAppointments?: AppointmentCreateNestedManyWithoutDoctorInput
     sessions?: SessionCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    auditLogArchives?: AuditLogArchiveCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUserRolesInput = {
@@ -21944,6 +23534,7 @@ export namespace Prisma {
     doctorAppointments?: AppointmentUncheckedCreateNestedManyWithoutDoctorInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    auditLogArchives?: AuditLogArchiveUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUserRolesInput = {
@@ -22003,6 +23594,7 @@ export namespace Prisma {
     doctorAppointments?: AppointmentUpdateManyWithoutDoctorNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    auditLogArchives?: AuditLogArchiveUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUserRolesInput = {
@@ -22021,6 +23613,7 @@ export namespace Prisma {
     doctorAppointments?: AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    auditLogArchives?: AuditLogArchiveUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type RoleUpsertWithoutUsersInput = {
@@ -22174,6 +23767,7 @@ export namespace Prisma {
     doctorAppointments?: AppointmentCreateNestedManyWithoutDoctorInput
     userRoles?: UserRoleCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    auditLogArchives?: AuditLogArchiveCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -22192,6 +23786,7 @@ export namespace Prisma {
     doctorAppointments?: AppointmentUncheckedCreateNestedManyWithoutDoctorInput
     userRoles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    auditLogArchives?: AuditLogArchiveUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -22226,6 +23821,7 @@ export namespace Prisma {
     doctorAppointments?: AppointmentUpdateManyWithoutDoctorNestedInput
     userRoles?: UserRoleUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    auditLogArchives?: AuditLogArchiveUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -22244,6 +23840,7 @@ export namespace Prisma {
     doctorAppointments?: AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
     userRoles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    auditLogArchives?: AuditLogArchiveUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAuditLogsInput = {
@@ -22262,6 +23859,7 @@ export namespace Prisma {
     doctorAppointments?: AppointmentCreateNestedManyWithoutDoctorInput
     userRoles?: UserRoleCreateNestedManyWithoutUserInput
     sessions?: SessionCreateNestedManyWithoutUserInput
+    auditLogArchives?: AuditLogArchiveCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -22280,6 +23878,7 @@ export namespace Prisma {
     doctorAppointments?: AppointmentUncheckedCreateNestedManyWithoutDoctorInput
     userRoles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    auditLogArchives?: AuditLogArchiveUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -22314,6 +23913,7 @@ export namespace Prisma {
     doctorAppointments?: AppointmentUpdateManyWithoutDoctorNestedInput
     userRoles?: UserRoleUpdateManyWithoutUserNestedInput
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    auditLogArchives?: AuditLogArchiveUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -22332,6 +23932,99 @@ export namespace Prisma {
     doctorAppointments?: AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
     userRoles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    auditLogArchives?: AuditLogArchiveUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserCreateWithoutAuditLogArchivesInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    phone?: string | null
+    avatar?: string | null
+    avatarFileId?: string | null
+    isSuperAdmin?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    patient?: PatientCreateNestedOneWithoutUserInput
+    employeeProfile?: EmployeeProfileCreateNestedOneWithoutUserInput
+    doctorAppointments?: AppointmentCreateNestedManyWithoutDoctorInput
+    userRoles?: UserRoleCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutAuditLogArchivesInput = {
+    id?: string
+    email: string
+    password: string
+    name: string
+    phone?: string | null
+    avatar?: string | null
+    avatarFileId?: string | null
+    isSuperAdmin?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    patient?: PatientUncheckedCreateNestedOneWithoutUserInput
+    employeeProfile?: EmployeeProfileUncheckedCreateNestedOneWithoutUserInput
+    doctorAppointments?: AppointmentUncheckedCreateNestedManyWithoutDoctorInput
+    userRoles?: UserRoleUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutAuditLogArchivesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutAuditLogArchivesInput, UserUncheckedCreateWithoutAuditLogArchivesInput>
+  }
+
+  export type UserUpsertWithoutAuditLogArchivesInput = {
+    update: XOR<UserUpdateWithoutAuditLogArchivesInput, UserUncheckedUpdateWithoutAuditLogArchivesInput>
+    create: XOR<UserCreateWithoutAuditLogArchivesInput, UserUncheckedCreateWithoutAuditLogArchivesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutAuditLogArchivesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutAuditLogArchivesInput, UserUncheckedUpdateWithoutAuditLogArchivesInput>
+  }
+
+  export type UserUpdateWithoutAuditLogArchivesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
+    isSuperAdmin?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    patient?: PatientUpdateOneWithoutUserNestedInput
+    employeeProfile?: EmployeeProfileUpdateOneWithoutUserNestedInput
+    doctorAppointments?: AppointmentUpdateManyWithoutDoctorNestedInput
+    userRoles?: UserRoleUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutAuditLogArchivesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    avatarFileId?: NullableStringFieldUpdateOperationsInput | string | null
+    isSuperAdmin?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    patient?: PatientUncheckedUpdateOneWithoutUserNestedInput
+    employeeProfile?: EmployeeProfileUncheckedUpdateOneWithoutUserNestedInput
+    doctorAppointments?: AppointmentUncheckedUpdateManyWithoutDoctorNestedInput
+    userRoles?: UserRoleUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AppointmentCreateManyDoctorInput = {
@@ -22369,6 +24062,16 @@ export namespace Prisma {
   }
 
   export type AuditLogCreateManyUserInput = {
+    id?: string
+    action: string
+    resource: string
+    resourceId?: string | null
+    details?: string | null
+    ipAddress?: string | null
+    timestamp?: Date | string
+  }
+
+  export type AuditLogArchiveCreateManyUserInput = {
     id?: string
     action: string
     resource: string
@@ -22503,6 +24206,36 @@ export namespace Prisma {
   }
 
   export type AuditLogUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    resource?: StringFieldUpdateOperationsInput | string
+    resourceId?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogArchiveUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    resource?: StringFieldUpdateOperationsInput | string
+    resourceId?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogArchiveUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: StringFieldUpdateOperationsInput | string
+    resource?: StringFieldUpdateOperationsInput | string
+    resourceId?: NullableStringFieldUpdateOperationsInput | string | null
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    ipAddress?: NullableStringFieldUpdateOperationsInput | string | null
+    timestamp?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogArchiveUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     action?: StringFieldUpdateOperationsInput | string
     resource?: StringFieldUpdateOperationsInput | string

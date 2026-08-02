@@ -78,9 +78,10 @@ model User {
   doctorAppointments Appointment[] @relation("DoctorAppointments")
 
   // Auth & RBAC Relations
-  userRoles UserRole[]
-  sessions  Session[]
-  auditLogs AuditLog[]
+  userRoles        UserRole[]
+  sessions         Session[]
+  auditLogs        AuditLog[]
+  auditLogArchives AuditLogArchive[]
 }
 
 model EmployeeProfile {
@@ -288,4 +289,20 @@ model AuditLog {
   details    String? // JSON string with more details
   ipAddress  String?
   timestamp  DateTime @default(now())
+
+  @@index([timestamp])
+}
+
+model AuditLogArchive {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String // e.g., "CREATE", "UPDATE", "DELETE", "LOGIN"
+  resource   String // e.g., "Patient", "Appointment", "Session"
+  resourceId String? // ID of the affected resource
+  details    String? // JSON string with more details
+  ipAddress  String?
+  timestamp  DateTime @default(now())
+
+  @@index([timestamp])
 }

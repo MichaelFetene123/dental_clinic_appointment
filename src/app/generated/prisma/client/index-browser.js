@@ -267,6 +267,17 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   timestamp: 'timestamp'
 };
 
+exports.Prisma.AuditLogArchiveScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  action: 'action',
+  resource: 'resource',
+  resourceId: 'resourceId',
+  details: 'details',
+  ipAddress: 'ipAddress',
+  timestamp: 'timestamp'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -335,7 +346,8 @@ exports.Prisma.ModelName = {
   UserRole: 'UserRole',
   RolePermission: 'RolePermission',
   Session: 'Session',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  AuditLogArchive: 'AuditLogArchive'
 };
 
 /**

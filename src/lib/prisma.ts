@@ -16,8 +16,9 @@ function createPrismaClient() {
   const pool = new Pool({ 
     connectionString,
     max: 10, // Reverted to 10: pushing this higher overloaded the upstream Supabase PgBouncer pooler limit
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 5000,
+    idleTimeoutMillis: 10000, // Reduced from 30s to 10s to drop idle connections before Supabase does
+    connectionTimeoutMillis: 10000, // Increased to 10s just in case
+    keepAlive: true, // Send TCP keepalive packets to prevent silent drops
   });
 
   // Catch unhandled errors on idle connections to prevent the process from crashing

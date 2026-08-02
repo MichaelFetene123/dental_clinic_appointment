@@ -25,6 +25,16 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export function RolesManager({
   initialRoles,
@@ -107,10 +117,17 @@ export function RolesManager({
     });
   };
 
+  const [deleteRoleId, setDeleteRoleId] = useState<string | null>(null);
+
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this role?")) return;
     startTransition(async () => {
-      await deleteRole(id);
+      const result = await deleteRole(id);
+      if (!result.success) {
+        toast.error(result.error);
+      } else {
+        toast.success("Role deleted successfully.");
+      }
+      setDeleteRoleId(null);
     });
   };
 
@@ -266,7 +283,7 @@ export function RolesManager({
                       <Button
                         variant="destructive"
                         size="sm"
-                        onClick={() => handleDelete(role.id)}
+                        onClick={() => setDeleteRoleId(role.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -286,6 +303,30 @@ export function RolesManager({
           )}
         </div>
       )}
+
+      <AlertDialog open={!!deleteRoleId} onOpenChange={(open) => !open && setDeleteRoleId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this role. Users assigned to this role will lose its permissions.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                if (deleteRoleId) handleDelete(deleteRoleId);
+              }}
+              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+              disabled={isPending}
+            >
+              {isPending ? "Deleting..." : "Delete Role"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

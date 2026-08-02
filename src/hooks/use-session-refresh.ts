@@ -27,27 +27,40 @@ export function useSessionRefresh() {
     return val ? parseInt(val, 10) : Date.now();
   };
 
+let refreshPromise: Promise<void> | null = null;
+
   const attemptRefresh = async () => {
     const inactiveDuration = Date.now() - getLastActivity();
 
     // Do not refresh if they are already considered idle (let the idle checker handle logout)
     if (inactiveDuration >= IDLE_TIMEOUT_MS) return;
 
-    try {
-      console.log(`[AUTH DEBUG] [${new Date().toISOString()}] attemptRefresh(): Calling /api/auth/refresh`);
-      const res = await fetch("/api/auth/refresh", { method: "POST" });
-      if (res.ok) {
-        console.log(`[AUTH DEBUG] [${new Date().toISOString()}] attemptRefresh(): Success`);
-        localStorage.setItem("lastRefresh", Date.now().toString());
-      } else {
-        console.log(`[AUTH DEBUG] [${new Date().toISOString()}] attemptRefresh(): Failed with status ${res.status}, redirecting to /login`);
-        // Refresh token is gone/expired/revoked → force re-login
-        router.push("/login");
-      }
-    } catch {
-      console.log(`[AUTH DEBUG] [${new Date().toISOString()}] attemptRefresh(): Network error`);
-      // Network error – stay quiet and retry at the next interval
+    if (refreshPromise) {
+      console.log(`[AUTH DEBUG] [${new Date().toISOString()}] attemptRefresh(): Already in-flight, waiting for existing request.`);
+      return refreshPromise;
     }
+
+    refreshPromise = (async () => {
+      try {
+        console.log(`[AUTH DEBUG] [${new Date().toISOString()}] attemptRefresh(): Calling /api/auth/refresh`);
+        const res = await fetch("/api/auth/refresh", { method: "POST" });
+        if (res.ok) {
+          console.log(`[AUTH DEBUG] [${new Date().toISOString()}] attemptRefresh(): Success`);
+          localStorage.setItem("lastRefresh", Date.now().toString());
+        } else {
+          console.log(`[AUTH DEBUG] [${new Date().toISOString()}] attemptRefresh(): Failed with status ${res.status}, redirecting to /login`);
+          // Refresh token is gone/expired/revoked → force re-login
+          router.push("/login");
+        }
+      } catch {
+        console.log(`[AUTH DEBUG] [${new Date().toISOString()}] attemptRefresh(): Network error`);
+        // Network error – stay quiet and retry at the next interval
+      } finally {
+        refreshPromise = null;
+      }
+    })();
+
+    return refreshPromise;
   };
 
   const checkIdleStatus = async () => {

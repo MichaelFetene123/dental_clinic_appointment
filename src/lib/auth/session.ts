@@ -159,8 +159,12 @@ export async function rotateSession(rawRefreshToken: string, ipAddress?: string)
     const newRefreshToken = generateToken();
     const permissions = await computePermissions(session.userId);
 
-    await prisma.session.update({
-      where: { id: session.id },
+    // Use updateMany for optimistic locking: ensures we only update if the refreshHash hasn't changed concurrently
+    const updateResult = await prisma.session.updateMany({
+      where: { 
+        id: session.id,
+        refreshHash: incomingHash 
+      },
       data: {
         previousTokenHash: session.tokenHash,
         previousTokenExpiresAt: new Date(Date.now() + 15000), // 15-second grace period
@@ -173,6 +177,11 @@ export async function rotateSession(rawRefreshToken: string, ipAddress?: string)
         ipAddress: ipAddress ?? session.ipAddress,
       },
     });
+
+    if (updateResult.count === 0) {
+      console.log(`[AUTH DEBUG] [${new Date().toISOString()}] rotateSession: Concurrent rotation detected for session ${session.id}, skipping.`);
+      return true; // Another request already rotated it, no-op and let it succeed
+    }
 
     console.log(`[AUTH DEBUG] [${new Date().toISOString()}] rotateSession: Tokens rotated and DB updated for session ${session.id}. Setting cookies...`);
     await setAuthCookies(newSessionToken, newRefreshToken);

@@ -1,30 +1,33 @@
 import { PrismaClient } from "../app/generated/prisma/client"; 
-import { PrismaPg } from "@prisma/adapter-pg"; 
 import { Pool } from "pg";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 const globalForPrisma = global as unknown as {
-  prisma: PrismaClient; 
-  pool: Pool;
+  prismaClientNative: PrismaClient; 
 }; 
 
-if (!globalForPrisma.pool) {
-  globalForPrisma.pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    // Configure pool for Supabase to avoid idle connection drops
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 5000,
-    max: 10,
-  });
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  throw new Error("DATABASE_URL is not defined. Please check your environment variables.");
 }
 
-const adapter = new PrismaPg(globalForPrisma.pool); 
+// Re-use a single Pool in development to avoid exhausting connections
+function createPrismaClient() {
+  const pool = new Pool({ connectionString });
+  const adapter = new PrismaPg(pool);
+  return new PrismaClient({ adapter });
+}
 
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({
-    adapter, 
-  }); 
+export const prisma = (() => {
+  if (globalForPrisma.prismaClientNative) {
+    console.log("Prisma: reusing global singleton");
+    return globalForPrisma.prismaClientNative;
+  }
+  console.log("Prisma: creating new client");
+  return createPrismaClient();
+})();
 
 if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
+  globalForPrisma.prismaClientNative = prisma;
 }

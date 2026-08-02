@@ -3,7 +3,7 @@
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryKeys";
 import { getStaff } from "@/lib/actions/queries/staff-queries";
-import { createStaff, updateStaff, deleteStaff } from "@/lib/actions/mutations/staff-mutations";
+import { createStaff, updateStaff, deleteStaff, resetStaffPassword } from "@/lib/actions/mutations/staff-mutations";
 import { toast } from "sonner";
 
 export function useStaff() {
@@ -14,7 +14,7 @@ export function useStaff() {
   });
 }
 
-export function useCreateStaff(onSuccess?: () => void) {
+export function useCreateStaff(onSuccess?: (tempPassword?: string) => void) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (formData: FormData) => createStaff({ success: false, error: "" }, formData),
@@ -25,7 +25,7 @@ export function useCreateStaff(onSuccess?: () => void) {
       }
       toast.success("Staff member created successfully.");
       queryClient.invalidateQueries({ queryKey: queryKeys.staff.all });
-      onSuccess?.();
+      onSuccess?.(result.data?.tempPassword);
     },
     onError: () => toast.error("Failed to create staff member."),
   });
@@ -61,5 +61,21 @@ export function useDeleteStaff() {
       queryClient.invalidateQueries({ queryKey: queryKeys.staff.all });
     },
     onError: () => toast.error("Failed to delete staff member."),
+  });
+}
+
+export function useResetStaffPassword() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => resetStaffPassword(id),
+    onSuccess: (result) => {
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success("Password reset successfully.");
+      queryClient.invalidateQueries({ queryKey: queryKeys.staff.all });
+    },
+    onError: () => toast.error("Failed to reset password."),
   });
 }

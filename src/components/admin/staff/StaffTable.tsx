@@ -8,12 +8,12 @@ import {
     useReactTable,
 } from "@tanstack/react-table"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { useStaff, useDeleteStaff } from "@/hooks/use-staff"
+import { useStaff, useDeleteStaff, useResetStaffPassword } from "@/hooks/use-staff"
 import type { StaffRow } from "@/lib/actions/queries/staff-queries"
 import { Skeleton } from "@/components/ui/skeleton"
 import { RoleData } from "@/lib/actions/queries/role-queries"
 import { Button } from "@/components/ui/button"
-import { MoreHorizontal, Edit, Trash2 } from "lucide-react"
+import { MoreHorizontal, Edit, Trash2, Key, Copy, Check } from "lucide-react"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -26,6 +26,7 @@ import {
     DialogDescription,
     DialogHeader,
     DialogTitle,
+    DialogFooter,
 } from "@/components/ui/dialog"
 import {
     AlertDialog,
@@ -40,11 +41,83 @@ import {
 import { StaffForm } from "./StaffForm"
 import { usePermissions } from "@/components/providers/PermissionProvider"
 
+function ResetPasswordDialog({
+    staff,
+    open,
+    onOpenChange,
+}: {
+    staff: StaffRow;
+    open: boolean;
+    onOpenChange: (v: boolean) => void;
+}) {
+    const [tempPassword, setTempPassword] = React.useState<string | null>(null);
+    const [copied, setCopied] = React.useState(false);
+    const { mutate, isPending } = useResetStaffPassword();
+
+    const handleCopy = () => {
+        if (tempPassword) {
+            navigator.clipboard.writeText(tempPassword);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        }
+    };
+
+    const handleClose = () => {
+        setTempPassword(null);
+        setCopied(false);
+        onOpenChange(false);
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={handleClose}>
+            <DialogContent className="sm:max-w-[400px]">
+                <DialogHeader>
+                    <DialogTitle>Reset Password</DialogTitle>
+                    <DialogDescription>
+                        A new temporary password will be generated for{" "}
+                        <span className="font-semibold">{staff.name}</span>. All current sessions will be revoked.
+                    </DialogDescription>
+                </DialogHeader>
+
+                {tempPassword ? (
+                    <div className="space-y-3 py-2">
+                        <p className="text-sm text-muted-foreground">
+                            Share this password with the staff member. They will use it to log in.
+                        </p>
+                        <div className="flex items-center gap-2 rounded-md border bg-muted/50 px-3 py-2">
+                            <code className="flex-1 text-sm font-mono">{tempPassword}</code>
+                            <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={handleCopy}>
+                                {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                            </Button>
+                        </div>
+                        <DialogFooter>
+                            <Button onClick={handleClose}>Done</Button>
+                        </DialogFooter>
+                    </div>
+                ) : (
+                    <DialogFooter>
+                        <Button variant="outline" onClick={handleClose} disabled={isPending}>
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={() => mutate(staff.id, { onSuccess: (res) => { if (res.success) setTempPassword(res.data?.tempPassword ?? null); } })}
+                            disabled={isPending}
+                        >
+                            {isPending ? "Resetting…" : "Reset Password"}
+                        </Button>
+                    </DialogFooter>
+                )}
+            </DialogContent>
+        </Dialog>
+    );
+}
+
 function StaffRowActions({ staff, roles }: { staff: StaffRow, roles: RoleData[] }) {
     const { hasPermission, isSuperAdmin } = usePermissions();
     const canEdit = isSuperAdmin || hasPermission("staff.edit");
     const canDelete = isSuperAdmin || hasPermission("staff.delete");
-    const [action, setAction] = React.useState<"edit" | "delete" | null>(null);
+    const [action, setAction] = React.useState<"edit" | "delete" | "resetPassword" | null>(null);
     const deleteMutation = useDeleteStaff();
     const isDeleting = deleteMutation.isPending;
 
@@ -68,9 +141,14 @@ function StaffRowActions({ staff, roles }: { staff: StaffRow, roles: RoleData[] 
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                     {canEdit && (
-                        <DropdownMenuItem onClick={() => setAction("edit")}>
-                            <Edit className="mr-2 h-4 w-4" /> Edit Profile
-                        </DropdownMenuItem>
+                        <>
+                            <DropdownMenuItem onClick={() => setAction("edit")}>
+                                <Edit className="mr-2 h-4 w-4" /> Edit Profile
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setAction("resetPassword")}>
+                                <Key className="mr-2 h-4 w-4" /> Reset Password
+                            </DropdownMenuItem>
+                        </>
                     )}
                     {canDelete && (
                         <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setAction("delete")}>
@@ -92,6 +170,14 @@ function StaffRowActions({ staff, roles }: { staff: StaffRow, roles: RoleData[] 
                         <StaffForm roles={roles} staff={staff} onSuccess={() => setAction(null)} />
                     </DialogContent>
                 </Dialog>
+            )}
+
+            {canEdit && action === "resetPassword" && (
+                <ResetPasswordDialog 
+                    staff={staff} 
+                    open={true} 
+                    onOpenChange={(v) => !v && setAction(null)} 
+                />
             )}
 
             {canDelete && (

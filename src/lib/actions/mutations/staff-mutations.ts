@@ -4,15 +4,16 @@ import { prisma } from "@/lib/prisma";
 import { updateTag } from "next/cache";
 import { hashPassword } from "@/lib/bcrypt";
 import { requirePermission } from "@/lib/auth/guards";
+import crypto from "crypto";
 
 export type ActionResponse<T = void> =
   | { success: true; data?: T }
   | { success: false; error: string; errors?: Record<string, string> };
 
 export async function createStaff(
-  _prevState: ActionResponse,
+  _prevState: ActionResponse<{ tempPassword?: string }>,
   formData: FormData
-): Promise<ActionResponse> {
+): Promise<ActionResponse<{ tempPassword?: string }>> {
   await requirePermission("staff.create");
 
   const name = formData.get("name") as string;
@@ -35,13 +36,15 @@ export async function createStaff(
       return { success: false, error: "Email already exists" };
     }
 
+    const tempPassword = crypto.randomBytes(8).toString("hex");
+
     await prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
         data: {
           name,
           email,
           phone,
-          password: await hashPassword("ChangeMe@123"),
+          password: await hashPassword(tempPassword),
         },
       });
 
@@ -63,7 +66,7 @@ export async function createStaff(
     });
 
     updateTag("staff");
-    return { success: true };
+    return { success: true, data: { tempPassword } };
   } catch {
     return { success: false, error: "Failed to create staff member" };
   }
@@ -137,3 +140,31 @@ export async function deleteStaff(id: string): Promise<ActionResponse> {
   }
 }
 
+/**
+ * Resets a staff member's password to a secure random string and revokes their sessions.
+ * Requires: staff.edit permission.
+ */
+export async function resetStaffPassword(userId: string): Promise<ActionResponse<{ tempPassword: string }>> {
+  await requirePermission("staff.edit");
+  try {
+    const tempPassword = crypto.randomBytes(8).toString("hex");
+    const hashedPassword = await hashPassword(tempPassword);
+
+    await prisma.$transaction(async (tx) => {
+      // Update password
+      await tx.user.update({
+        where: { id: userId },
+        data: { password: hashedPassword },
+      });
+
+      // Revoke all active sessions
+      await tx.session.deleteMany({
+        where: { userId },
+      });
+    });
+
+    return { success: true, data: { tempPassword } };
+  } catch (error) {
+    return { success: false, error: "Failed to reset password" };
+  }
+}

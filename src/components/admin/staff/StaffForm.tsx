@@ -12,7 +12,7 @@ import { DialogFooter } from "@/components/ui/dialog";
 
 interface StaffFormProps {
   roles: RoleData[];
-  onSuccess: () => void;
+  onSuccess: (tempPassword?: string) => void;
   staff?: StaffRow;
 }
 

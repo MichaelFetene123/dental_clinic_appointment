@@ -15,7 +15,7 @@ if (!connectionString) {
 function createPrismaClient() {
   const pool = new Pool({ 
     connectionString,
-    max: 10,
+    max: 30, // Increased to 30 to comfortably handle concurrent Promise.all batches (e.g. 5x queries per dashboard load)
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 5000,
   });
@@ -24,6 +24,12 @@ function createPrismaClient() {
   pool.on("error", (err) => {
     console.error("PrismaPg Pool Error: Unexpected error on idle client", err);
   });
+
+  if (process.env.NODE_ENV !== "production") {
+    setInterval(() => {
+      console.log(`[PG POOL STATS] Total: ${pool.totalCount} | Idle: ${pool.idleCount} | Waiting: ${pool.waitingCount}`);
+    }, 10000).unref(); // Use unref() so this timer doesn't keep the Node process alive indefinitely
+  }
 
   const adapter = new PrismaPg(pool);
   return new PrismaClient({ adapter });

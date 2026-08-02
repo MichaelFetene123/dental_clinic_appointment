@@ -140,23 +140,86 @@ export async function updatePatient(
 }
 
 // ─── Delete Patient ────────────────────────────────────────────────────────────
+//
+// Portal User handling decision (Option A — hard delete):
+//   If the patient has a linked portal User account, that User is deleted inside
+//   the same $transaction as the Patient.  Rationale:
+//     • Portal accounts are single-purpose (identified by: no role, no employee
+//       profile, not superAdmin).  An orphaned account stays authenticatable but
+//       has no data — a security gap.
+//     • Deleting the User cascades their active Sessions automatically
+//       (onDelete: Cascade on Session.userId), revoking all portal logins.
+//     • AuditLog rows survive with userId → null (onDelete: SetNull), keeping
+//       historical records intact but de-identified.
+//   An AuditLog entry is always written inside the transaction so the deletion
+//   (and any portal revocation) is fully traceable even if cache tags fail.
+//
 export async function deletePatient(id: string): Promise<ActionResponse> {
-  await requirePermission("patient.delete");
+  const session = await requirePermission("patient.delete");
+
   try {
-    // Delete the patient (due to onDelete: Cascade in prisma schema, this should delete related appointments, history, documents)
-    await prisma.patient.delete({
+    // Snapshot patient + any linked portal user BEFORE the transaction.
+    const patient = await prisma.patient.findUnique({
       where: { id },
+      select: {
+        id: true,
+        name: true,
+        user: { select: { id: true, email: true, name: true } },
+      },
     });
 
+    if (!patient) {
+      return { success: false, error: "Patient not found." };
+    }
+
+    const linkedPortalUser = patient.user ?? null;
+
+    await prisma.$transaction(async (tx) => {
+      // Step 1 — Delete the patient.
+      //   Prisma cascades: Appointment → DentalHistory, MedicalDocument.
+      //   The Patient row is removed first so the FK (Patient.userId → User.id)
+      //   disappears before we touch the User below.
+      await tx.patient.delete({ where: { id } });
+
+      // Step 2 — If a portal User was linked, delete them too.
+      //   Sessions are cascade-deleted; AuditLogs survive with userId = null.
+      if (linkedPortalUser) {
+        await tx.user.delete({ where: { id: linkedPortalUser.id } });
+      }
+
+      // Step 3 — Audit log (always written, whether or not a portal user existed).
+      await tx.auditLog.create({
+        data: {
+          userId: session.userId,
+          action: "DELETE",
+          resource: "Patient",
+          resourceId: id,
+          details: JSON.stringify({
+            patientName: patient.name,
+            portalUserDeleted: linkedPortalUser !== null,
+            ...(linkedPortalUser && {
+              portalUserId: linkedPortalUser.id,
+              portalUserEmail: linkedPortalUser.email,
+            }),
+          }),
+        },
+      });
+    });
+
+    // Invalidate all affected cache tags after the transaction commits.
     updateTag("patients");
     updateTag(`patient-${id}`);
     updateTag("dashboard");
     updateTag("appointments");
     updateTag("appointments-calendar");
+    updateTag("portal-users"); // Portal Users page must reflect the revoked account.
 
     return { success: true };
   } catch (error: any) {
     console.error("Error deleting patient:", error);
-    return { success: false, error: "Failed to delete patient. Ensure related data is cleared or cascade rules apply." };
+    return {
+      success: false,
+      error: "Failed to delete patient. Please try again.",
+    };
   }
 }

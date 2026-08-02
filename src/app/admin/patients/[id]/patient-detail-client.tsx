@@ -3,7 +3,8 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
 import { format } from 'date-fns'
-import { usePatientDetail } from '@/hooks/use-patients'
+import { useRouter } from 'next/navigation'
+import { usePatientDetail, useDeletePatient } from '@/hooks/use-patients'
 import { usePermissions } from '@/components/providers/PermissionProvider'
 
 import { Button } from '@/components/ui/button'
@@ -12,6 +13,16 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Separator } from '@/components/ui/separator'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 
 import { GrantAccessModal } from '@/components/admin/patient/GrantAccessModal'
 import { AppointmentForm } from "@/components/admin/forms/appointmentForm"
@@ -19,7 +30,7 @@ import PatientForm from "@/components/admin/forms/patientForm"
 
 import {
     Calendar, Mail, MapPin, Phone, VenusAndMars, User,
-    CalendarCheck, Clock, FileText, Activity, Key, Edit, Plus
+    CalendarCheck, Clock, FileText, Activity, Key, Edit, Plus, Trash2, Loader2
 } from 'lucide-react'
 
 interface PatientDetailClientProps {
@@ -27,16 +38,21 @@ interface PatientDetailClientProps {
 }
 
 export default function PatientDetailClient({ id }: PatientDetailClientProps) {
+    const router = useRouter();
     const { data: patient, isLoading } = usePatientDetail(id)
     const { hasPermission, isSuperAdmin } = usePermissions();
     const canEdit = isSuperAdmin || hasPermission("patient.edit");
+    const canDelete = isSuperAdmin || hasPermission("patient.delete");
     const canManagePortal = isSuperAdmin || hasPermission("portal_users.manage");
     const canCreateAppointment = isSuperAdmin || hasPermission("appointment.create");
+
+    const deleteMutation = useDeletePatient();
 
     // Dialog States
     const [grantModalOpen, setGrantModalOpen] = useState(false);
     const [showApptForm, setShowApptForm] = useState(false);
     const [editPatientOpen, setEditPatientOpen] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
     if (isLoading) {
         return (
@@ -107,6 +123,19 @@ export default function PatientDetailClient({ id }: PatientDetailClientProps) {
                         <Button className="gap-2 h-10 font-semibold shadow-sm" onClick={() => setShowApptForm(true)}>
                             <Plus className="w-4 h-4" />
                             New Appointment
+                        </Button>
+                    )}
+                    {canDelete && (
+                        <Button
+                            variant="destructive"
+                            className="gap-2 h-10"
+                            onClick={() => setDeleteDialogOpen(true)}
+                            disabled={deleteMutation.isPending}
+                        >
+                            {deleteMutation.isPending
+                                ? <Loader2 className="w-4 h-4 animate-spin" />
+                                : <Trash2 className="w-4 h-4" />}
+                            Delete Patient
                         </Button>
                     )}
                 </div>
@@ -325,6 +354,41 @@ export default function PatientDetailClient({ id }: PatientDetailClientProps) {
                     patient={patient}
                 />
             )}
+
+            <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Patient</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to permanently delete <strong>{patient?.name}</strong>? This will
+                            also remove all their appointments, dental history, and medical documents. This action
+                            cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel disabled={deleteMutation.isPending}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            disabled={deleteMutation.isPending}
+                            onClick={async (e) => {
+                                e.preventDefault();
+                                deleteMutation.mutate(patient.id, {
+                                    onSuccess: (result) => {
+                                        if (result.success) {
+                                            setDeleteDialogOpen(false);
+                                            router.push('/admin/patients');
+                                        }
+                                    },
+                                });
+                            }}
+                        >
+                            {deleteMutation.isPending
+                                ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />Deleting…</>
+                                : 'Delete Patient'}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     )
 }

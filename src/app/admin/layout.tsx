@@ -10,7 +10,7 @@ import { requireAuth } from "@/lib/auth/guards";
 import { prisma } from "@/lib/prisma";
 import { SessionRefresher } from "@/components/providers/SessionRefresher";
 
-async function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
     // Top-level layout guard: fetch current session. 
     // This throws an error/redirect and blocks rendering if no valid session is found.
     const session = await requireAuth();
@@ -44,13 +44,5 @@ async function AuthenticatedLayout({ children }: { children: React.ReactNode }) 
                 </SidebarInset>
             </SidebarProvider>
         </PermissionProvider>
-    );
-}
-
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
-    return (
-        <Suspense fallback={<div className="flex h-screen w-screen items-center justify-center bg-background"><div className="animate-pulse text-lg text-muted-foreground">Loading application...</div></div>}>
-            <AuthenticatedLayout>{children}</AuthenticatedLayout>
-        </Suspense>
     );
 }

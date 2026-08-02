@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import AppointmentForm from '@/components/admin/forms/appointmentForm';
 import AppointmentCalendar from '@/components/admin/appointment/calendar/AppointmentCalendar';
-import { AppointmentCalendarSkeleton } from '@/lib/skeleton/AppointmentCalendarSkeleton';
 import { useDashboardStats } from '@/hooks/use-dashboard';
 import { usePermissions } from '@/components/providers/PermissionProvider';
 
@@ -66,9 +65,7 @@ const Page = () => {
 
             <SectionCards data={cardData} />
 
-            <Suspense fallback={<AppointmentCalendarSkeleton />}>
-                <AppointmentCalendar />
-            </Suspense>
+            <AppointmentCalendar />
 
             {/* Tab Navigation */}
             <div className="flex gap-4 border-b-2 py-2 px-4 flex-wrap">
@@ -112,9 +109,7 @@ const Page = () => {
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
                     >
-                        <Suspense fallback={<div className="h-96 rounded-lg border animate-pulse bg-muted/40" />}>
-                            <AppointmentTable />
-                        </Suspense>
+                        <AppointmentTable />
                     </motion.div>
                 )}
                 {activeTab === 'queue' && (
@@ -125,9 +120,7 @@ const Page = () => {
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
                     >
-                        <Suspense fallback={<div className="h-96 rounded-lg border animate-pulse bg-muted/40" />}>
-                            <AppointmentTable statusFilter="PENDING" />
-                        </Suspense>
+                        <AppointmentTable statusFilter={["PENDING"]} />
                     </motion.div>
                 )}
                 {activeTab === 'confirmed' && (
@@ -138,9 +131,7 @@ const Page = () => {
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
                     >
-                        <Suspense fallback={<div className="h-96 rounded-lg border animate-pulse bg-muted/40" />}>
-                            <AppointmentTable statusFilter="CONFIRMED" />
-                        </Suspense>
+                        <AppointmentTable statusFilter={["CONFIRMED"]} />
                     </motion.div>
                 )}
                 {activeTab === 'archive' && (
@@ -151,9 +142,7 @@ const Page = () => {
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
                     >
-                        <Suspense fallback={<div className="h-96 rounded-lg border animate-pulse bg-muted/40" />}>
-                            <AppointmentTable statusFilter={["COMPLETED", "CANCELLED"]} />
-                        </Suspense>
+                        <AppointmentTable statusFilter={["COMPLETED", "CANCELLED"]} />
                     </motion.div>
                 )}
             </AnimatePresence>

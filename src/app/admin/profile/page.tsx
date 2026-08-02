@@ -1,4 +1,5 @@
 import React, { Suspense } from "react";
+import { ProfileFormSkeleton } from "@/components/skeleton/ProfileFormSkeleton";
 import { getProfile } from "@/lib/actions/queries/profile-queries";
 import { ProfileManager } from "@/components/admin/profile/ProfileManager";
 
@@ -18,7 +19,7 @@ export default function ProfilePage() {
         </p>
       </div>
 
-      <Suspense fallback={<div className="animate-pulse h-96 bg-muted/50 rounded-xl" />}>
+      <Suspense fallback={<ProfileFormSkeleton />}>
         <ProfileContent />
       </Suspense>
     </div>

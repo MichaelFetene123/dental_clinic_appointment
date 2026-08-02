@@ -1,4 +1,5 @@
 import React, { Suspense } from "react";
+import { DataTableSkeleton } from "@/components/skeleton/DataTableSkeleton";
 import { RolesManager } from "@/components/admin/roles/RolesManager";
 import { getRoles, getPermissions } from "@/lib/actions/queries/role-queries";
 import { requirePermission } from "@/lib/auth/guards";
@@ -25,7 +26,7 @@ export default function RolesPage() {
         </p>
       </div>
 
-      <Suspense fallback={<div className="animate-pulse h-64 bg-muted/50 rounded-xl" />}>
+      <Suspense fallback={<DataTableSkeleton columnCount={4} rowCount={3} />}>
         <RolesContent />
       </Suspense>
     </div>

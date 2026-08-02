@@ -9,11 +9,11 @@ import { usePermissions } from '@/components/providers/PermissionProvider'
 import { AlertTriangleIcon, CalendarCheckIcon, CircleCheckBig, TrendingUpIcon, Users } from 'lucide-react'
 import PatientForm from '@/components/admin/forms/patientForm'
 import { useDashboardStats } from '@/hooks/use-dashboard'
-
+import { DashboardCardsSkeleton } from '@/components/skeleton/DashboardCardSkeleton'
 
 const Page = () => {
     const [showForm, setShowForm] = useState(false);
-    const { data: dashData } = useDashboardStats();
+    const { data: dashData, isLoading: statsLoading } = useDashboardStats();
     const { hasPermission } = usePermissions();
     const canCreate = hasPermission("patient.create");
 
@@ -68,10 +68,12 @@ const Page = () => {
                         )}
                     </div>
                 </div>
-                <SectionCards data={cardData} />
-                <Suspense fallback={<div className="h-96 rounded-lg border animate-pulse bg-muted/40" />}>
-                    <DataTable isDashboard={false} />
-                </Suspense>
+                {statsLoading ? (
+                    <DashboardCardsSkeleton count={4} />
+                ) : (
+                    <SectionCards data={cardData} />
+                )}
+                <DataTable isDashboard={false} />
             </div>
             {showForm && <PatientForm show={showForm} setShow={setShowForm} />}
         </>

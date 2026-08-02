@@ -76,6 +76,7 @@ import Link from "next/link"
 import { usePatients, useDeletePatient } from "@/hooks/use-patients"
 import type { PatientRow } from "@/lib/actions/queries/patient-queries"
 import { Skeleton } from "@/components/ui/skeleton"
+import { DataTableSkeleton } from "@/components/skeleton/DataTableSkeleton"
 import { GrantAccessModal } from "@/components/admin/patient/GrantAccessModal"
 import PatientForm from "@/components/admin/forms/patientForm"
 import {
@@ -471,11 +472,7 @@ export function DataTable({
                     />
                 </div>
                 {isLoading ? (
-                    <div className="space-y-3">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                            <Skeleton key={i} className="h-12 w-full rounded-md" />
-                        ))}
-                    </div>
+                    <DataTableSkeleton columnCount={7} rowCount={isDashboard ? 5 : 10} />
                 ) : (
                 <div>
                     <DndContext

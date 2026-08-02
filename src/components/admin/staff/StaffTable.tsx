@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useStaff, useDeleteStaff, useResetStaffPassword } from "@/hooks/use-staff"
 import type { StaffRow } from "@/lib/actions/queries/staff-queries"
 import { Skeleton } from "@/components/ui/skeleton"
+import { DataTableSkeleton } from "@/components/skeleton/DataTableSkeleton"
 import { RoleData } from "@/lib/actions/queries/role-queries"
 import { Button } from "@/components/ui/button"
 import { MoreHorizontal, Edit, Trash2, Key, Copy, Check } from "lucide-react"
@@ -259,13 +260,7 @@ export function StaffTable({ roles }: { roles: RoleData[] }) {
     })
 
     if (isLoading) {
-        return (
-            <div className="space-y-4">
-                {Array.from({ length: 5 }).map((_, i) => (
-                    <Skeleton key={i} className="h-12 w-full rounded-md" />
-                ))}
-            </div>
-        )
+        return <DataTableSkeleton columnCount={5} rowCount={10} />
     }
 
     return (

@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DataTableSkeleton } from "@/components/skeleton/DataTableSkeleton";
 import { format } from "date-fns";
 import { PortalAppointmentModal } from "@/components/portal/PortalAppointmentModal";
 import { usePortalAppointments } from "@/hooks/use-portal-appointments";
@@ -98,55 +99,49 @@ export default function PortalAppointmentsPage() {
                     <CardTitle>My Appointments</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="rounded-md border">
-                        <Table>
-                            <TableHeader>
-                                {table.getHeaderGroups().map((headerGroup) => (
-                                    <TableRow key={headerGroup.id}>
-                                        {headerGroup.headers.map((header) => (
-                                            <TableHead key={header.id}>
-                                                {header.isPlaceholder
-                                                    ? null
-                                                    : flexRender(
-                                                        header.column.columnDef.header,
-                                                        header.getContext()
-                                                    )}
-                                            </TableHead>
-                                        ))}
-                                    </TableRow>
-                                ))}
-                            </TableHeader>
-                            <TableBody>
-                                {isLoading ? (
-                                    Array.from({ length: 5 }).map((_, i) => (
-                                        <TableRow key={i}>
-                                            {columns.map((_, j) => (
-                                                <TableCell key={j}>
-                                                    <Skeleton className="h-4 w-full" />
-                                                </TableCell>
+                    {isLoading ? (
+                        <DataTableSkeleton columnCount={4} rowCount={5} />
+                    ) : (
+                        <div className="rounded-md border">
+                            <Table>
+                                <TableHeader>
+                                    {table.getHeaderGroups().map((headerGroup) => (
+                                        <TableRow key={headerGroup.id}>
+                                            {headerGroup.headers.map((header) => (
+                                                <TableHead key={header.id}>
+                                                    {header.isPlaceholder
+                                                        ? null
+                                                        : flexRender(
+                                                            header.column.columnDef.header,
+                                                            header.getContext()
+                                                        )}
+                                                </TableHead>
                                             ))}
                                         </TableRow>
-                                    ))
-                                ) : table.getRowModel().rows?.length ? (
-                                    table.getRowModel().rows.map((row) => (
-                                        <TableRow key={row.id}>
-                                            {row.getVisibleCells().map((cell) => (
-                                                <TableCell key={cell.id}>
-                                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                                </TableCell>
-                                            ))}
+                                    ))}
+                                </TableHeader>
+                                <TableBody>
+                                    {table.getRowModel().rows?.length ? (
+                                        table.getRowModel().rows.map((row) => (
+                                            <TableRow key={row.id}>
+                                                {row.getVisibleCells().map((cell) => (
+                                                    <TableCell key={cell.id}>
+                                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                                    </TableCell>
+                                                ))}
+                                            </TableRow>
+                                        ))
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell colSpan={columns.length} className="h-32 text-center text-muted-foreground">
+                                                No appointments found. Use the button above to book one!
+                                            </TableCell>
                                         </TableRow>
-                                    ))
-                                ) : (
-                                    <TableRow>
-                                        <TableCell colSpan={columns.length} className="h-32 text-center text-muted-foreground">
-                                            No appointments found. Use the button above to book one!
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </div>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
         </div>

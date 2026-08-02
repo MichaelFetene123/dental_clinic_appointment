@@ -5,7 +5,7 @@ import { PortalSidebar } from "@/components/portal/sidebar/portal-sidebar";
 import { SiteHeader } from "@/components/admin/sidebar/site-header";
 import { SessionRefresher } from "@/components/providers/SessionRefresher";
 
-async function PortalLayoutContent({ children }: { children: React.ReactNode }) {
+export default async function PortalLayout({ children }: { children: React.ReactNode }) {
     const { session, patient } = await requirePatientAuth();
 
     return (
@@ -30,13 +30,5 @@ async function PortalLayoutContent({ children }: { children: React.ReactNode }) 
                 </div>
             </SidebarInset>
         </SidebarProvider>
-    );
-}
-
-export default function PortalLayout({ children }: { children: React.ReactNode }) {
-    return (
-        <Suspense fallback={<div className="flex h-screen w-screen items-center justify-center bg-background"><div className="animate-pulse text-lg text-muted-foreground">Loading portal...</div></div>}>
-            <PortalLayoutContent>{children}</PortalLayoutContent>
-        </Suspense>
     );
 }

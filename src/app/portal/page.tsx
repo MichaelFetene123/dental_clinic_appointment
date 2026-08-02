@@ -7,7 +7,10 @@ import Link from "next/link";
 import { ArrowRight, Calendar, FileText, Activity } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default async function PortalDashboardPage() {
+import { DashboardCardsSkeleton } from "@/components/skeleton/DashboardCardSkeleton";
+import { Suspense } from "react";
+
+async function DashboardContent() {
     const { patient } = await requirePatientAuth();
     const appointments = await getPortalAppointments();
     
@@ -83,5 +86,21 @@ export default async function PortalDashboardPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function PortalDashboardPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex flex-col gap-5 py-4 md:gap-6 md:py-6 px-4 lg:px-6 space-y-8">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight">Welcome back!</h1>
+                    <p className="text-muted-foreground mt-2">Here is an overview of your dental care.</p>
+                </div>
+                <DashboardCardsSkeleton count={2} />
+            </div>
+        }>
+            <DashboardContent />
+        </Suspense>
     );
 }

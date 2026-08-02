@@ -19,12 +19,13 @@ import { WeekView } from "./views/WeekView";
 import { MonthView } from "./views/MonthView";
 import { NewAppointmentDialog } from "./dialogs/NewAppointmentDialog";
 import { ViewAppointmentDialog } from "./dialogs/ViewAppointmentDialog";
+import { AppointmentCalendarSkeleton } from "@/components/skeleton/AppointmentCalendarSkeleton";
 
 // ─── Orchestrator ────────────────────────────────────────────────────────────
 export default function AppointmentCalendar() {
     // ── Data ──────────────────────────────────────────────────────────────────
     const [currentDate, setCurrentDate] = useState(() => new Date());
-    const { data: serverAppointments, isFetching: isCalendarFetching } =
+    const { data: serverAppointments, isFetching: isCalendarFetching, isLoading } =
         useCalendarAppointments(currentDate);
     const queryClient = useQueryClient();
     const { hasPermission } = usePermissions();
@@ -99,6 +100,10 @@ export default function AppointmentCalendar() {
     };
 
     // ── Render ────────────────────────────────────────────────────────────────
+    if (isLoading) {
+        return <AppointmentCalendarSkeleton />;
+    }
+
     return (
         <div className="w-full min-w-0 bg-background">
             <div className="w-full min-w-0 max-w-7xl mx-auto">

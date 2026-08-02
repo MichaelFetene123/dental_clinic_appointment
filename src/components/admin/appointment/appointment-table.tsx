@@ -18,6 +18,7 @@ import { ArrowUpDown, Eye, Trash2, CheckCircle, XCircle, Calendar, Clock, Phone,
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
+import { DataTableSkeleton } from "@/components/skeleton/DataTableSkeleton"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -255,11 +256,12 @@ export function AppointmentTable({ statusFilter }: AppointmentTableProps = {}) {
             <Card>
                 <CardHeader>
                     <CardTitle>Appointments</CardTitle>
+                    <CardDescription>
+                        Manage your patients' appointments, view details, update status, and more.
+                    </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                        <Skeleton key={i} className="h-10 w-full rounded-md" />
-                    ))}
+                <CardContent>
+                    <DataTableSkeleton columnCount={8} rowCount={10} />
                 </CardContent>
             </Card>
         )

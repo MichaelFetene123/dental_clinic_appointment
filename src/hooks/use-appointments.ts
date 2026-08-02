@@ -41,6 +41,7 @@ export function useUpdateAppointmentStatus() {
       toast.success(`Appointment marked as ${status.toLowerCase()}.`);
       queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.portal.appointments() });
     },
     onError: () => toast.error("Failed to update appointment status."),
   });
@@ -59,6 +60,7 @@ export function useDeleteAppointment() {
       toast.success("Appointment deleted.");
       queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.portal.appointments() });
     },
     onError: () => toast.error("Failed to delete appointment."),
   });
@@ -77,6 +79,7 @@ export function useCreateAppointment() {
       queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.portal.appointments() });
     },
   });
 }
@@ -94,6 +97,7 @@ export function useUpdateAppointment() {
       queryClient.invalidateQueries({ queryKey: queryKeys.appointments.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard.all });
       queryClient.invalidateQueries({ queryKey: queryKeys.patients.all });
+      queryClient.invalidateQueries({ queryKey: queryKeys.portal.appointments() });
     },
   });
 }

@@ -129,16 +129,16 @@ function AppointmentActions({ appointment }: { appointment: AppointmentRow }) {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                         <AlertDialogHeader>
-                            <AlertDialogTitle>Delete Appointment</AlertDialogTitle>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                             <AlertDialogDescription>
-                                Are you sure you want to delete this appointment? This action cannot be undone.
+                                This will permanently delete this appointment. This action cannot be undone.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction
                                 onClick={() => deleteMutation.mutate(appointment.id)}
-                                className="bg-transparent border border-destructive text-destructive hover:bg-red-500/10 hover:text-destructive transition-colors"
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                             >
                                 Delete
                             </AlertDialogAction>

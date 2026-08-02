@@ -5,19 +5,26 @@ import { PortalSidebar } from "@/components/portal/sidebar/portal-sidebar";
 import { SiteHeader } from "@/components/admin/sidebar/site-header";
 import { SessionRefresher } from "@/components/providers/SessionRefresher";
 
-export default async function PortalLayout({ children }: { children: React.ReactNode }) {
-    const { session, patient } = await requirePatientAuth();
+async function PortalSidebarWrapper() {
+    const { patient } = await requirePatientAuth();
+    return (
+        <PortalSidebar 
+            variant="inset" 
+            user={{ 
+                name: patient.name, 
+                email: patient.email || "", 
+                avatar: null 
+            }} 
+        />
+    );
+}
 
+export default function PortalLayout({ children }: { children: React.ReactNode }) {
     return (
         <SidebarProvider className="h-screen overflow-hidden">
-            <PortalSidebar 
-                variant="inset" 
-                user={{ 
-                    name: patient.name, 
-                    email: patient.email || "", 
-                    avatar: null 
-                }} 
-            />
+            <Suspense fallback={<PortalSidebar variant="inset" user={{ name: "Loading...", email: "", avatar: null }} />}>
+                <PortalSidebarWrapper />
+            </Suspense>
             <SidebarInset className="overflow-y-auto">
                 <Suspense fallback={<div className="h-12 border-b" />}>
                     <SiteHeader />

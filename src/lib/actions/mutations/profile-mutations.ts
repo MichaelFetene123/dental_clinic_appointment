@@ -3,6 +3,8 @@
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth/guards";
 import { comparePassword, hashPassword } from "@/lib/bcrypt";
+import { revokeAllSessions } from "@/lib/auth/session";
+import { clearAuthCookies } from "@/lib/auth/cookies";
 import {
   deleteImageFromImageKit,
   deleteLocalAvatar,
@@ -50,6 +52,10 @@ export async function changePassword(current: string, newPass: string) {
     where: { id: session.userId },
     data: { password: newPasswordHash },
   });
+
+  // Revoke all existing sessions for security
+  await revokeAllSessions(session.userId);
+  await clearAuthCookies();
 
   return { success: true };
 }

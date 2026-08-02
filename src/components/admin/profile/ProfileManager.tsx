@@ -6,6 +6,7 @@ import { useProfile } from "@/hooks/use-profile";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -235,9 +236,8 @@ export function ProfileManager({ profile }: ProfileProps) {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="newPassword">New Password</Label>
-                  <Input
+                  <PasswordInput
                     id="newPassword"
-                    type="password"
                     value={newPassword}
                     onChange={(e) => { setNewPassword(e.target.value); setPasswordErrors((prev) => ({ ...prev, newPassword: undefined })); }}
                     required
@@ -252,9 +252,8 @@ export function ProfileManager({ profile }: ProfileProps) {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                  <Input
+                  <PasswordInput
                     id="confirmPassword"
-                    type="password"
                     value={confirmPassword}
                     onChange={(e) => { setConfirmPassword(e.target.value); setPasswordErrors((prev) => ({ ...prev, confirmPassword: undefined })); }}
                     required

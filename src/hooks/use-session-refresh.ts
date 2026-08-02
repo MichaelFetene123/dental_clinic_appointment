@@ -47,10 +47,13 @@ let refreshPromise: Promise<void> | null = null;
         if (res.ok) {
           console.log(`[AUTH DEBUG] [${new Date().toISOString()}] attemptRefresh(): Success`);
           localStorage.setItem("lastRefresh", Date.now().toString());
-        } else {
-          console.log(`[AUTH DEBUG] [${new Date().toISOString()}] attemptRefresh(): Failed with status ${res.status}, redirecting to /login`);
+        } else if (res.status === 401 || res.status === 403) {
+          console.log(`[AUTH DEBUG] [${new Date().toISOString()}] attemptRefresh(): Auth failed with status ${res.status}, redirecting to /login`);
           // Refresh token is gone/expired/revoked → force re-login
           router.push("/login");
+        } else {
+          console.log(`[AUTH DEBUG] [${new Date().toISOString()}] attemptRefresh(): Transient server error ${res.status}, ignoring and retrying next interval`);
+          // Server error (e.g. 500 connection timeout). Do not force logout.
         }
       } catch {
         console.log(`[AUTH DEBUG] [${new Date().toISOString()}] attemptRefresh(): Network error`);

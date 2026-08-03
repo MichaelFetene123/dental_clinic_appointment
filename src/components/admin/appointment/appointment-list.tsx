@@ -7,7 +7,7 @@ import React from 'react'
 import { Skeleton } from '@/components/ui/skeleton'
 import Link from 'next/link'
 import { format } from 'date-fns'
-import type { AppointmentStatus } from '@prisma/client'
+import type { AppointmentStatus } from '@/app/generated/prisma/client'
 
 type RecentAppointment = {
     id: string;

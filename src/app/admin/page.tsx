@@ -6,6 +6,7 @@ import DashboardClient from "@/components/admin/DashboardClient"
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 import { DashboardCardsSkeleton, ChartAreaInteractiveSkeleton, PatientStatusChartSkeleton } from "@/components/skeleton/DashboardCardSkeleton"
+import { DataTableSkeleton } from "@/components/skeleton/DataTableSkeleton"
 
 export default function Page() {
     return (
@@ -32,7 +33,7 @@ export default function Page() {
                         </div>
                     </div>
                     <div className="w-full">
-                        <Suspense fallback={<div className="h-[400px] flex items-center justify-center border rounded-lg text-muted-foreground">Loading Table...</div>}>
+                        <Suspense fallback={<DataTableSkeleton columnCount={7} rowCount={5} />}>
                             <DataTable isDashboard={true} />
                         </Suspense>
                     </div>

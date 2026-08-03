@@ -247,8 +247,8 @@ export const columns: ColumnDef<PatientRow>[] = [
                         className="rounded-full object-cover aspect-square"
                     />
                 </div>
-                <div>
-                    <p className="text-[16px] font-subheading font-medium">{row.getValue("name")}</p>
+                <div className="min-w-0">
+                    <p className="text-[16px] font-subheading font-medium truncate max-w-[120px] sm:max-w-[150px] lg:max-w-[250px] xl:max-w-[300px]" title={row.getValue("name")}>{row.getValue("name")}</p>
                 </div>
             </Link>,
     },
@@ -379,6 +379,11 @@ export function DataTable({
 
     const { data: queryData, isLoading } = usePatients();
     const initialData = React.useMemo(() => queryData?.data ?? [], [queryData?.data]);
+    const [mounted, setMounted] = React.useState(false);
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
     
     const [data, setData] = React.useState<PatientRow[]>([]);
     const [rowSelection, setRowSelection] = React.useState({});
@@ -486,7 +491,7 @@ export function DataTable({
                         className="outline-none w-[40%]  focus:outline-none border-2 border-input px-4 py-2 rounded-lg"
                     />
                 </div>
-                {isLoading ? (
+                {!mounted || isLoading ? (
                     <DataTableSkeleton columnCount={7} rowCount={isDashboard ? 5 : 10} />
                 ) : (
                 <div>

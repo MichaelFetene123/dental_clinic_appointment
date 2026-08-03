@@ -17,46 +17,63 @@ import {
     ChartTooltipContent,
 } from "@/components/ui/chart"
 
-const chartData = [
-    { status: "Braces", patients: 150, fill: "var(--chart-1)" },
-    { status: "Canal", patients: 120, fill: "var(--chart-2)" },
-    { status: "Orthodontics", patients: 200, fill: "var(--chart-3)" },
-    { status: "Endodontics", patients: 180, fill: "var(--chart-4)" },
-]
-
-// Sort the data to ensure the highest number of patients is at the top
-const sortedChartData = [...chartData].sort((a, b) => b.patients - a.patients)
-
-const chartConfig = {
-    braces: {
-        label: "Braces Patients",
-        color: "var(--chart-1)",
-    },
-    canal: {
-        label: "Canal Patients",
-        color: "var(--chart-2)",
-    },
-    orthodontics: {
-        label: "Orthodontics Patients",
-        color: "var(--chart-3)",
-    },
-    endodontics: {
-        label: "Endodontics Patients",
-        color: "var(--chart-4)",
-    },
-} satisfies ChartConfig
+import { useDashboardStats } from "@/hooks/use-dashboard"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export function PatientStatusChart() {
+    const { data, isLoading, isError } = useDashboardStats()
+
+    if (isLoading) {
+        return <Skeleton className="w-full h-full min-h-[300px] rounded-xl" />
+    }
+
+    if (isError || !data) {
+        return (
+            <Card className="flex flex-col h-full min-h-[300px] items-center justify-center p-6">
+                <CardTitle className="text-muted-foreground text-sm">Failed to load chart data</CardTitle>
+            </Card>
+        )
+    }
+
+    const departmentData = data.departmentData || [];
+
+    if (departmentData.length === 0) {
+        return (
+            <Card className="flex flex-col h-full min-h-[300px]">
+                <CardHeader>
+                    <CardTitle>Patient Department</CardTitle>
+                </CardHeader>
+                <div className="flex-grow flex items-center justify-center p-6 text-center">
+                    <p className="text-muted-foreground text-sm">No treatment data yet.</p>
+                </div>
+            </Card>
+        )
+    }
+
+    const colorVars = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--chart-5)"];
+    
+    const chartDataWithColors = departmentData.map((item, index) => ({
+        ...item,
+        fill: colorVars[index % colorVars.length]
+    }));
+
+    const chartConfig = {} as ChartConfig;
+    chartDataWithColors.forEach((item, index) => {
+        chartConfig[item.status.toLowerCase()] = {
+            label: item.status,
+            color: colorVars[index % colorVars.length]
+        }
+    });
 
     return (
-        <Card className="flex flex-col">
+        <Card className="flex flex-col h-full min-h-[300px]">
             <CardHeader>
                 <CardTitle>Patient Department</CardTitle>
             </CardHeader>
-            <div className="flex px-2">
+            <div className="flex px-2 flex-grow items-center">
                 <ChartContainer
                     config={chartConfig}
-                    className="mx-auto aspect-square max-h-[250px] w-[70%]"
+                    className="mx-auto aspect-square max-h-[250px] w-[60%]"
                 >
                     <PieChart>
                         <ChartTooltip
@@ -64,7 +81,7 @@ export function PatientStatusChart() {
                             content={<ChartTooltipContent hideLabel />}
                         />
                         <Pie
-                            data={sortedChartData}  // Use sorted data so highest is at the top
+                            data={chartDataWithColors}
                             dataKey="patients"
                             nameKey="status"
                             innerRadius={60}
@@ -104,11 +121,11 @@ export function PatientStatusChart() {
                 </ChartContainer>
 
                 {/* Add all labels here */}
-                <div className="flex flex-col justify-center gap-2 ml-4">
-                    {sortedChartData.map((item) => (
+                <div className="flex flex-col justify-center gap-2 ml-4 w-[40%]">
+                    {chartDataWithColors.map((item) => (
                         <div key={item.status} className="flex items-center gap-2">
-                            <Square size={13} style={{ backgroundColor: item.fill, color: item.fill }} />
-                            <p className="text-foreground text-sm">{item.status}</p>
+                            <Square size={13} style={{ backgroundColor: item.fill, color: item.fill }} className="flex-shrink-0" />
+                            <p className="text-foreground text-sm truncate" title={item.status}>{item.status}</p>
                         </div>
                     ))}
                 </div>

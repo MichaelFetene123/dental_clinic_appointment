@@ -15,12 +15,8 @@ export function RoleCardSkeleton({ isSystem = false }: { isSystem?: boolean }) {
         </div>
 
         <div className="flex gap-2 self-start md:self-auto">
-          {!isSystem && (
-            <>
-              <Skeleton className="h-9 w-20" />
-              <Skeleton className="h-9 w-10" />
-            </>
-          )}
+          <Skeleton className="h-9 w-20" />
+          <Skeleton className="h-9 w-10" />
         </div>
       </CardContent>
     </Card>

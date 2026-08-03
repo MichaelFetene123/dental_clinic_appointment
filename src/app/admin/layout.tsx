@@ -7,6 +7,7 @@ import { requireAuth } from "@/lib/auth/guards";
 import { prisma } from "@/lib/prisma";
 import { SessionRefresher } from "@/components/providers/SessionRefresher";
 import { Suspense } from "react";
+import Loader from "@/components/Loader";
 
 async function AdminSidebarWrapper() {
     const session = await requireAuth();
@@ -46,13 +47,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <AdminSidebarWrapper />
             </Suspense>
             <SidebarInset className="overflow-y-auto">
-                <SiteHeader />
+                <Suspense fallback={<header className="h-12 flex shrink-0 items-center border-b px-4 lg:px-6"></header>}>
+                    <SiteHeader />
+                </Suspense>
                 <div className="flex flex-1 flex-col min-h-0">
                     <div className="@container/main flex flex-1 flex-col gap-2 min-h-0">
                         <Suspense fallback={
-                            <PermissionProvider permissions={[]} isSuperAdmin={false}>
-                                {children}
-                            </PermissionProvider>
+                            <div className="flex flex-1 items-center justify-center p-8 min-h-[400px]">
+                                <Loader />
+                            </div>
                         }>
                             <AdminContentWrapper>
                                 {children}

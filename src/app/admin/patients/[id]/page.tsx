@@ -1,11 +1,22 @@
-import { Suspense } from 'react'
 import PatientDetailClient from './patient-detail-client'
 import { notFound } from 'next/navigation'
-import { requirePermission } from '@/lib/auth/guards'
+import { requirePermission, ForbiddenError } from '@/lib/auth/guards'
 
 async function PatientAuthGuard({ id }: { id: string }) {
-    await requirePermission("patient.read");
-    return <PatientDetailClient id={id} />
+    try {
+        await requirePermission("patient.read");
+        return <PatientDetailClient id={id} />
+    } catch (e) {
+        if (e instanceof ForbiddenError) {
+            return (
+                <div className="flex flex-col items-center justify-center min-h-[400px] bg-muted/20 border rounded-lg m-6 p-12 text-center">
+                    <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
+                    <p className="text-muted-foreground">You do not have permission to view patient details.</p>
+                </div>
+            )
+        }
+        throw e;
+    }
 }
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
@@ -17,9 +28,5 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         notFound();
     }
 
-    return (
-        <Suspense fallback={<div className="p-8 text-muted-foreground">Loading patient details...</div>}>
-            <PatientAuthGuard id={id} />
-        </Suspense>
-    )
+    return <PatientAuthGuard id={id} />;
 }

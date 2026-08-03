@@ -5,12 +5,17 @@ import { queryKeys } from "@/lib/queryKeys";
 import { getStaff } from "@/lib/actions/queries/staff-queries";
 import { createStaff, updateStaff, deleteStaff, resetStaffPassword } from "@/lib/actions/mutations/staff-mutations";
 import { toast } from "sonner";
+import { usePermissions } from "@/components/providers/PermissionProvider";
 
 export function useStaff() {
+  const { hasPermission, isSuperAdmin } = usePermissions();
+  const canRead = isSuperAdmin || hasPermission("staff.read");
+
   return useQuery({
     queryKey: queryKeys.staff.list(),
     queryFn: () => getStaff(),
     staleTime: 0,
+    enabled: canRead,
   });
 }
 

@@ -28,8 +28,9 @@ export default function AppointmentCalendar() {
     const { data: serverAppointments, isFetching: isCalendarFetching, isLoading } =
         useCalendarAppointments(currentDate);
     const queryClient = useQueryClient();
-    const { hasPermission } = usePermissions();
+    const { hasPermission, isSuperAdmin } = usePermissions();
     const canCreate = hasPermission("appointment.create");
+    const canRead = isSuperAdmin || hasPermission("appointment.read");
 
     // ── Create-appointment action ──────────────────────────────────────────────
     const createMutation = useCreateAppointment();
@@ -100,6 +101,14 @@ export default function AppointmentCalendar() {
     };
 
     // ── Render ────────────────────────────────────────────────────────────────
+    if (!canRead) {
+        return (
+            <Card className="w-full min-h-[600px] flex items-center justify-center bg-muted/20">
+                <p className="text-muted-foreground">Insufficient permissions to view calendar.</p>
+            </Card>
+        )
+    }
+
     if (isLoading) {
         return <AppointmentCalendarSkeleton />;
     }

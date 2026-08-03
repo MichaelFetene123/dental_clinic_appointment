@@ -1,20 +1,33 @@
 "use client";
 
 import { queryKeys } from "@/lib/queryKeys";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { getPatients, getPatientDetail } from "@/lib/actions/queries/patient-queries";
 import { deletePatient, createPatient, updatePatient } from "@/lib/actions/mutations/patient-mutations";
+import { usePermissions } from "@/components/providers/PermissionProvider";
 
 export function usePatients() {
+  const { hasPermission, isSuperAdmin } = usePermissions();
+  const canRead = isSuperAdmin || hasPermission("patient.read");
+
   return useQuery({
     queryKey: queryKeys.patients.list(),
     queryFn: () => getPatients(),
     staleTime: 0,
+    enabled: canRead,
   });
 }
 
 export function usePatientDetail(id: string) {
   return useQuery({
+    queryKey: queryKeys.patients.detail(id),
+    queryFn: () => getPatientDetail(id),
+    staleTime: 0,
+  });
+}
+
+export function useSuspensePatientDetail(id: string) {
+  return useSuspenseQuery({
     queryKey: queryKeys.patients.detail(id),
     queryFn: () => getPatientDetail(id),
     staleTime: 0,

@@ -226,6 +226,9 @@ interface AppointmentTableProps {
 }
 
 export function AppointmentTable({ statusFilter }: AppointmentTableProps = {}) {
+    const { hasPermission, isSuperAdmin } = usePermissions();
+    const canRead = isSuperAdmin || hasPermission("appointment.read");
+
     const { data, isLoading } = useAppointments(statusFilter)
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
@@ -250,6 +253,16 @@ export function AppointmentTable({ statusFilter }: AppointmentTableProps = {}) {
         onPaginationChange: setPagination,
         state: { sorting, columnFilters, columnVisibility, rowSelection, pagination },
     })
+
+    if (!canRead) {
+        return (
+            <Card>
+                <CardContent className="flex items-center justify-center p-12 text-muted-foreground bg-muted/20 min-h-[300px]">
+                    <p>Insufficient permissions to view appointments.</p>
+                </CardContent>
+            </Card>
+        )
+    }
 
     if (isLoading) {
         return (

@@ -374,6 +374,9 @@ export function DataTable({
 }: {
     isDashboard: boolean
 }) {
+    const { hasPermission, isSuperAdmin } = usePermissions();
+    const canRead = isSuperAdmin || hasPermission("patient.read");
+
     const { data: queryData, isLoading } = usePatients();
     const initialData = React.useMemo(() => queryData?.data ?? [], [queryData?.data]);
     
@@ -461,6 +464,18 @@ export function DataTable({
                 value="outline"
                 className="relative flex flex-col gap-4 overflow-auto"
             >
+                {!canRead ? (
+                    isDashboard ? (
+                        <div className="w-full flex items-center justify-center h-[300px] border rounded-lg text-muted-foreground bg-muted/20">
+                            <p>Insufficient permissions to view patients.</p>
+                        </div>
+                    ) : (
+                        <div className="w-full flex items-center justify-center p-12 border rounded-lg text-muted-foreground bg-muted/20">
+                            <p>You do not have permission to view patients.</p>
+                        </div>
+                    )
+                ) : (
+                <>
                 <div className="flex justify-between ">
                     <Input
                         placeholder="Filter by id or name..."
@@ -613,6 +628,8 @@ export function DataTable({
                         </Button>
                     </div>
                 }
+                </>
+                )}
             </TabsContent>
             <TabsContent
                 value="past-performance"

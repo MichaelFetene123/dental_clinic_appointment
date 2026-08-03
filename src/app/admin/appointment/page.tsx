@@ -65,7 +65,9 @@ const Page = () => {
 
             <SectionCards data={cardData} />
 
-            <AppointmentCalendar />
+            <Suspense fallback={<div className="w-full h-[600px] flex items-center justify-center border rounded-lg text-muted-foreground bg-muted/20">Loading Calendar...</div>}>
+                <AppointmentCalendar />
+            </Suspense>
 
             {/* Tab Navigation */}
             <div className="flex gap-4 border-b-2 py-2 px-4 flex-wrap">

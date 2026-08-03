@@ -23,7 +23,20 @@ interface AppointmentListProps {
     isLoading?: boolean;
 }
 
+import { usePermissions } from "@/components/providers/PermissionProvider"
+
 const AppointmentList = ({ recentAppointments = [], isLoading = false }: AppointmentListProps) => {
+    const { hasPermission, isSuperAdmin } = usePermissions();
+    const canRead = isSuperAdmin || hasPermission("appointment.read");
+
+    if (!canRead) {
+        return (
+            <Card className='flex flex-col min-h-[430px] items-center justify-center bg-muted/20'>
+                <p className="text-muted-foreground text-sm">Insufficient permissions to view appointments.</p>
+            </Card>
+        )
+    }
+
     return (
         <Card className='flex flex-col min-h-[430px]'>
             <CardHeader className="flex flex-row items-center justify-between pb-6">

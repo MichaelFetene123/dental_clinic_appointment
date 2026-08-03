@@ -83,6 +83,18 @@ export async function requirePermission(action: string): Promise<AuthSession> {
 }
 
 /**
+ * Checks that the current session includes the specified permission.
+ * Redirects to the specified path if the user lacks the required permission.
+ */
+export async function redirectIfMissingPermission(action: string, redirectTo = "/admin") {
+  const session = await requireAuth();
+  if (session.isSuperAdmin) return;
+  if (!session.permissions.includes(action)) {
+    redirect(redirectTo);
+  }
+}
+
+/**
  * Verifies that the resource being accessed belongs to the current user.
  * Use this for scope-limited roles (e.g. a Doctor can only update their own appointments).
  * Throws ForbiddenError if the resource does not belong to the session user.

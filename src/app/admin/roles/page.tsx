@@ -2,11 +2,23 @@ import React, { Suspense } from "react";
 import { RolesPageSkeleton } from "@/components/skeleton/RolesPageSkeleton";
 import { RolesManager } from "@/components/admin/roles/RolesManager";
 import { getRoles, getPermissions } from "@/lib/actions/queries/role-queries";
-import { requirePermission } from "@/lib/auth/guards";
+import { requirePermission, ForbiddenError } from "@/lib/auth/guards";
 
 async function RolesContent() {
   // Ensure only authorized personnel can access the roles management page
-  await requirePermission("staff.manage");
+  try {
+    await requirePermission("staff.manage");
+  } catch (e) {
+    if (e instanceof ForbiddenError) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[400px] bg-muted/20 border rounded-lg p-12 text-center mt-6">
+                <h2 className="text-xl font-semibold mb-2">Access Denied</h2>
+                <p className="text-muted-foreground">You do not have permission to manage roles.</p>
+            </div>
+        )
+    }
+    throw e;
+  }
 
   const [roles, permissions] = await Promise.all([
     getRoles(),

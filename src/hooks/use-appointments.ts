@@ -8,22 +8,32 @@ import type { AppointmentStatus } from "@/app/generated/prisma/client";
 import { toast } from "sonner";
 import { format } from "date-fns";
 
+import { usePermissions } from "@/components/providers/PermissionProvider";
+
 // ─── Appointment List Query ───────────────────────────────────────────────────
 export function useAppointments(status?: AppointmentStatus | AppointmentStatus[]) {
+  const { hasPermission, isSuperAdmin } = usePermissions();
+  const canRead = isSuperAdmin || hasPermission("appointment.read");
+
   return useQuery({
     queryKey: queryKeys.appointments.list({ status }),
     queryFn: () => getAppointments(status),
     staleTime: 0,
+    enabled: canRead,
   });
 }
 
 // ─── Calendar Query ───────────────────────────────────────────────────────────
 export function useCalendarAppointments(date: Date) {
+  const { hasPermission, isSuperAdmin } = usePermissions();
+  const canRead = isSuperAdmin || hasPermission("appointment.read");
+
   const month = format(date, "yyyy-MM");
   return useQuery({
     queryKey: queryKeys.appointments.calendar(month),
     queryFn: () => getCalendarAppointments(month),
     staleTime: 0,
+    enabled: canRead,
   });
 }
 

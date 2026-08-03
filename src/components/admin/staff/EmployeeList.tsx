@@ -9,10 +9,22 @@ import React from 'react'
 
 import { Skeleton } from '@/components/ui/skeleton'
 import { useStaff } from '@/hooks/use-staff'
+import { usePermissions } from "@/components/providers/PermissionProvider";
 
 const EmployeeList = () => {
+    const { hasPermission, isSuperAdmin } = usePermissions();
+    const canRead = isSuperAdmin || hasPermission("staff.read");
+
     const { data, isLoading } = useStaff()
     const employees = data?.data ?? []
+
+    if (!canRead) {
+        return (
+            <Card className='flex flex-col min-h-[430px] items-center justify-center bg-muted/20'>
+                <p className="text-muted-foreground text-sm">Insufficient permissions to view staff.</p>
+            </Card>
+        )
+    }
 
     return (
         <Card className='flex flex-col min-h-[430px]'>

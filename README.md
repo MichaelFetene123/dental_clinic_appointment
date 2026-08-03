@@ -6,7 +6,7 @@ A comprehensive, modern full-stack web application built to manage a dental clin
 
 - **Framework**: Next.js 15+ (App Router)
 - **Language**: TypeScript
-- **Database**: PostgreSQL
+- **Database**: PostgreSQL (via Supabase with PgBouncer connection pooling)
 - **ORM**: Prisma
 - **State Management**: TanStack Query (React Query)
 - **UI/Styling**: Tailwind CSS, shadcn/ui, Radix UI primitives
@@ -16,63 +16,65 @@ A comprehensive, modern full-stack web application built to manage a dental clin
 
 The project strictly follows the Next.js App Router architecture:
 
-- `src/app/` - Application routes (grouped into `(public)`, `admin`, `portal`, `api`)
-- `src/components/` - Reusable UI components (organized by domain: `admin`, `portal`, `ui`)
-- `src/lib/` - Core business logic, Prisma client, server actions, authentication utilities
-- `src/hooks/` - Custom React hooks and TanStack Query wrappers
-- `prisma/` - Database schema and migration files
+- `src/app/` - Application routes organized by domain (`(public)`, `admin`, `portal`, `api`).
+- `src/components/` - Reusable UI components grouped by feature area (`admin`, `portal`, `ui`, `skeleton`).
+- `src/lib/` - Core business logic, Prisma client, Server Actions, queries, and authentication utilities.
+- `src/hooks/` - Custom React hooks and TanStack Query wrappers.
+- `prisma/` - Database schema, connection config, and migration files.
 
 ## 🗄️ Database Schema & Relationships
 
-The database is built on PostgreSQL via Prisma. The core entities include:
+The database is built on PostgreSQL via Prisma. Key entities and structural decisions include:
 
-- **`User`**: Represents anyone who logs into the system (Staff, Admins, Doctors, Portal Users).
-- **`Patient`**: The central medical record. A Patient can exist *without* a User account (e.g., if they are manually added by a receptionist).
-- **`Appointment`**: Linked to a `Patient` and optionally assigned to a `User` (Doctor).
-- **`Session`**: Tracks active authenticated sessions.
-- **`Role` & `Permission`**: Manages RBAC.
+- **`User` vs. `Patient`**: 
+  - `User` represents the authentication identity (Staff, Admins, Doctors, Portal Users).
+  - `Patient` represents the core medical entity (health records, demographics, vitals, history).
+  - A `Patient` can exist independently without a `User` account (e.g., walk-ins). If portal access is granted, a `User` account is uniquely linked to the `Patient` via `userId`.
+- **`Appointment`**: Linked exclusively to a `Patient` and optionally assigned to a `User` (Doctor).
+- **`DentalHistory` & `MedicalDocument`**: Tied directly to the `Patient` to maintain a unified, longitudinal medical record.
+- **RBAC (`Role`, `Permission`, `UserRole`, `RolePermission`)**: Supports a granular, permission-based Role-Based Access Control model.
+- **`Session`**: Tracks active authenticated sessions and refresh token families.
 
-### Key Architectural Decision: The User-Patient Relationship
-A critical design decision is the separation of **Users** and **Patients**:
-- The `Patient` model represents the clinical entity (health records, demographics, history).
-- The `User` model represents the authentication entity.
-- **Portal Accounts**: If a patient wishes to log in, a `User` account is created and uniquely linked to their `Patient` record via `userId`. This allows the system to seamlessly track medical records whether the patient books as a guest, is added by an admin, or uses the authenticated portal.
+### Connection Pooling
+The application utilizes connection pooling via **PgBouncer** (provided by Supabase) to handle high concurrency efficiently. Prisma connects to the pool rather than opening direct individual database connections, ensuring stable performance during traffic spikes.
 
-## 🔐 Authentication & RBAC
+## 🔐 Authentication & Session Management
 
-The system utilizes a highly secure, custom dual-token architecture (Access + Refresh tokens) stored in `HttpOnly` cookies.
+The system implements a highly secure, custom dual-token architecture (Access + Refresh tokens) utilizing `HttpOnly` cookies.
 
-- **Short-Lived Access Tokens**: Valid for 15 minutes to minimize exposure.
-- **Silent Refresh**: A client-side hook (`useSessionRefresh`) silently requests a new token pair in the background every 12 minutes to keep active users logged in without interruption.
-- **Strict Inactivity**: If a user is inactive for 15 minutes across all browser tabs (monitored via DOM events and `localStorage`), the system triggers a hard logout and revokes the session in the database.
-- **RBAC (Role-Based Access Control)**: Users are assigned `Roles` (e.g., Admin, Receptionist, Patient) containing specific `Permissions`. Middleware and Server Actions strictly guard routes and data mutations based on these cached permissions.
+### Session Rotation & Grace Period
+- **Short-Lived Access Tokens**: Valid for 15 minutes.
+- **Refresh Token Rotation**: Refresh tokens are rotated dynamically. When a refresh occurs, new tokens are issued.
+- **Grace-Period Handling**: To prevent race conditions from concurrent requests (e.g., multiple tabs reloading simultaneously), the system maintains a **15-second grace period**. The `Session` model stores `previousTokenHash` and `previousTokenExpiresAt`, allowing parallel requests using just-rotated tokens to resolve successfully without forcing a logout or triggering a reuse attack.
+- **Reuse Detection**: If a previously used refresh token is detected outside the grace period, it triggers an immediate revocation of the entire token family (`familyId`).
 
-## 📅 Appointment Workflow & Deduplication
+## 🛡️ Permission-Based RBAC (Role-Based Access Control)
 
-The system handles appointments through a bifurcated approach to prevent duplicate patient records:
+Access control operates on a granular **Resource:Action** model (e.g., `patient.read`, `appointment.edit`) rather than broad roles.
 
-### 1. Authenticated Portal Booking
-Portal users book directly through their dashboard. The system inherently knows their identity via the `patientId` attached to their user session, guaranteeing 1:1 data integrity without requiring them to re-enter demographic details.
+- **Server-Side Authorization**: Every protected Server Action invokes `requirePermission(action)`, evaluating the user's cached permission set natively stored in the `Session` model.
+- **Redirect-Based Protection**: Page layouts and routes use `redirectIfMissingPermission(action, fallbackRoute)` to seamlessly reroute unauthorized users away from restricted views.
+- **Super Admins**: Users flagged as `isSuperAdmin` automatically bypass all permission checks.
 
-### 2. Public Guest Booking
-Guests book anonymously on the public-facing site. The `createGuestAppointment` Server Action intercepts the request and runs a structured, 3-tier fallback matching system to safely identify existing patients:
-1. **Email Match** (High Confidence)
-2. **Phone Match** (High Confidence)
-3. **Fuzzy Name Match** (Fallback)
+## ⚡ Data Fetching, State Management & Caching
 
-If a match is found, the appointment is attached to the existing `Patient` record. If no match is found, a new `Patient` is created (defaulting the gender to `UNKNOWN` until the profile is completed).
+The system employs a hybrid caching strategy bridging Next.js Server Cache and TanStack Query.
 
-## ⚡ Data Fetching, Caching & State Management
+- **Server Actions (Data Layer)**: All database operations strictly go through Server Actions.
+- **TanStack Query (Client Layer)**: Read queries are wrapped in TanStack Query hooks. 
+- **Query Key & Cache Tag Invalidation**: 
+  - After a successful Server Action mutation, the action invalidates the Next.js cache using `revalidateTag('tag-name')` (or `revalidatePath`).
+  - On the client side, success callbacks trigger `queryClient.invalidateQueries({ queryKey: [...] })` to instantly synchronize the UI.
+  - This ensures instantaneous perceived performance with guaranteed fresh server data.
 
-The application employs a hybrid caching strategy, leveraging both Next.js Server Cache and TanStack Query client-side state.
+## ⏳ Loading Strategy (Suspense & Skeletons)
 
-### Server Actions (Data Layer)
-- **Mutations**: All database writes (create, update, delete) are handled strictly through Next.js Server Actions.
-- **Invalidation**: Upon successful mutation, Server Actions call `updateTag("tag-name")` to instantly purge the Next.js server-side cache.
+To provide a snappy, premium user experience, the application utilizes a **Component-Level Loading Strategy**:
+- Next.js `loading.tsx` and React `<Suspense>` boundaries are used extensively.
+- Component-specific **Skeleton loaders** (`src/components/skeleton/...`) act as placeholders for asynchronous data fetching, preventing layout shift and ensuring the UI feels responsive even on slower network connections.
 
-### TanStack Query (Client Layer)
-- **Hooks**: Server Action read queries are wrapped in TanStack Query hooks (e.g., `usePatients`, `usePortalAppointments`).
-- **Synchronization**: TanStack Query acts as the client-side state manager, handling background refetching and caching (`staleTime: 5 minutes`).
-- **Optimistic Updates & Refresh**: After a client-side mutation succeeds, the component immediately triggers `queryClient.invalidateQueries()`, ensuring the UI perfectly reflects the backend state without a hard page reload.
+## 📝 Audit Logging & Retention
 
-By combining Next.js `cacheTag` invalidation with React Query's real-time client state, the application achieves instantaneous perceived performance while ensuring the server always serves the freshest data.
+To meet security and compliance standards, the application implements a structured audit logging system.
+- **`AuditLog` Model**: Records critical actions (`CREATE`, `UPDATE`, `DELETE`, `LOGIN`), the affected resource, resource ID, the user's ID, and IP address.
+- **Archiving Strategy**: To prevent the main `AuditLog` table from bloating and degrading query performance, older logs are periodically migrated to an `AuditLogArchive` table for long-term retention.

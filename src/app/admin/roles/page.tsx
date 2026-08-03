@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { DataTableSkeleton } from "@/components/skeleton/DataTableSkeleton";
+import { RolesPageSkeleton } from "@/components/skeleton/RolesPageSkeleton";
 import { RolesManager } from "@/components/admin/roles/RolesManager";
 import { getRoles, getPermissions } from "@/lib/actions/queries/role-queries";
 import { requirePermission } from "@/lib/auth/guards";
@@ -26,7 +26,7 @@ export default function RolesPage() {
         </p>
       </div>
 
-      <Suspense fallback={<DataTableSkeleton columnCount={4} rowCount={3} />}>
+      <Suspense fallback={<RolesPageSkeleton />}>
         <RolesContent />
       </Suspense>
     </div>

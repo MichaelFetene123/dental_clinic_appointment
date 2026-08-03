@@ -11,7 +11,9 @@ import { Suspense } from "react";
 async function AdminSidebarWrapper() {
     const session = await requireAuth();
     return (
-        <AppSidebar variant="inset" user={{ name: session.userName, email: session.userEmail, avatar: session.userAvatar || "" }} />
+        <PermissionProvider permissions={session.permissions} isSuperAdmin={session.isSuperAdmin}>
+            <AppSidebar variant="inset" user={{ name: session.userName, email: session.userEmail, avatar: session.userAvatar || "" }} />
+        </PermissionProvider>
     );
 }
 

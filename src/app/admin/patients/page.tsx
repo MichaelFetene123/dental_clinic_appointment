@@ -10,6 +10,7 @@ import { AlertTriangleIcon, CalendarCheckIcon, CircleCheckBig, TrendingUpIcon, U
 import PatientForm from '@/components/admin/forms/patientForm'
 import { useDashboardStats } from '@/hooks/use-dashboard'
 import { DashboardCardsSkeleton } from '@/components/skeleton/DashboardCardSkeleton'
+import { DataTableSkeleton } from '@/components/skeleton/DataTableSkeleton'
 
 const Page = () => {
     const [showForm, setShowForm] = useState(false);
@@ -73,7 +74,9 @@ const Page = () => {
                 ) : (
                     <SectionCards data={cardData} />
                 )}
-                <DataTable isDashboard={false} />
+                <Suspense fallback={<DataTableSkeleton columnCount={7} rowCount={10} />}>
+                    <DataTable isDashboard={false} />
+                </Suspense>
             </div>
             {showForm && <PatientForm show={showForm} setShow={setShowForm} />}
         </>

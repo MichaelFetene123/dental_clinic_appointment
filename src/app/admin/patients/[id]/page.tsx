@@ -1,6 +1,12 @@
+import { Suspense } from 'react'
 import PatientDetailClient from './patient-detail-client'
 import { notFound } from 'next/navigation'
 import { requirePermission } from '@/lib/auth/guards'
+
+async function PatientAuthGuard({ id }: { id: string }) {
+    await requirePermission("patient.read");
+    return <PatientDetailClient id={id} />
+}
 
 export default async function Page({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -11,9 +17,9 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         notFound();
     }
 
-    // Guard: only users with patient.read permission may view a patient's detail page.
-    // This blocks direct URL access regardless of whether any hook or query fires.
-    await requirePermission("patient.read");
-
-    return <PatientDetailClient id={id} />
+    return (
+        <Suspense fallback={<div className="p-8 text-muted-foreground">Loading patient details...</div>}>
+            <PatientAuthGuard id={id} />
+        </Suspense>
+    )
 }

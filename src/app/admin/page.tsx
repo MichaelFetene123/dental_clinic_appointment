@@ -5,7 +5,7 @@ import AdminHero from "@/components/admin/adminHero"
 import DashboardClient from "@/components/admin/DashboardClient"
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
-import { DashboardCardsSkeleton } from "@/components/skeleton/DashboardCardSkeleton"
+import { DashboardCardsSkeleton, ChartAreaInteractiveSkeleton, PatientStatusChartSkeleton } from "@/components/skeleton/DashboardCardSkeleton"
 
 export default function Page() {
     return (
@@ -21,12 +21,12 @@ export default function Page() {
 
                     <div className="md:flex justify-between gap-4 h-full">
                         <div className="md:w-[70%] md:h-full h-[100vh]">
-                            <Suspense fallback={<Skeleton className="h-full w-full min-h-[400px] rounded-xl" />}>
+                            <Suspense fallback={<ChartAreaInteractiveSkeleton />}>
                                 <ChartAreaInteractive />
                             </Suspense>
                         </div>
                         <div className="md:w-[30%] h-full">
-                            <Suspense fallback={<Skeleton className="h-full w-full min-h-[300px] rounded-xl" />}>
+                            <Suspense fallback={<PatientStatusChartSkeleton />}>
                                 <PatientStatusChart />
                             </Suspense>
                         </div>

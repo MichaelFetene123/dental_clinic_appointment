@@ -30,3 +30,36 @@ export function DashboardCardsSkeleton({ count = 4 }: { count?: number }) {
         </div>
     );
 }
+
+export function ChartAreaInteractiveSkeleton() {
+    return (
+        <Card className="h-full flex flex-col min-h-[400px]">
+            <CardHeader className="relative flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+                <Skeleton className="h-6 w-32" />
+                <Skeleton className="h-4 w-48 hidden sm:block" />
+                <Skeleton className="h-10 w-[160px] sm:ml-auto" />
+            </CardHeader>
+            <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6 flex-grow flex items-center justify-center">
+                <Skeleton className="w-full h-full min-h-[250px] rounded-xl" />
+            </CardContent>
+        </Card>
+    )
+}
+
+export function PatientStatusChartSkeleton() {
+    return (
+        <Card className="flex flex-col h-full min-h-[300px]">
+            <CardHeader>
+                <Skeleton className="h-6 w-40" />
+            </CardHeader>
+            <div className="flex px-2 flex-grow items-center justify-center p-4">
+                <Skeleton className="h-[200px] w-[200px] rounded-full" />
+                <div className="flex flex-col justify-center gap-4 ml-8 w-[40%]">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-4 w-24" />
+                </div>
+            </div>
+        </Card>
+    )
+}

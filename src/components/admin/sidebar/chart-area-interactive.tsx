@@ -29,6 +29,7 @@ import {
 
 import { useDashboardStats } from "@/hooks/use-dashboard"
 import { Skeleton } from "@/components/ui/skeleton"
+import { ChartAreaInteractiveSkeleton } from "@/components/skeleton/DashboardCardSkeleton"
 
 const chartConfig = {
     visitors: {
@@ -48,15 +49,17 @@ export function ChartAreaInteractive() {
     const isMobile = useIsMobile()
     const [timeRange, setTimeRange] = React.useState("30d")
     const { data, isLoading, isError } = useDashboardStats()
+    const [mounted, setMounted] = React.useState(false)
 
     React.useEffect(() => {
+        setMounted(true)
         if (isMobile) {
             setTimeRange("7d")
         }
     }, [isMobile])
 
-    if (isLoading) {
-        return <Skeleton className="w-full h-full min-h-[350px] rounded-xl" />
+    if (!mounted || isLoading) {
+        return <ChartAreaInteractiveSkeleton />
     }
 
     if (isError || !data) {

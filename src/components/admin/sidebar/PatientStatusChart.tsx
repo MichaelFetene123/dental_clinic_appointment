@@ -19,12 +19,18 @@ import {
 
 import { useDashboardStats } from "@/hooks/use-dashboard"
 import { Skeleton } from "@/components/ui/skeleton"
+import { PatientStatusChartSkeleton } from "@/components/skeleton/DashboardCardSkeleton"
 
 export function PatientStatusChart() {
     const { data, isLoading, isError } = useDashboardStats()
+    const [mounted, setMounted] = React.useState(false)
 
-    if (isLoading) {
-        return <Skeleton className="w-full h-full min-h-[300px] rounded-xl" />
+    React.useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    if (!mounted || isLoading) {
+        return <PatientStatusChartSkeleton />
     }
 
     if (isError || !data) {

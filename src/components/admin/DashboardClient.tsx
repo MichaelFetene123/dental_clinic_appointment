@@ -13,8 +13,15 @@ import {
 } from "lucide-react";
 import { DashboardCardsSkeleton } from "@/components/skeleton/DashboardCardSkeleton";
 
+import { useState, useEffect } from "react";
+
 export default function DashboardClient() {
     const { data, isLoading, isError } = useDashboardStats();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const cardData = [
         {
@@ -49,10 +56,8 @@ export default function DashboardClient() {
 
     return (
         <div className="flex flex-col gap-4 md:gap-6">
-            {isLoading ? (
-                <div className="flex flex-col gap-4">
-                    <DashboardCardsSkeleton count={4} />
-                </div>
+            {!mounted || isLoading ? (
+                <DashboardCardsSkeleton count={4} />
             ) : isError ? (
                 <div className="p-4 rounded-lg border border-destructive/30 bg-destructive/10 text-destructive text-sm">
                     Failed to load dashboard statistics. Please refresh the page.
@@ -62,7 +67,7 @@ export default function DashboardClient() {
             )}
             <div className="grid md:grid-cols-2 gap-4 h-full">
                 <EmployeeList />
-                <AppointmentList recentAppointments={data?.recentAppointments ?? []} isLoading={isLoading} />
+                <AppointmentList recentAppointments={data?.recentAppointments ?? []} isLoading={!mounted || isLoading} />
             </div>
         </div>
     );
